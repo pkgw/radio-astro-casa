@@ -21,6 +21,9 @@
 
 cmake_minimum_required( VERSION 2.8 )
 
+cmake_policy(SET CMP0056 NEW)
+cmake_policy(SET CMP0066 NEW)
+
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/install )
 
 execute_process( COMMAND svn info
