@@ -161,7 +161,7 @@ class </xsl:text><xsl:value-of select="@name"/><xsl:text>_pg_:</xsl:text>
 #          saveinputs(</xsl:text>&apos;<xsl:value-of select="$taskname"/>&apos;, &apos;<xsl:value-of select="$taskname"/><xsl:text disable-output-escaping="yes">.last&apos;, myparams)
 #
 #
-        except Exception, instance:
+        except Exception as instance:
           if(myf.has_key('__rethrow_casa_exceptions') and myf['__rethrow_casa_exceptions']) :
              raise
           else:
@@ -247,7 +247,7 @@ class </xsl:text><xsl:value-of select="@name"/><xsl:text>_pg_:</xsl:text>
             break
       myf=sys._getframe(stacklevel).f_globals
 
-#      print 'param:', param, 'value:', value
+#      print('param:', param, 'value:', value)
       try :
          if str(type(value)) != "&lt;type &apos;instance&apos;&gt;" :
             value0 = value
@@ -257,8 +257,8 @@ class </xsl:text><xsl:value-of select="@name"/><xsl:text>_pg_:</xsl:text>
                if(type(value) == type(value0)):
                   myf[param] = value.tolist()
                else:
-                  #print 'value:', value, 'value0:', value0
-                  #print 'type(value):', type(value), 'type(value0):', type(value0)
+                  #print('value:', value, 'value0:', value0)
+                  #print('type(value):', type(value), 'type(value0):', type(value0))
                   myf[param] = value0
                   if type(value0) != list :
                      matchtype = True
@@ -267,7 +267,7 @@ class </xsl:text><xsl:value-of select="@name"/><xsl:text>_pg_:</xsl:text>
             value = myf['cu'].verifyparam({param:value})
             if matchtype:
                value = False
-      except Exception, instance:
+      except Exception as instance:
          #ignore the exception and just return it unchecked
          myf[param] = value
       return value
