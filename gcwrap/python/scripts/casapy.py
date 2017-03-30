@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os
 if os.environ.has_key('LD_PRELOAD'):
     del os.environ['LD_PRELOAD']
@@ -52,9 +54,9 @@ if MPIEnvironment.is_mpi_enabled and not MPIEnvironment.is_mpi_client:
 ##
 try:
     os.setpgid(0,0)
-except OSError, e:
-    print "setgpid( ) failed: " + e.strerror
-    print "                   processes may be left dangling..."
+except OSError as e:
+    print("setgpid( ) failed: " + e.strerror)
+    print("                   processes may be left dangling...")
 
 ##
 ## watchdog... which is *not* in the casapy process group
@@ -109,22 +111,22 @@ if os.fork( ) == 0 :
 ##
 try:
     import casac 
-except ImportError, e:
-    print "failed to load casa:\n", e
+except ImportError as e:
+    print("failed to load casa:\n", e)
     sys.exit(1)
 
 try:
     import matplotlib
-except ImportError, e:
-    print "failed to load matplotlib:\n", e
-    print "sys.path =", "\n\t".join(sys.path)
+except ImportError as e:
+    print("failed to load matplotlib:\n", e)
+    print("sys.path =", "\n\t".join(sys.path))
     
 from asap_init import *
 
 
 homedir = os.getenv('HOME')
 if homedir == None :
-   print "Environment variable HOME is not set, please set it"
+   print("Environment variable HOME is not set, please set it")
    sys.exit(1)
 
 import casadef
@@ -174,8 +176,8 @@ if os.environ.has_key('CASAPATH') :
     __casapath__ = os.environ['CASAPATH'].split(' ')[0]
     __casaarch__ = os.environ['CASAPATH'].split(' ')[1]
     if not os.path.exists(__casapath__ + "/data") :
-        print "DEBUG: CASAPATH = %s" % (__casapath__)
-        raise RuntimeError, "Unable to find the data repository directory in your CASAPATH. Please fix."
+        print("DEBUG: CASAPATH = %s" % (__casapath__))
+        raise RuntimeError("Unable to find the data repository directory in your CASAPATH. Please fix.")
     else :
         casa['dirs']['root'] = __casapath__
         casa['dirs']['data'] = __casapath__ + "/data"
@@ -194,7 +196,7 @@ if os.environ.has_key('CASAPATH') :
         elif os.path.exists(__casapath__ + "/xml"):
             casa['dirs']['xml'] = __casapath__ + "/xml"
         else:
-            raise RuntimeError, "Unable to find the XML constraints directory in your CASAPATH"
+            raise RuntimeError("Unable to find the XML constraints directory in your CASAPATH")
 else :
     __casapath__ = casac.__file__
     while __casapath__ and __casapath__ != "/" :
@@ -202,7 +204,7 @@ else :
             break
         __casapath__ = os.path.dirname(__casapath__)
     if not os.path.exists(__casapath__ + "/data") :
-        raise RuntimeError, "casa path could not be determined"
+        raise RuntimeError("casa path could not be determined")
     else :
         casa['dirs']['root'] = __casapath__
         casa['dirs']['data'] = __casapath__ + "/data"
@@ -285,7 +287,7 @@ for info in [ (['dbus-daemon'],'dbus'),
             if casa['helpers'][entry] is not None:
                 break
 
-print "CASA Version " + casa['build']['version'] + "-REL (r" + casa['source']['revision'] + ")\n  Compiled on: " + casa['build']['time']
+print("CASA Version " + casa['build']['version'] + "-REL (r" + casa['source']['revision'] + ")\n  Compiled on: " + casa['build']['time'])
 
 a = [] + sys.argv             ## get a copy from goofy python
 a.reverse( )
@@ -304,12 +306,12 @@ while len(a) > 0:
         ## strip out 2 element ipython flags (which we recognize) here...
         ##
         if len(a) == 0 :
-            print "A option must be specified with " + c + "..."
+            print("A option must be specified with " + c + "...")
             sys.exit(1)
         else:
             c = a.pop( )
             if c != 'NoColor' and c != 'Linux' and c != 'LightBG':
-                print "unrecognized option for '--color': " + c
+                print("unrecognized option for '--color': " + c)
                 sys.exit(1)
             else:
                 __ipython_colors = c
@@ -320,7 +322,7 @@ while len(a) > 0:
         ##
         c = c.split('=')[1]
         if c != 'NoColor' and c != 'Linux' and c != 'LightBG':
-            print "unrecognized option for '--color': " + c
+            print("unrecognized option for '--color': " + c)
             sys.exit(1)
         else:
             __ipython_colors = c
@@ -330,7 +332,7 @@ while len(a) > 0:
         ## we join multi-arg parameters here
         ##
         if len(a) == 0 :
-            print "A file must be specified with " + c + "..."
+            print("A file must be specified with " + c + "...")
             sys.exit(1)
         else :
             casa['flags'][c] = a.pop( )
@@ -349,19 +351,19 @@ if casa['flags'].has_key('--nologfile') :
     casa['files'].pop('logfile')				## user indicates no log file
 
 if casa['flags'].has_key('--help') :
-	print "Options are: "
-	print "   --rcdir directory"
-	print "   --logfile logfilename"
-	print "   --maclogger"
-	print "   --log2term"
-	print "   --nologger"
-	print "   --nologfile"
-	print "   --nogui"
-        print "   --colors=[NoColor|Linux|LightBG]"
-        print "   --pipeline"
-	print "   -c filename-or-expression"
-	print "   --help, print this text and exit"
-	print
+	print("Options are: ")
+	print("   --rcdir directory")
+	print("   --logfile logfilename")
+	print("   --maclogger")
+	print("   --log2term")
+	print("   --nologger")
+	print("   --nologfile")
+	print("   --nogui")
+        print("   --colors=[NoColor|Linux|LightBG]")
+        print("   --pipeline")
+	print("   -c filename-or-expression")
+	print("   --help, print this text and exit")
+	print()
 	sys.exit(0) 
 
 if os.uname()[0]=='Darwin' :
@@ -393,8 +395,8 @@ if os.path.exists( casa['dirs']['rc'] + '/prelude.py' ) :
     try:
         execfile ( casa['dirs']['rc'] + '/prelude.py' )
     except:
-        print str(sys.exc_info()[0]) + ": " + str(sys.exc_info()[1])
-        print 'Could not execute initialization file: ' + casa['dirs']['rc'] + '/prelude.py'
+        print(str(sys.exc_info()[0]) + ": " + str(sys.exc_info()[1]))
+        print('Could not execute initialization file: ' + casa['dirs']['rc'] + '/prelude.py')
         sys.exit(1)
 
 ## ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -510,7 +512,7 @@ def casalogger(logfile=''):
     elif (os.uname()[0]=='Linux'):
         pid=os.spawnlp(os.P_NOWAIT,casa['helpers']['logger'],casa['helpers']['logger'],logfile)
     else:
-        print 'Unrecognized OS: No logger available'
+        print('Unrecognized OS: No logger available')
 
     if (pid!=9999): logpid.append(pid)
 
@@ -528,14 +530,14 @@ if casa['flags'].has_key('--nologfile') :
 
 deploylogger = True
 if casa['flags'].has_key('--nolog') :
-    print "--nolog is deprecated, please use --nologger"
+    print("--nolog is deprecated, please use --nologger")
     deploylogger = False
 
 if not os.access('.', os.W_OK) :
-    print 
-    print "********************************************************************************"
-    print "Warning: no write permission in current directory, no log files will be written."
-    print "********************************************************************************"
+    print() 
+    print("********************************************************************************")
+    print("Warning: no write permission in current directory, no log files will be written.")
+    print("********************************************************************************")
     deploylogger = False
     thelogfile = 'null'
     
@@ -587,10 +589,10 @@ def go(taskname=None):
     try:
         parameter_checktype(['taskname'],[taskname],str)
     except TypeError, e:
-        print "go -- TypeError: ",e
+        print("go -- TypeError: ",e)
         return
     fulltaskname=taskname+'()'
-    print 'Executing: ',fulltaskname
+    print('Executing: ',fulltaskname)
     exec(fulltaskname)
     myf['taskname']=oldtaskname
 
@@ -604,7 +606,7 @@ def selectfield(vis,minstring):
     stringlist=list()
 
     fldlist=minstring.split()#split string into elements
-    print 'fldlist is ',fldlist
+    print('fldlist is ',fldlist)
     for fld in fldlist:     #loop over fields
         _iter=fields.__iter__() #create iterator for fieldnames
         while 1:
@@ -617,7 +619,7 @@ def selectfield(vis,minstring):
                 indexlist.append(fields.index(x))
                 stringlist.append(x)
 
-    print 'Selected fields are: ',stringlist
+    print('Selected fields are: ',stringlist)
     return indexlist
 
 def selectantenna(vis,minstring):
@@ -638,8 +640,8 @@ def selectantenna(vis,minstring):
         except ValueError:
             pass
 
-    print 'Selected reference antenna: ',stringlist
-    print 'indexlist: ',indexlist
+    print('Selected reference antenna: ',stringlist)
+    print('indexlist: ',indexlist)
     return indexlist[0]
 
 def readboxfile(boxfile):
@@ -675,7 +677,7 @@ def readboxfile(boxfile):
             break
 
     f.close()
-    print 'union is: ',union
+    print('union is: ',union)
     return union
 
 
@@ -714,7 +716,7 @@ def inp(taskname=None, page=False):
         ####
         myf=sys._getframe(len(inspect.stack())-1).f_globals
         if((taskname==None) and (not myf.has_key('taskname'))):
-            print 'No task name defined for inputs display'
+            print('No task name defined for inputs display')
             return
         if taskname==None: taskname=myf['taskname']
         myf['taskname']=taskname
@@ -724,11 +726,11 @@ def inp(taskname=None, page=False):
 
         try:
             parameter_checktype(['taskname'],taskname,str)
-        except TypeError, e:
-            print "inp -- TypeError: ", e
+        except TypeError as e:
+            print("inp -- TypeError: ", e)
             return
-        except ValueError, e:
-            print "inp -- OptionError: ", e
+        except ValueError as e:
+            print("inp -- OptionError: ", e)
             return
 
         ###Check if task exists by checking if task_defaults is defined
@@ -741,12 +743,12 @@ def inp(taskname=None, page=False):
         else:
             myf.update({'__last_taskname':taskname})
 
-        print '# ',myf['taskname']+' :: '+(eval(myf['taskname']+'.description()'))
+        print('# ',myf['taskname']+' :: '+(eval(myf['taskname']+'.description()')))
         update_params(myf['taskname'], myf)
-    except TypeError, e:
-        print "inp --error: ", e
-    except Exception, e:
-        print "---",e
+    except TypeError as e:
+        print("inp --error: ", e)
+    except Exception as e:
+        print("---", e)
 
 def update_params(func, printtext=True, ipython_globals=None):
     from odict import odict
@@ -1043,7 +1045,7 @@ def print_params_col(param=None, value=None, comment='', colorparam=None,
     if colorcomment == 'last':        #     (Is colorcomment ever green?)
         commentpart += "\n"
 
-    print parampart + valpart + commentpart
+    print(parampart + valpart + commentpart)
 
 def __set_default_parameters(b):
     myf=sys._getframe(len(inspect.stack())-1).f_globals
@@ -1151,20 +1153,20 @@ def saveinputs(taskname=None, outfile='', myparams=None, ipython_globals=None, s
         if outpathfile not in casa['state']['unwritable'] and outpathdir not in casa['state']['unwritable']:
             try:
                 taskparameterfile=open(outfile,'w')
-                print >>taskparameterfile, '%-15s    = "%s"'%('taskname', taskname)
+                print('%-15s    = "%s"'%('taskname', taskname), file=taskparameterfile)
                 do_save_inputs = True
             except:
-                print "********************************************************************************"
-                print "Warning: no write permission for %s, cannot save task" % outfile
+                print("********************************************************************************")
+                print("Warning: no write permission for %s, cannot save task" % outfile)
                 if os.path.isfile(outfile):
-                    print "         inputs in %s..." % outpathfile
+                    print("         inputs in %s..." % outpathfile)
                     casa['state']['unwritable'].add(outpathfile)
                 elif not os.path.isdir(outfile):
-                    print "         inputs in dir %s..." % outpathdir
+                    print("         inputs in dir %s..." % outpathdir)
                     casa['state']['unwritable'].add(outpathdir)
                 else:
-                    print "         inputs because given file (%s) is a dir..." % outpathfile
-                print "********************************************************************************"
+                    print("         inputs because given file (%s) is a dir..." % outpathfile)
+                print("********************************************************************************")
         f=zip(myf[taskname].__call__.func_code.co_varnames[1:],myf[taskname].__call__.func_defaults)
         scriptstring='#'+str(taskname)+'('
 	if myparams == None :
@@ -1179,18 +1181,18 @@ def saveinputs(taskname=None, outfile='', myparams=None, ipython_globals=None, s
                     # if the string doesn't contain double quotes then
                     # use double quotes around it in the parameter file.
                     if do_save_inputs:
-                        print >>taskparameterfile, '%-15s    =  "%s"'%(k, myparams[k])
+                        print('%-15s    =  "%s"'%(k, myparams[k]), file=taskparameterfile)
                     scriptstring=scriptstring+k+'="'+myparams[k]+'",'
                 else:
                     # use single quotes.
                     if do_save_inputs:
-                        print >>taskparameterfile, "%-15s    =  '%s'"%(k, myparams[k])
+                        print("%-15s    =  '%s'"%(k, myparams[k]), file=taskparameterfile)
                     scriptstring=scriptstring+k+"='"+myparams[k]+"',"
             else :
                 if ( j != 0 or k != "self" or
                      str(type(myf[taskname])) != "<type 'instance'>" ) :
                     if do_save_inputs:
-                        print >>taskparameterfile, '%-15s    =  %s'%(k, myparams[k])
+                        print('%-15s    =  %s'%(k, myparams[k]), file=taskparameterfile)
                     scriptstring=scriptstring+k+'='+str(myparams[k])+','
 
             ###Now delete varianle from global user space because
@@ -1210,10 +1212,10 @@ def saveinputs(taskname=None, outfile='', myparams=None, ipython_globals=None, s
         scriptstring=scriptstring.replace('        ', '')
         scriptstring=scriptstring.replace('\n', '')
         if do_save_inputs:
-            print >>taskparameterfile,scriptstring
+            print(scriptstring, file=taskparameterfile)
             taskparameterfile.close()
-    except TypeError, e:
-        print "saveinputs --error: ", e
+    except TypeError as e:
+        print("saveinputs --error: ", e)
 def default(taskname=None):
     """ reset given task to its default values :
 
@@ -1242,8 +1244,8 @@ def default(taskname=None):
         casalog.post(' #######  Setting values to default for task: '+taskstring+'  #######')
 
 
-    except TypeError, e:
-        print "default --error: ", e
+    except TypeError as e:
+        print("default --error: ", e)
 
 def taskparamgui(useGlobals=True):
     """
@@ -1280,15 +1282,15 @@ def pybot_install( ):
                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=tmp )
     (output, err) = checkout.communicate()
     if len(err) > 0:
-        print "OUTPUT: ", output
-        print "ERROR:  ", err
+        print("OUTPUT: ", output)
+        print("ERROR:  ", err)
 
     install = subprocess.Popen( "python setup.py install --install-lib=%s/python/2.7 --install-scripts=%s/bin" % (archdir,archdir), \
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=tmp )
     (output, err) = install.communicate()
     if len(err) > 0:
-        print "OUTPUT: ", output
-        print "ERROR:  ", err
+        print("OUTPUT: ", output)
+        print("ERROR:  ", err)
 
     shutil.rmtree(tmp)
 
@@ -1299,8 +1301,8 @@ def pybot_setup( ):
                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True )
     (output, err) = checkout.communicate()
     if len(err) > 0:
-        print "OUTPUT: ", output
-        print "ERROR:  ", err
+        print("OUTPUT: ", output)
+        print("ERROR:  ", err)
 ####################
 
     
@@ -1330,8 +1332,8 @@ F     = False
 # Case where casapy is run non-interactively
 try:
    import IPython
-except ImportError, e:
-   print 'Failed to load IPython: ', e
+except ImportError as e:
+   print('Failed to load IPython: ', e)
    exit(1)
 
 
@@ -1359,7 +1361,7 @@ if casa['flags'].has_key('--pipeline'):
         import pipeline
         pipeline.initcli()
     else:
-        print "Unable to locate pipeline installation, exiting"
+        print("Unable to locate pipeline installation, exiting")
         sys.exit(1)
 
 ## ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -1372,8 +1374,8 @@ if os.path.exists( casa['dirs']['rc'] + '/init.py' ) :
     try:
         execfile ( casa['dirs']['rc'] + '/init.py' )
     except:
-        print str(sys.exc_info()[0]) + ": " + str(sys.exc_info()[1])
-        print 'Could not execute initialization file: ' + casa['dirs']['rc'] + '/init.py'
+        print(str(sys.exc_info()[0]) + ": " + str(sys.exc_info()[1]))
+        print('Could not execute initialization file: ' + casa['dirs']['rc'] + '/init.py')
         sys.exit(1)
 
 startup()
@@ -1418,7 +1420,7 @@ ipythonlog = 'ipython-'+time.strftime("%Y%m%d-%H%M%S", time.gmtime())+'.log'
 
    
 if casa['flags'].has_key('-c') :
-    print 'will execute script',casa['flags']['-c']
+    print('will execute script',casa['flags']['-c'])
     if os.path.exists( casa['dirs']['rc']+'/ipython/ipy_user_conf.py' ) :
         if os.path.exists( casa['flags']['-c'] ) :
             ###
@@ -1427,7 +1429,7 @@ if casa['flags'].has_key('-c') :
             try:
                 ipshell = IPython.Shell.IPShell( argv=['-prompt_in1','CASA <\#>: ','-autocall','2','-colors',__ipython_colors, '-nomessages', '-nobanner','-logfile',ipythonlog,'-ipythondir',casa['dirs']['rc']+'/ipython','-c','execfile("'+casa['flags']['-c']+'")'], user_ns=globals() )
             except:
-                print "ERROR: falied to create an instance of IPython.Shell.IPShell"
+                print("ERROR: falied to create an instance of IPython.Shell.IPShell")
         else:
             ###
             ###  assume casa['flags']['-c'] is a python command...
@@ -1435,7 +1437,7 @@ if casa['flags'].has_key('-c') :
             try:
                 ipshell = IPython.Shell.IPShell( argv=['-prompt_in1','CASA <\#>: ','-autocall','2','-colors',__ipython_colors, '-nomessages', '-nobanner','-logfile',ipythonlog,'-ipythondir',casa['dirs']['rc']+'/ipython','-c',casa['flags']['-c']], user_ns=globals() )
             except: 
-                print "ERROR: falied to create an instance of IPython.Shell.IPShell"
+                print("ERROR: falied to create an instance of IPython.Shell.IPShell")
     else:
         if os.path.exists( casa['flags']['-c'] ) :
             ###
@@ -1444,7 +1446,7 @@ if casa['flags'].has_key('-c') :
             try:
                 ipshell = IPython.Shell.IPShell( argv=['-prompt_in1','CASA <\#>: ','-autocall','2','-colors',__ipython_colors, '-nomessages', '-nobanner','-logfile',ipythonlog,'-upgrade','-ipythondir',casa['dirs']['rc']+'/ipython','-c','execfile("'+casa['flags']['-c']+'")'], user_ns=globals() )
             except: 
-                print "ERROR: falied to create an instance of IPython.Shell.IPShell"
+                print("ERROR: falied to create an instance of IPython.Shell.IPShell")
         else:
             ###
             ###  assume casa['flags']['-c'] is a python command...
@@ -1452,30 +1454,30 @@ if casa['flags'].has_key('-c') :
             try:
                 ipshell = IPython.Shell.IPShell( argv=['-prompt_in1','CASA <\#>: ','-autocall','2','-colors',__ipython_colors, '-nomessages', '-nobanner','-logfile',ipythonlog,'-upgrade','-ipythondir',casa['dirs']['rc']+'/ipython','-c',casa['flags']['-c']], user_ns=globals() )
             except: 
-                print "ERROR: falied to create an instance of IPython.Shell.IPShell"
+                print("ERROR: falied to create an instance of IPython.Shell.IPShell")
 else:
     if os.path.exists( casa['dirs']['rc']+'/ipython/ipy_user_conf.py' ) :
         if(thelogfile != 'null') :
             try:
                 ipshell = IPython.Shell.IPShell( argv=['-prompt_in1','CASA <\#>: ','-autocall','2','-colors',__ipython_colors, '-nomessages', '-nobanner','-logfile',ipythonlog,'-ipythondir',casa['dirs']['rc']+'/ipython'], user_ns=globals() )
             except: 
-                print "ERROR: falied to create an instance of IPython.Shell.IPShell"
+                print("ERROR: falied to create an instance of IPython.Shell.IPShell")
         else :
             try:
                 ipshell = IPython.Shell.IPShell( argv=['-prompt_in1','CASA <\#>: ','-autocall','2','-colors',__ipython_colors, '-nomessages', '-nobanner','-ipythondir',casa['dirs']['rc']+'/ipython'], user_ns=globals() )
             except: 
-                print "ERROR: falied to create an instance of IPython.Shell.IPShell"
+                print("ERROR: falied to create an instance of IPython.Shell.IPShell")
     else:
         if(thelogfile != 'null') :
             try:
                 ipshell = IPython.Shell.IPShell( argv=['-prompt_in1','CASA <\#>: ','-autocall','2','-colors',__ipython_colors, '-nomessages', '-nobanner','-logfile',ipythonlog,'-upgrade','-ipythondir',casa['dirs']['rc']+'/ipython'], user_ns=globals() )
             except: 
-                print "ERROR: falied to create an instance of IPython.Shell.IPShell"
+                print("ERROR: falied to create an instance of IPython.Shell.IPShell")
         else :
             try:
                 ipshell = IPython.Shell.IPShell( argv=['-prompt_in1','CASA <\#>: ','-autocall','2','-colors',__ipython_colors, '-nomessages', '-nobanner','-upgrade','-ipythondir',casa['dirs']['rc']+'/ipython'], user_ns=globals() )
             except: 
-                print "ERROR: falied to create an instance of IPython.Shell.IPShell"
+                print("ERROR: falied to create an instance of IPython.Shell.IPShell")
     ipshell.IP.runlines('execfile("'+fullpath+'")')
 
 #ipshell = IPython.Shell.IPShell( argv=['-prompt_in1','CASA <\#>: ','-autocall','2','-colors',__ipython_colors,'-logfile',ipythonlog,'-ipythondir',casa['dirs']['rc']+'/ipython'], user_ns=globals() )
@@ -1485,7 +1487,7 @@ casalog.setlogfile(thelogfile)
 try:
     casalog.post('---')
 except:
-    print "Error: the logfile is not writable"
+    print("Error: the logfile is not writable")
     sys.exit(1)
 
 
@@ -1558,8 +1560,8 @@ try:
     if len (message) > 0:
         print ("***\n*** Crash reporter failed to initialize: " + message)
 except Exception as e:
-    print "***\n*** Crash reporter initialization failed.\n***"
-    print "*** exception={0}\n***".format (e)
+    print("***\n*** Crash reporter initialization failed.\n***")
+    print("*** exception={0}\n***".format (e))
 
 ipshell.mainloop( )
 if(os.uname()[0] == 'Darwin') and type(casa) == "<type 'dict'>" and casa['flags'].has_key('--maclogger') :
@@ -1577,14 +1579,14 @@ for x in os.listdir('.'):
 
 ## leave killing off children to the watchdog...
 ## so everyone has a chance to die naturally...
-print "leaving casa..."
+print("leaving casa...")
 def excepthook(exctype, value, tb):
-    print "-----------------------------------------------------------------------------"
-    print "error during shutdown"
-    print "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --"
-    print exctype
-    print value
-    print "-----------------------------------------------------------------------------"
+    print("-----------------------------------------------------------------------------")
+    print("error during shutdown")
+    print("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
+    print(exctype)
+    print(value)
+    print("-----------------------------------------------------------------------------")
 
 sys.excepthook = excepthook
 sys.exit(0)
