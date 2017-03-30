@@ -17,15 +17,15 @@ projname = "m51c"
 startTime = time.time()
 startProc = time.clock()
 
-print '--Running simlation of M51 (ALMA-12m INT + ACA-7m INT + 12m TP) --'
+print('--Running simlation of M51 (ALMA-12m INT + ACA-7m INT + 12m TP) --')
 # configs are in the repository
 
 l=locals() 
-if not l.has_key("repodir"): 
+if "repodir" not in l: 
     repodir=os.getenv("CASAPATH").split(' ')[0]
 
-print casa['build']
-print 'I think the data repository is at '+repodir
+print(casa['build'])
+print('I think the data repository is at '+repodir)
 datadir=repodir+"/data/regression/simdata/"
 cfgdir=repodir+"/data/alma/simmos/"
 #importfits(fitsimage=datadir+modelname,imagename="m51.image")
@@ -71,7 +71,7 @@ if noise:
 else:
     thermalnoise=""
 
-if not l.has_key('interactive'): interactive=False
+if 'interactive' not in l: interactive=False
 if interactive:
     graphics="both"
 else:
@@ -122,7 +122,7 @@ if noise:
 else:
     thermalnoise=""
 
-if not l.has_key('interactive'): interactive=False
+if 'interactive' not in l: interactive=False
 if interactive:
     graphics="both"
 else:
@@ -174,7 +174,7 @@ if noise:
 else:
     thermalnoise=""
 
-if not l.has_key('interactive'): interactive=False
+if 'interactive' not in l: interactive=False
 if interactive:
     graphics="both"
 else:
@@ -216,7 +216,7 @@ showpsf = False
 showresidual = False
 showconvolved = True
 
-if not l.has_key('interactive'): interactive=False
+if 'interactive' not in l: interactive=False
 if interactive:
     graphics="both"
 else:
@@ -250,7 +250,7 @@ showpsf = False
 showresidual = False
 showconvolved = True
 
-if not l.has_key('interactive'): interactive=False
+if 'interactive' not in l: interactive=False
 if interactive:
     graphics="both"
 else:
@@ -348,21 +348,21 @@ datestring = datetime.datetime.isoformat(datetime.datetime.today())
 outfile    = project+"/"+project + '.' + datestring + '.log'
 logfile    = open(outfile, 'w')
 
-print 'Writing regression output to ' + outfile + "\n"
-print >> logfile,casa['build']
+print('Writing regression output to ' + outfile + "\n")
+print(casa['build'], file=logfile)
 
 loghdr = """
 ********** Regression *****************
 """
 
-print >> logfile, loghdr
+print(loghdr, file=logfile)
 
 # more info
 ms.open(project+"/"+project+".alma_0.5arcsec.ms")
-print >> logfile, "Noiseless MS, amp stats:"
-print >> logfile, ms.statistics('DATA','amp')
-print >> logfile, "Noiseless MS, phase stats:"
-print >> logfile, ms.statistics('DATA','phase')
+print("Noiseless MS, amp stats:", file=logfile)
+print(ms.statistics('DATA','amp'), file=logfile)
+print("Noiseless MS, phase stats:", file=logfile)
+print(ms.statistics('DATA','phase'), file=logfile)
 ms.close()
 #ms.open(project+".noisy.ms")
 #print >> logfile, "Noisy MS, amp stats:"
@@ -373,56 +373,56 @@ ms.close()
 
 
 regstate = True
-rskes = refstats.keys()
+rskes = list(refstats.keys())
 rskes.sort()
 for ke in rskes:
     adiff=abs(m51both_stats[ke][0] - refstats[ke])/abs(refstats[ke])
     if adiff < reftol[ke]:
-        print >> logfile, "* Passed %-5s image test, got % -11.5g expected % -11.5g." % (ke, m51both_stats[ke][0], refstats[ke])
+        print("* Passed %-5s image test, got % -11.5g expected % -11.5g." % (ke, m51both_stats[ke][0], refstats[ke]), file=logfile)
     else:
-        print >> logfile, "* FAILED %-5s image test, got % -11.5g instead of % -11.5g." % (ke, m51both_stats[ke][0], refstats[ke])
+        print("* FAILED %-5s image test, got % -11.5g instead of % -11.5g." % (ke, m51both_stats[ke][0], refstats[ke]), file=logfile)
         regstate = False
 
-rskes = diffstats.keys()
+rskes = list(diffstats.keys())
 rskes.sort()
 for ke in rskes:
     adiff=abs(m51both_diffstats[ke][0] - diffstats[ke])/abs(diffstats[ke])
     if adiff < reftol[ke]:
-        print >> logfile, "* Passed %-5s  diff test, got % -11.5g expected % -11.5g." % (ke, m51both_diffstats[ke][0], diffstats[ke])
+        print("* Passed %-5s  diff test, got % -11.5g expected % -11.5g." % (ke, m51both_diffstats[ke][0], diffstats[ke]), file=logfile)
     else:
-        print >> logfile, "* FAILED %-5s  diff test, got % -11.5g instead of % -11.5g." % (ke, m51both_diffstats[ke][0], diffstats[ke])
+        print("* FAILED %-5s  diff test, got % -11.5g instead of % -11.5g." % (ke, m51both_diffstats[ke][0], diffstats[ke]), file=logfile)
         regstate = False
 
-print >> logfile,'---'
+print('---', file=logfile)
 if regstate:
-    print >> logfile, 'Passed',
-    print ''
-    print 'Regression PASSED'
-    print ''
+    print('Passed', end=' ', file=logfile)
+    print('')
+    print('Regression PASSED')
+    print('')
 else:
-    print >> logfile, 'FAILED',
-    print ''
-    print 'Regression FAILED'
-    print ''
+    print('FAILED', end=' ', file=logfile)
+    print('')
+    print('Regression FAILED')
+    print('')
 
-print >> logfile, 'regression test for simdata of M51 (ALMA-12m INT + ACA-7m INT + 12m TP).'
-print >>logfile,'---'
-print >>logfile,'*********************************'
+print('regression test for simdata of M51 (ALMA-12m INT + ACA-7m INT + 12m TP).', file=logfile)
+print('---', file=logfile)
+print('*********************************', file=logfile)
     
-print >>logfile,''
-print >>logfile,'********** Benchmarking **************'
-print >>logfile,''
-print >>logfile,'Total wall clock time was: %8.3f s.' % (endTime - startTime)
-print >>logfile,'Total CPU        time was: %8.3f s.' % (endProc - startProc)
-print >>logfile,'Wall processing  rate was: %8.3f MB/s.' % (17896.0 /
-                                                            (endTime - startTime))
+print('', file=logfile)
+print('********** Benchmarking **************', file=logfile)
+print('', file=logfile)
+print('Total wall clock time was: %8.3f s.' % (endTime - startTime), file=logfile)
+print('Total CPU        time was: %8.3f s.' % (endProc - startProc), file=logfile)
+print('Wall processing  rate was: %8.3f MB/s.' % (17896.0 /
+                                                            (endTime - startTime)), file=logfile)
 
 ### Get last modification time of .ms.
 msfstat = os.stat(project+"/"+project+'.alma_0.5arcsec.ms')
-print >>logfile,'* Breakdown:                           *'
-print >>logfile,'*  generating visibilities took %8.3fs,' % (msfstat[8] - startTime)
-print >>logfile,'*************************************'
+print('* Breakdown:                           *', file=logfile)
+print('*  generating visibilities took %8.3fs,' % (msfstat[8] - startTime), file=logfile)
+print('*************************************', file=logfile)
     
 logfile.close()
 						    
-print '--Finished simdata of M51 (total power+interferometric) regression--'
+print('--Finished simdata of M51 (total power+interferometric) regression--')

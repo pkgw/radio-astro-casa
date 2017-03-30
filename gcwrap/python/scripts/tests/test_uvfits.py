@@ -30,9 +30,9 @@ def check_eq(val, expval, tol=None):
         if hasattr(are_eq, 'all'):
             are_eq = are_eq.all()
         if not are_eq:
-            raise ValueError, '!='
+            raise ValueError('!=')
     except ValueError:
-        raise ValueError, "%r != %r" % (val, expval)
+        raise ValueError("%r != %r" % (val, expval))
 
 
 class uvfits_test(unittest.TestCase):
@@ -148,7 +148,7 @@ class uvfits_test(unittest.TestCase):
         diam = mymd.antennadiameter(-1)
         mymd.done()
         expec = "25m"
-        for i in diam.keys():
+        for i in list(diam.keys()):
             self.assertTrue(qa.eq(diam[i], expec), "Unexpected diameter for antenna " + i)
 
     def test_filename_extensions(self):

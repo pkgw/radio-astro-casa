@@ -4,12 +4,12 @@ import sys
 
 class carta:
     def __init__(self):
-       print __file__
-       print sys.platform
+       print(__file__)
+       print(sys.platform)
        scriptdir = os.path.dirname(__file__)
        relativepath = "/../../etc/carta/bin/carta.sh"
        if sys.platform == "darwin" :
            relativepath = "/../Carta.app/Contents/MacOS/carta.sh"
        cartapath = scriptdir + relativepath
-       print cartapath
+       print(cartapath)
        subprocess.Popen([cartapath])

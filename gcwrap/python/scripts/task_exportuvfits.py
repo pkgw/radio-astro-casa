@@ -12,7 +12,7 @@ def exportuvfits(
         if ((type(vis)==str) & (os.path.exists(vis))):
             myms.open( vis, lock=True )
         else:
-            raise Exception, 'Visibility data set not found - please verify the name'
+            raise Exception('Visibility data set not found - please verify the name')
         writesyscal=False #until ms syscal table defined
         #start=-1 # redundant, use spw expr
         #nchan=-1 # redundant, use spw expr
@@ -35,7 +35,7 @@ def exportuvfits(
             return True
         else:
             raise Exception("exportuvfits failed")
-    except Exception, instance:
+    except Exception as instance:
         casalog.post( '*** Error ***'+str(instance), 'SEVERE' )
         raise
     finally:

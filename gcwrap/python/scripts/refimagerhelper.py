@@ -1,5 +1,5 @@
 import os
-import commands
+import subprocess
 import math
 import shutil
 import string
@@ -43,7 +43,7 @@ class PySynthesisImager:
         # CFCache params
         self.cfcachepars = params.getCFCachePars()
         ## Number of fields ( main + outliers )
-        self.NF = len(self.allimpars.keys())
+        self.NF = len(list(self.allimpars.keys()))
         self.stopMinor = {}  ##[0]*self.NF
         for immod in range(0,self.NF):
             self.stopMinor[str(immod)]=0
@@ -69,7 +69,7 @@ class PySynthesisImager:
         # NoOps (in SynthesisImager.cc) if the gridder is not one
         # which uses CFCache.
         if (exists):
-            print "CFCache already exists";
+            print("CFCache already exists");
         else:
             self.dryGridding();
             self.fillCFCache();
@@ -257,7 +257,7 @@ class PySynthesisImager:
                     #print 'Output iterpars : ', self.iterpars['niter'],self.iterpars['cycleniter'],self.iterpars['threshold']
                     itbot = self.IBtool.setupiteration(iterpars=self.iterpars)
 
-                    if iterparsmod.has_key('actioncode') :
+                    if 'actioncode' in iterparsmod :
                         self.stopMinor[str(immod)] = iterparsmod['actioncode']  # 0 or 1 or 2 ( old interactive viewer )
 
             alldone=True
@@ -381,7 +381,7 @@ class PySynthesisImager:
                 exrec = self.SDtools[immod].executeminorcycle( iterbotrecord = iterbotrec )
                 #print '.... iterdone for ', immod, ' : ' , exrec['iterdone']
                 self.IBtool.mergeexecrecord( exrec )
-                if os.environ.has_key('SAVE_ALL_AUTOMASKS') and os.environ['SAVE_ALL_AUTOMASKS']=="true":
+                if 'SAVE_ALL_AUTOMASKS' in os.environ and os.environ['SAVE_ALL_AUTOMASKS']=="true":
                     maskname = self.allimpars[str(immod)]['imagename']+'.mask'
                     tempmaskname = self.allimpars[str(immod)]['imagename']+'.autothresh'+str(self.ncycle)
                     if os.path.isdir(maskname):
@@ -409,8 +409,8 @@ class PySynthesisImager:
 
     def plotReport( self, summ={} ,fignum=1 ):
 
-        if not ( summ.has_key('summaryminor') and summ.has_key('summarymajor') and summ.has_key('threshold') and summ['summaryminor'].shape[0]==6 ):
-            print 'Cannot make summary plot. Please check contents of the output dictionary from tclean.'
+        if not ( 'summaryminor' in summ and 'summarymajor' in summ and 'threshold' in summ and summ['summaryminor'].shape[0]==6 ):
+            print('Cannot make summary plot. Please check contents of the output dictionary from tclean.')
             return summ
 
         import pylab as pl
@@ -715,9 +715,9 @@ class PyParallelContSynthesisImager(PySynthesisImager):
             self.PH.checkJobs( joblist )
 
            ## gather weightdensity and sum and scatter
-            print "******************************************************"
-            print " gather and scatter now "
-            print "******************************************************"
+            print("******************************************************")
+            print(" gather and scatter now ")
+            print("******************************************************")
             for immod in range(0,self.NF):
                 self.PStools[immod].gatherweightdensity()
                 self.PStools[immod].scatterweightdensity()
@@ -751,7 +751,7 @@ class PyParallelContSynthesisImager(PySynthesisImager):
         joblist=[];
         for node in self.listOfNodes:
             cmd = "toolsi.reloadcfcache()";
-            print "CMD = ",node," ",cmd;
+            print("CMD = ",node," ",cmd);
             joblist.append(self.PH.runcmd(cmd,node));
         self.PH.checkJobs(joblist);
 #############################################
@@ -846,7 +846,7 @@ class PyParallelCubeSynthesisImager():
          
         self.PH = PyParallelImagerHelper()
         self.NN = self.PH.NN
-        self.NF = len(allimagepars.keys())
+        self.NF = len(list(allimagepars.keys()))
         self.listOfNodes = self.PH.getNodeList();
         ## Partition both data and image coords the same way.
         #self.allselpars = self.PH.partitionCubeDataSelection(allselpars)
@@ -884,8 +884,8 @@ class PyParallelCubeSynthesisImager():
             tnode = str(ipart)
             selparsPerNode= {tnode:{}}
             imparsPerNode= {tnode:{}}
-            for fid in allimagepars.iterkeys():
-                for ky in alldataimpars[fid][nodeidx].iterkeys():
+            for fid in allimagepars.keys():
+                for ky in alldataimpars[fid][nodeidx].keys():
                     selparsPerNode[tnode]={}
                     if ky.find('ms')==0:
                         # data sel per field
@@ -1009,7 +1009,7 @@ class PyParallelCubeSynthesisImager():
         for node in self.listOfNodes:
              rest = self.PH.pullval("rest", node )
              retval = retval and rest[node]
-             print "Node " , node , " converged : ", rest[node];
+             print("Node " , node , " converged : ", rest[node]);
 
         return retval
 
@@ -1093,14 +1093,14 @@ class PyParallelDeconvolver(PySynthesisImager):
         PySynthesisImager.__init__(self,params)
 
         self.PH = PyParallelImagerHelper()
-        self.NF = len( allimpars.keys() )
+        self.NF = len( list(allimpars.keys()) )
         self.listOfNodes = self.PH.getNodeList();
         #### MPIInterface related changes
         #self.NN = self.PH.NN
         self.NN = len(self.listOfNodes);
         if self.NF != self.NN:
-             print 'For now, cannot handle nfields != nnodes. Will implement round robin allocation later.'
-             print 'Using only ', self.NN, ' fields and nodes'
+             print('For now, cannot handle nfields != nnodes. Will implement round robin allocation later.')
+             print('Using only ', self.NN, ' fields and nodes')
              
 
 #############################################
@@ -1138,7 +1138,7 @@ class PyParallelDeconvolver(PySynthesisImager):
 
         # Check with the iteration controller about convergence.
         stopflag = self.IBtool.cleanComplete()
-        print 'Converged : ', stopflag
+        print('Converged : ', stopflag)
         if( stopflag>0 ):
             stopreasons = ['iteration limit', 'threshold', 'force stop','no change in peak residual across two major cycles','peak residual increased by more than 5 times']
             casalog.post("Reached global stopping criterion : " + stopreasons[stopflag-1], "INFO")
@@ -1198,7 +1198,7 @@ class PyParallelImagerHelper():
 
 #############################################
     def chunkify(self,lst,n):
-        return [ lst[i::n] for i in xrange(n) ]
+        return [ lst[i::n] for i in range(n) ]
 
     def partitionCFCacheList(self,gridPars):
 
@@ -1267,7 +1267,7 @@ class PyParallelImagerHelper():
         allselpars =  synu.contdatapartition( oneselpars , self.NN )
         synu.done()
 
-        print 'Partitioned Selection : ', allselpars
+        print('Partitioned Selection : ', allselpars)
         return allselpars
 
 #############################################
@@ -1278,7 +1278,7 @@ class PyParallelImagerHelper():
         allselpars =  synu.cubedatapartition( oneselpars , self.NN )
         synu.done()
 
-        print 'Partitioned Selection : ', allselpars
+        print('Partitioned Selection : ', allselpars)
         return allselpars
 
 #############################################
@@ -1288,7 +1288,7 @@ class PyParallelImagerHelper():
         allimpars =  synu.cubeimagepartition( impars , self.NN )
         synu.done()
 
-        print 'ImSplit : ', allimpars
+        print('ImSplit : ', allimpars)
         return allimpars
 
 #############################################
@@ -1324,14 +1324,14 @@ class PyParallelImagerHelper():
         self.CL.pgc('from numpy import array,int32')
         self.CL.pgc('os.chdir("'+owd+'")')
         os.chdir(owd)
-        print "Setting up ", numproc, " engines."
+        print("Setting up ", numproc, " engines.")
         return numproc
 
 #############################################
     def takedownCluster(self):
         # Check that all nodes have returned, before stopping the cluster
          self.checkJobs()
-         print 'Ending use of cluster, but not closing it. Call clustermanager.stop_cluster() to close it if needed.'
+         print('Ending use of cluster, but not closing it. Call clustermanager.stop_cluster() to close it if needed.')
 #         self.sc.stop_cluster()
          self.CL=None
          self.sc=None
@@ -1343,12 +1343,12 @@ class PyParallelImagerHelper():
         numcpu = len(self.nodeList)
         
         if len(joblist)==0:
-             joblist = range(numcpu)
+             joblist = list(range(numcpu))
              #for k in range(numcpu):
              for k in self.nodeList:
                  joblist[k-1] = self.CL.odo('casalog.post("node '+str(k)+' has completed its job")', k)
 
-        print 'Blocking for nodes to finish'
+        print('Blocking for nodes to finish')
         over=False
         while(not over):
             overone=True
@@ -1356,10 +1356,10 @@ class PyParallelImagerHelper():
             for k in range(len(joblist)):
                 try:
                     overone =  self.CL.check_job(joblist[k],False) and overone
-                except Exception,e:
+                except Exception as e:
                      raise Exception(e)
             over = overone
-        print '...done'
+        print('...done')
 
 #############################################
     def runcmd(self, cmdstr="", node=-1):
@@ -1640,7 +1640,7 @@ class ImagerParameters():
         ### MOVE this segment of code to the constructor so that it's clear which parameters go where ! 
         ### Copy them from 'impars' to 'normpars' and 'decpars'
         self.iterpars['allimages']={}
-        for immod in self.allimpars.keys() :
+        for immod in list(self.allimpars.keys()) :
             self.allnormpars[immod]['imagename'] = self.allimpars[immod]['imagename']
             self.alldecpars[immod]['imagename'] = self.allimpars[immod]['imagename']
             self.allgridpars[immod]['imagename'] = self.allimpars[immod]['imagename']
@@ -1670,20 +1670,20 @@ class ImagerParameters():
 
         # If it's already a dict with ms0,ms1,etc...leave it be.
         ok=True
-        for kk in self.allselpars.keys():
+        for kk in list(self.allselpars.keys()):
             if kk.find('ms')!=0:
                 ok=False
 
         if ok==True:
-            print "Already in correct format"
+            print("Already in correct format")
             return errs
 
         # msname, field, spw, etc must all be equal-length lists of strings, or all except msname must be of length 1.
-        if not self.allselpars.has_key('msname'):
+        if 'msname' not in self.allselpars:
             errs = errs + 'MS name(s) not specified'
         else:
 
-            selkeys = self.allselpars.keys()
+            selkeys = list(self.allselpars.keys())
 
             # Convert all non-list parameters into lists.
             for par in selkeys:
@@ -1778,7 +1778,7 @@ class ImagerParameters():
 
     def handleImageNames(self):
 
-            for immod in self.allimpars.keys() :
+            for immod in list(self.allimpars.keys()) :
                 inpname = self.allimpars[immod]['imagename']
 
                 ### If a directory name is embedded in the image name, check that the dir exists.
@@ -1796,15 +1796,15 @@ class ImagerParameters():
             if self.allimpars['0']['restart'] == False:   # Later, can change this to be field dependent too.
                 ## Get a list of image names for all fields (to sync name increment ids across fields)
                 inpnamelist={}
-                for immod in self.allimpars.keys() :
+                for immod in list(self.allimpars.keys()) :
                     inpnamelist[immod] = self.allimpars[immod]['imagename'] 
 
                 newnamelist = self.incrementImageNameList( inpnamelist )
 
-                if len(newnamelist) != len(self.allimpars.keys()) :
+                if len(newnamelist) != len(list(self.allimpars.keys())) :
                     casalog.post('Internal Error : Non matching list lengths in refimagerhelper::handleImageNames. Not updating image names','WARN')
                 else : 
-                    for immod in self.allimpars.keys() :
+                    for immod in list(self.allimpars.keys()) :
                         self.allimpars[immod]['imagename'] = newnamelist[immod]
                 
     def checkAndFixIterationPars(self ):
@@ -1882,7 +1882,7 @@ class ImagerParameters():
                     tempnormpar[ parpair[0] ] = parpair[1]
                     usepar=True
                 if usepar==False:
-                    print 'Ignoring unknown parameter pair : ' + oneline
+                    print('Ignoring unknown parameter pair : ' + oneline)
 
         if len(errs)==0:
             returnlist.append( {'impars':tempimpar,'gridpars':tempgridpar, 'weightpars':tempweightpar, 'decpars':tempdecpar, 'normpars':tempnormpar} )
@@ -1905,7 +1905,7 @@ class ImagerParameters():
     def evalToTarget(self, globalpars, subparkey, parname, dtype='int' ):
         try:
             for fld in range(0, len( globalpars ) ):
-                if globalpars[ fld ][subparkey].has_key(parname):
+                if parname in globalpars[ fld ][subparkey]:
                     if dtype=='int' or dtype=='intvec':
                         val_e = eval( globalpars[ fld ][subparkey][parname] )
                     if dtype=='strvec':
@@ -1918,7 +1918,7 @@ class ImagerParameters():
 
                     globalpars[ fld ][subparkey][parname] = val_e
         except:
-            print 'Cannot evaluate outlier field parameter "' + parname + '"'
+            print('Cannot evaluate outlier field parameter "' + parname + '"')
 
         return globalpars
 
@@ -1959,7 +1959,7 @@ class ImagerParameters():
                             maxid = val
             newimagename = dirname[2:] + prefix + '_' + str(maxid+1)
 
-        print 'Using : ',  newimagename
+        print('Using : ',  newimagename)
         return newimagename
 
     def incrementImageNameList(self, inpnamelist ):
@@ -1967,7 +1967,7 @@ class ImagerParameters():
         dirnames={}
         prefixes={}
 
-        for immod in inpnamelist.keys() : 
+        for immod in list(inpnamelist.keys()) : 
             imagename = inpnamelist[immod]
             dirname = '.'
             prefix = imagename
@@ -1982,7 +1982,7 @@ class ImagerParameters():
 
 
         maxid=0
-        for immod in inpnamelist.keys() : 
+        for immod in list(inpnamelist.keys()) : 
             prefix = prefixes[immod]
             inamelist = [fn for fn in os.listdir(dirnames[immod]) if any([fn.startswith(prefix)])];
             nlen = len(prefix)
@@ -2020,7 +2020,7 @@ class ImagerParameters():
 
         
         newimagenamelist={}
-        for immod in inpnamelist.keys() : 
+        for immod in list(inpnamelist.keys()) : 
             if maxid==0 : 
                 newimagenamelist[immod] = inpnamelist[immod]
             else:
@@ -2036,8 +2036,8 @@ class ImagerParameters():
     ## Guard against numpy int32,int64 types which don't convert well across tool boundary.
     ## For CAS-8250. Remove when CAS-6682 is done.
     def fixIntParam(self, allpars, parname ):
-        for immod in allpars.keys() :
-            if allpars[immod].has_key(parname):
+        for immod in list(allpars.keys()) :
+            if parname in allpars[immod]:
                 ims = allpars[immod][parname]
                 if type(ims) != list:
                     ims = int(ims)
@@ -2071,7 +2071,7 @@ class PerformanceMeasure():
 import os
 import sys
 import shutil
-import commands
+import subprocess
 import numpy
 import inspect
 #from tasks import delmod
@@ -2151,7 +2151,7 @@ class TestHelpers():
 #          return out, iters
 
      def getpeakres(self,summ):
-          if summ.has_key('summaryminor'):
+          if 'summaryminor' in summ:
                reslist = summ['summaryminor'][1,:]
                peakres = reslist[ len(reslist)-1 ]
           else:
@@ -2159,7 +2159,7 @@ class TestHelpers():
           return peakres
 
      def getmodflux(self,summ):
-          if summ.has_key('summaryminor'):
+          if 'summaryminor' in summ:
                modlist = summ['summaryminor'][2,:]
                modflux = modlist[ len(modlist)-1 ]
           else:
@@ -2167,7 +2167,7 @@ class TestHelpers():
           return modflux
 
      def getiterdone(self,summ):
-          if summ.has_key('iterdone'):
+          if 'iterdone' in summ:
                iters = summ['iterdone']
           else:
                iters = None
@@ -2186,7 +2186,7 @@ class TestHelpers():
           
           pstr =  "[" + testname + "] PeakRes is " + str(peakres) + " ("+self.verdict(retres)+" : should be " + str(correctres) + ")\n"
           pstr = pstr + "[" + testname + "] Modflux is " + str(modflux) + " ("+self.verdict(retmod)+" : should be " + str(correctmod) + ")"
-          print pstr
+          print(pstr)
           if retres==False or retmod==False:
                self.fail(pstr)
 
@@ -2219,7 +2219,7 @@ class TestHelpers():
                          pstr += self.checkval( val=ret['nmajordone'], correctval=nmajordone, valname="nmajordone", exact=True )
 
                except Exception as e:
-                    print ret
+                    print(ret)
                     raise
 
           if imexist != None:
@@ -2260,7 +2260,7 @@ class TestHelpers():
                          ok=False
                     pstr =  "[" + testname + "] Chan "+ str(val[0]) + "  is " + str(thisval) + " ("+self.verdict(ok)+" : should be " + str(val[1]) + str(val[2]) + ")\n"
 
-          print pstr
+          print(pstr)
           return pstr
           #pstr = self.checkfinal(pstr)
 
@@ -2293,7 +2293,7 @@ class TestHelpers():
                          out=False
 
           pstr = "[" + testname + "] " + valname + " is " + str(val) + " ("+self.verdict(out)+" : should be " + str(correctval) + ")"
-          print pstr
+          print(pstr)
           pstr=pstr+"\n"
 #          if out==False:
 #               self.fail(pstr)
@@ -2311,7 +2311,7 @@ class TestHelpers():
                     out=False
 
           pstr = "[" + testname + "] Image made : " + str(imlist) + " = " + str(imex) + "(" + self.verdict(out) + " : should all be " + str(truth) + ")"
-          print pstr
+          print(pstr)
           pstr=pstr+"\n"
 #          if all(imex) == False:
 #               self.fail(pstr)
@@ -2341,7 +2341,7 @@ class TestHelpers():
                        res = True
                
           pstr =  "[" + testname + "] " + imname + ": Value is " + str(readval) + " at " + str(thepos) + " (" + self.verdict(res) +" : should be " + str(theval) + " )"
-          print pstr
+          print(pstr)
           pstr=pstr+"\n"
 #          if res==False:
 #               self.fail(pstr)
@@ -2369,7 +2369,7 @@ class TestHelpers():
                pstr =  "[" + testname + "] " + imname + ": Spec frame is " +\
                str(baseframe) + " with crval " + str(basecrval) + " (" +\
                self.verdict(res) +" : should be " + thecorrectans +" )"
-               print pstr
+               print(pstr)
                pstr=pstr+"\n"
           #self.checkfinal(pstr)
           return pstr
@@ -2449,7 +2449,7 @@ class TestHelpers():
                     hasvirmod=True
           tb.close()
 
-          print msname , ": modelcol=", hasmodcol, " modsum=", modsum, " virmod=", hasvirmod
+          print(msname , ": modelcol=", hasmodcol, " modsum=", modsum, " virmod=", hasvirmod)
           return hasmodcol, modsum, hasvirmod
 
      def checkmodelchan(self,msname="",chan=0):
@@ -2490,7 +2490,7 @@ class TestHelpers():
                #self.checkall(imexist = imlist)
 
           else:
-               print 'Not a parallel run of CASA'
+               print('Not a parallel run of CASA')
 
           return imlist
 

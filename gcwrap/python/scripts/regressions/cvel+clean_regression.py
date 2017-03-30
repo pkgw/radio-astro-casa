@@ -28,27 +28,27 @@ dataset_name_orig = 'ANTEN_sort_hann_for_cvel_reg-thinned.ms'
 
 # get the dataset name from the wrapper if possible
 mydict = locals()
-if mydict.has_key("dataset_name"):
+if "dataset_name" in mydict:
     dataset_name_orig = mydict["dataset_name"]
 
 def isnear(a,b,p):
-    print "  ", a, b
+    print("  ", a, b)
     if(a==b):
-        print "  exactly equal"
+        print("  exactly equal")
         return True
     dev = abs(a-b)
-    print "  deviation = ", dev
+    print("  deviation = ", dev)
     if(dev<=p):
         return True
     return False
 
 def isrnear(a,b,p):
-    print "  ", a, b
+    print("  ", a, b)
     if(a==b):
-        print "  exactly equal"
+        print("  exactly equal")
         return True
     rdev = abs(a-b)/abs(max(a,b))
-    print "  relative deviation = ", rdev
+    print("  relative deviation = ", rdev)
     if(rdev<=p):
         return True
     return False
@@ -434,8 +434,8 @@ maxdevat = " "
 problems = 0
 for frame in frames_to_do:
     for mode in ['frequency', 'radio velocity', 'optical velocity']:
-        for chan in mode_imstats.keys():
-            print "Testing ", frame, ", ",  mode, ", Hanning ", dohanning[frame], ", box ", testregion, ", channel ", chan, " ..."
+        for chan in list(mode_imstats.keys()):
+            print("Testing ", frame, ", ",  mode, ", Hanning ", dohanning[frame], ", box ", testregion, ", channel ", chan, " ...")
 
             isok = true
             c1 = 0.
@@ -451,7 +451,7 @@ for frame in frames_to_do:
                 isok = False
                 passed = False
                 problems +=1
-                print "Error: this subtest failed"
+                print("Error: this subtest failed")
                 
             if isok:
                 if(abs(c1-c2) > maxdev):
@@ -460,9 +460,9 @@ for frame in frames_to_do:
                                +":\n    cvel+clean finds max flux in channel "+str(chan)+" to be "+str(c2)\
                                +"\n    clean-only finds max flux in channel "+str(chan)+" to be "+str(c1)
                 if(not isnear(c1,c2, tolerance)):
-                    print " ** Problem in ", mode, " mode for output frame ", frame, ":"
-                    print "     cvel+clean finds max flux in channel ", chan, " to be ", c2
-                    print "     clean-only finds max flux in channel ", chan, " to be ", c1
+                    print(" ** Problem in ", mode, " mode for output frame ", frame, ":")
+                    print("     cvel+clean finds max flux in channel ", chan, " to be ", c2)
+                    print("     clean-only finds max flux in channel ", chan, " to be ", c1)
                     passed = False
                     isok = False
                     problems +=1
@@ -471,34 +471,34 @@ for frame in frames_to_do:
                 numpoints += 1.
             
                 if(not s1 == s2):
-                    print " ** Problem in ", mode, " mode for output frame ", frame, ":"
-                    print "     cvel+clean finds world coordinates for channel ", chan, " to be ", s2
-                    print "     clean-only finds world coordinates for channel ", chan, " to be ", s1
+                    print(" ** Problem in ", mode, " mode for output frame ", frame, ":")
+                    print("     cvel+clean finds world coordinates for channel ", chan, " to be ", s2)
+                    print("     clean-only finds world coordinates for channel ", chan, " to be ", s1)
                     passed = False
                     isok = False
                     problems +=1
                 else:
-                    print "  World coordinates identical == ", s2
+                    print("  World coordinates identical == ", s2)
 
                 if isok:
-                    print "... OK"      
+                    print("... OK")      
 
 if(numpoints > 0.):
     avdev = avdev/numpoints
-    print numpoints, " spectral points compared, average deviation = ", avdev, " Jy"
+    print(numpoints, " spectral points compared, average deviation = ", avdev, " Jy")
     if(avdev>avtolerance):
         passed = False
-        print " ** Problem: average deviation too large. Expected is value < ", avtolerance
+        print(" ** Problem: average deviation too large. Expected is value < ", avtolerance)
         problems += 1
-    print "   maximum deviation = ", maxdev, " in ", maxdevat 
+    print("   maximum deviation = ", maxdev, " in ", maxdevat) 
                     
 if passed:
-    print ''
-    print 'Regression PASSED'
-    print ''
+    print('')
+    print('Regression PASSED')
+    print('')
 else:
-    print "Execution successful but found ", problems, " issues in analysis of results."
-    print ''
-    print 'Regression FAILED'
-    print ''
+    print("Execution successful but found ", problems, " issues in analysis of results.")
+    print('')
+    print('Regression FAILED')
+    print('')
     raise

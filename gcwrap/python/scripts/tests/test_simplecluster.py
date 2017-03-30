@@ -35,7 +35,7 @@ class test_simplecluster(unittest.TestCase):
     ncpu=multiprocessing.cpu_count()
     
     # jagonzal (CAS-4287): Add a cluster-less mode to by-pass parallel processing for MMSs as requested 
-    if os.environ.has_key('BYPASS_SEQUENTIAL_PROCESSING'):
+    if 'BYPASS_SEQUENTIAL_PROCESSING' in os.environ:
         ParallelTaskHelper.bypassParallelProcessing(1)
         bypassParallelProcessing = True
     else:
@@ -117,9 +117,9 @@ class test_simplecluster(unittest.TestCase):
     def setUpFileCore(self,file,type_file):
         
         if os.path.exists(file):
-             print "%s file %s is already in the working area, deleting ..." % (type_file,file)
+             print("%s file %s is already in the working area, deleting ..." % (type_file,file))
              os.system('rm -rf ' + file)
-        print "Copy %s file %s into the working area..." % (type_file,file)
+        print("Copy %s file %s into the working area..." % (type_file,file))
         os.system('cp -R ' + os.environ.get('CASAPATH').split()[0] +
                   '/data/regression/unittest/simplecluster/' + file + ' ' + file)
     
@@ -251,14 +251,14 @@ class test_simplecluster(unittest.TestCase):
         state = self.cluster.show_resource(True)
         cluster_list = self.cluster.get_hosts()
         for engine in range(cluster_list[0][1]):
-            self.assertTrue(state[self.host][engine].has_key('Status'))
-            self.assertTrue(state[self.host][engine].has_key('Sub-MS'))
-            self.assertTrue(state[self.host][engine].has_key('Read'))
-            self.assertTrue(state[self.host][engine].has_key('Write'))
-            self.assertTrue(state[self.host][engine].has_key('Job'))
-            self.assertTrue(state[self.host][engine].has_key('Memory'))
-            self.assertTrue(state[self.host][engine].has_key('ReadRate'))
-            self.assertTrue(state[self.host][engine].has_key('WriteRate'))
+            self.assertTrue('Status' in state[self.host][engine])
+            self.assertTrue('Sub-MS' in state[self.host][engine])
+            self.assertTrue('Read' in state[self.host][engine])
+            self.assertTrue('Write' in state[self.host][engine])
+            self.assertTrue('Job' in state[self.host][engine])
+            self.assertTrue('Memory' in state[self.host][engine])
+            self.assertTrue('ReadRate' in state[self.host][engine])
+            self.assertTrue('WriteRate' in state[self.host][engine])
 
         self.stopCluster()
         
@@ -433,7 +433,7 @@ class test_setjy_mms(test_simplecluster):
                     else:
                         self.assertEqual(len(model_i),0)
                 except:
-                    print "Problem accesing SOURCE_MODEL col from subMS " + subMS 
+                    print("Problem accesing SOURCE_MODEL col from subMS " + subMS) 
             tblocal.close()
             
     def test2_setjy_scratchless_mode_multiple_model(self):
@@ -489,7 +489,7 @@ class test_setjy_mms(test_simplecluster):
             elif (fieldId == 2):
                 self.assertEqual(tblocal.getcell('MODEL_DATA',1)[0][0].real,1.0)
             else:
-                raise AssertionError, "Unrecognized field [%s] found in Sub-MS [%s]" %(str(fieldId),subMS)
+                raise AssertionError("Unrecognized field [%s] found in Sub-MS [%s]" %(str(fieldId),subMS))
                 tblocal.close()
             tblocal.close()
 
@@ -518,7 +518,7 @@ class test_setjy_mms(test_simplecluster):
             elif (fieldId == 2):
                 self.assertEqual(tblocal.getcell('MODEL_DATA',1)[0][0].real,1.0)
             else:
-                raise AssertionError, "Unrecognized field [%s] found in Sub-MS [%s]" %(str(fieldId),subMS)
+                raise AssertionError("Unrecognized field [%s] found in Sub-MS [%s]" %(str(fieldId),subMS))
                 tblocal.close()
             tblocal.close()
             
@@ -692,7 +692,7 @@ class testJobQueueManager(unittest.TestCase):
         self.assertEqual(jobList[0].getReturnValues(),'inputVar')
         
         queue.clearJobs()
-        for idx in xrange(16):
+        for idx in range(16):
             queue.addJob(JobData('echoFunction',
                                  {'input':'inputVar%d' % idx}))
         queue.executeQueue()
@@ -714,7 +714,7 @@ class testJobQueueManager(unittest.TestCase):
 
         # Test a mixed return case
         queue.clearJobs()
-        for idx in xrange(16):
+        for idx in range(16):
             if idx % 2:
                 queue.addJob(JobData('echoFunction',
                                      {'input':'inputVar%d' % idx}))
@@ -743,7 +743,7 @@ class testJobQueueManager(unittest.TestCase):
 
         # Test a mixed return case
         queue.clearJobs()
-        for idx in xrange(16):
+        for idx in range(16):
             queue.addJob(JobData('setError', {'setError': idx %2,
                                               'returnValue': idx}))
         queue.executeQueue()

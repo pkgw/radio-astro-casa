@@ -42,7 +42,7 @@ def run(fetch=False):
 
     im.done()
     time2=time.time();
-    print 'Time taken for wproject= ', (time2-time1)/60,'mins'
+    print('Time taken for wproject= ', (time2-time1)/60,'mins')
     #resturn the images that will be templated and compared in future runs
     return ['bla1re.restored', 'outlier1re.restored']
 

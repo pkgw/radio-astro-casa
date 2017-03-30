@@ -41,13 +41,13 @@ step_title = {0: 'Partitioning and listobs',
               15: 'Application of the bandpass and gain cal tables'}
 
 try:
-  print 'List of steps to be executed ...', mysteps
+  print('List of steps to be executed ...', mysteps)
   thesteps = mysteps
 except:
-  print 'global variable mysteps not set.'
+  print('global variable mysteps not set.')
 if (thesteps==[]):
-  thesteps = range(0,len(step_title))
-  print 'Executing all steps: ', thesteps
+  thesteps = list(range(0,len(step_title)))
+  print('Executing all steps: ', thesteps)
 
 # The Python variable 'mysteps' will control which steps
 # are executed when you start the script using
@@ -99,13 +99,13 @@ def timing():
 
 # Using reference antenna = DV04
 
-print "# A priori calibration"
+print("# A priori calibration")
 
 # listobs
 mystep = 0
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
   
   os.system('rm -rf hpc-uid___A002_X47bd4d_Xbd4.ms*')
   
@@ -123,7 +123,7 @@ if(mystep in thesteps):
 mystep = 1
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   flagdata(vis = 'hpc-uid___A002_X47bd4d_Xbd4.ms',
            mode = 'manual',
@@ -154,7 +154,7 @@ if(mystep in thesteps):
 mystep = 2
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   os.system('rm -rf hpc-uid___A002_X47bd4d_Xbd4.ms.wvr') 
 
@@ -186,7 +186,7 @@ if(mystep in thesteps):
 mystep = 3
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   os.system('rm -rf hpc-uid___A002_X47bd4d_Xbd4.ms.tsys') 
   gencal(vis = 'hpc-uid___A002_X47bd4d_Xbd4.ms',
@@ -207,7 +207,7 @@ if(mystep in thesteps):
 mystep = 4
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   # Note: no baseline run found for antenna DV19.
   
@@ -274,7 +274,7 @@ if(mystep in thesteps):
 mystep = 5
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
   
   from recipes.almahelpers import tsysspwmap
   tsysmap = tsysspwmap(vis = 'hpc-uid___A002_X47bd4d_Xbd4.ms', tsystable = 'hpc-uid___A002_X47bd4d_Xbd4.ms.tsys')
@@ -323,7 +323,7 @@ if(mystep in thesteps):
 mystep = 6
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   os.system('rm -rf hpc-uid___A002_X47bd4d_Xbd4.ms.split') 
   split(vis = 'hpc-uid___A002_X47bd4d_Xbd4.ms',
@@ -337,13 +337,13 @@ if(mystep in thesteps):
   timing()
 
 
-print "# Calibration"
+print("# Calibration")
 
 # Listobs, clear pointing table, and save original flags
 mystep = 7
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   os.system('rm -rf hpc-uid___A002_X47bd4d_Xbd4.ms.split.listobs')
   listobs(vis = 'hpc-uid___A002_X47bd4d_Xbd4.ms.split',
@@ -360,7 +360,7 @@ if(mystep in thesteps):
 mystep = 8
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   # Flagging shadowed data
   
@@ -434,7 +434,7 @@ if(mystep in thesteps):
 mystep = 9
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   setjy(vis = 'hpc-uid___A002_X47bd4d_Xbd4.ms.split',
     field = '1', # Callisto
@@ -460,7 +460,7 @@ if(mystep in thesteps):
 mystep = 10
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   flagmanager(vis = 'hpc-uid___A002_X47bd4d_Xbd4.ms.split',
     mode = 'save',
@@ -473,7 +473,7 @@ if(mystep in thesteps):
 mystep = 11
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   os.system('rm -rf hpc-uid___A002_X47bd4d_Xbd4.ms.split.ap_pre_bandpass') 
   
@@ -519,7 +519,7 @@ if(mystep in thesteps):
 mystep = 12
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   flagmanager(vis = 'hpc-uid___A002_X47bd4d_Xbd4.ms.split',
     mode = 'save',
@@ -532,7 +532,7 @@ if(mystep in thesteps):
 mystep = 13
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   # Note: the Solar system object used for flux calibration is highly resolved on some baselines.
   # Note: we will first determine the flux of the phase calibrator(s) on a subset of antennas.
@@ -634,7 +634,7 @@ if(mystep in thesteps):
 mystep = 14
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   flagmanager(vis = 'hpc-uid___A002_X47bd4d_Xbd4.ms.split',
     mode = 'save',
@@ -647,7 +647,7 @@ if(mystep in thesteps):
 mystep = 15
 if(mystep in thesteps):
   casalog.post('Step '+str(mystep)+' '+step_title[mystep],'INFO')
-  print 'Step ', mystep, step_title[mystep]
+  print('Step ', mystep, step_title[mystep])
 
   for i in ['1']: # Callisto
     applycal(vis = 'hpc-uid___A002_X47bd4d_Xbd4.ms.split',

@@ -118,16 +118,16 @@ difpass = difpass_max & difpass_rms & difpass_sum
 
 pass_regress = difpass
 
-if (difpass_max): print '* Passed spectrum max test '
-if (difpass_rms): print '* Passed spectrum rms test '
-if (difpass_sum): print '* Passed spectrum sum test'
+if (difpass_max): print('* Passed spectrum max test ')
+if (difpass_rms): print('* Passed spectrum rms test ')
+if (difpass_sum): print('* Passed spectrum sum test')
 if (difpass):
-        print '---Passed Stat test for '+project
+        print('---Passed Stat test for '+project)
 else:
-        print '---FAILED Stat test for '+project
-print ' '
-print 'Total wall clock time was: '+str(endTime - startTime)
-print 'Total CPU        time was: '+str(endProc - startProc)
+        print('---FAILED Stat test for '+project)
+print(' ')
+print('Total wall clock time was: '+str(endTime - startTime))
+print('Total CPU        time was: '+str(endProc - startProc))
 #print 'Processing rate MB/s  was: ', 35.1/(endTime - startTime)
 
 #
@@ -138,28 +138,28 @@ datestring=datetime.datetime.isoformat(datetime.datetime.today())
 outfile=prolog+datestring+'.log'
 logfile=open(outfile,'w')
 
-print >>logfile,''
-print >>logfile,'************ Regression ****************'
-print >>logfile,'*                                      *'
-if (difpass_max): print >>logfile,'* Passed spectrum max test '
-print >>logfile,'*  Spectrum max '+str(new_max)
-if (difpass_rms): print >>logfile,'* Passed spectrum rms test '
-print >>logfile,'*  Spectrum rms '+str(new_rms)
-if (difpass_sum): print >>logfile,'* Passed spectrum sum test'
-print >>logfile,'*  Spectrum sum '+str(new_sum)
+print('', file=logfile)
+print('************ Regression ****************', file=logfile)
+print('*                                      *', file=logfile)
+if (difpass_max): print('* Passed spectrum max test ', file=logfile)
+print('*  Spectrum max '+str(new_max), file=logfile)
+if (difpass_rms): print('* Passed spectrum rms test ', file=logfile)
+print('*  Spectrum rms '+str(new_rms), file=logfile)
+if (difpass_sum): print('* Passed spectrum sum test', file=logfile)
+print('*  Spectrum sum '+str(new_sum), file=logfile)
 if (difpass):
-        print >>logfile,'---'
-        print >>logfile,'Passed Stat test for '+project
+        print('---', file=logfile)
+        print('Passed Stat test for '+project, file=logfile)
 else:
-        print >>logfile,'---'
-        print >>logfile,'FAILED Stat test for '+project
-print >>logfile,'****************************************'
-print >>logfile,''
-print >>logfile,''
-print >>logfile,'************ Benchmarking **************'
-print >>logfile,'*                                      *'
-print >>logfile,'Total wall clock time was: '+str(endTime - startTime)
-print >>logfile,'Total CPU        time was: '+str(endProc - startProc)
+        print('---', file=logfile)
+        print('FAILED Stat test for '+project, file=logfile)
+print('****************************************', file=logfile)
+print('', file=logfile)
+print('', file=logfile)
+print('************ Benchmarking **************', file=logfile)
+print('*                                      *', file=logfile)
+print('Total wall clock time was: '+str(endTime - startTime), file=logfile)
+print('Total CPU        time was: '+str(endProc - startProc), file=logfile)
 #print >>logfile,'Processing rate MB/s  was: ', 35.1/(endTime - startTime)
 
 logfile.close()
@@ -265,16 +265,16 @@ difpass = difpass_max & difpass_rms & difpass_sum
 
 pass_regress = pass_regress & difpass
 
-if (difpass_max): print '* Passed spectrum max test '
-if (difpass_rms): print '* Passed spectrum rms test '
-if (difpass_sum): print '* Passed spectrum sum test'
+if (difpass_max): print('* Passed spectrum max test ')
+if (difpass_rms): print('* Passed spectrum rms test ')
+if (difpass_sum): print('* Passed spectrum sum test')
 if (difpass):
-        print '---Passed Stat test for '+project
+        print('---Passed Stat test for '+project)
 else:
-        print '---FAILED Stat test for '+project
-print ' '
-print 'Total wall clock time was: '+str(endTime - startTime)
-print 'Total CPU        time was: '+str(endProc - startProc)
+        print('---FAILED Stat test for '+project)
+print(' ')
+print('Total wall clock time was: '+str(endTime - startTime))
+print('Total CPU        time was: '+str(endProc - startProc))
 #print 'Processing rate MB/s  was: ', 35.1/(endTime - startTime)
 
 #
@@ -285,28 +285,28 @@ datestring=datetime.datetime.isoformat(datetime.datetime.today())
 outfile=prolog+datestring+'.log'
 logfile=open(outfile,'w')
 
-print >>logfile,''
-print >>logfile,'************ Regression ****************'
-print >>logfile,'*                                      *'
-if (difpass_max < 0.05): print >>logfile,'* Passed spectrum max test '
-print >>logfile,'*  Spectrum max '+str(new_max)
-if (difpass_rms < 0.05): print >>logfile,'* Passed spectrum rms test '
-print >>logfile,'*  Spectrum rms '+str(new_rms)
-if (difpass_sum < 0.05): print >>logfile,'* Passed spectrum sum test'
-print >>logfile,'*  Spectrum sum '+str(new_sum)
+print('', file=logfile)
+print('************ Regression ****************', file=logfile)
+print('*                                      *', file=logfile)
+if (difpass_max < 0.05): print('* Passed spectrum max test ', file=logfile)
+print('*  Spectrum max '+str(new_max), file=logfile)
+if (difpass_rms < 0.05): print('* Passed spectrum rms test ', file=logfile)
+print('*  Spectrum rms '+str(new_rms), file=logfile)
+if (difpass_sum < 0.05): print('* Passed spectrum sum test', file=logfile)
+print('*  Spectrum sum '+str(new_sum), file=logfile)
 if (difpass):
-        print >>logfile,'---'
-        print >>logfile,'Passed Stat test for '+project
+        print('---', file=logfile)
+        print('Passed Stat test for '+project, file=logfile)
 else:
-        print >>logfile,'---'
-        print >>logfile,'FAILED Stat test for '+project
-print >>logfile,'****************************************'
-print >>logfile,''
-print >>logfile,''
-print >>logfile,'************ Benchmarking **************'
-print >>logfile,'*                                      *'
-print >>logfile,'Total wall clock time was: '+str(endTime - startTime)
-print >>logfile,'Total CPU        time was: '+str(endProc - startProc)
+        print('---', file=logfile)
+        print('FAILED Stat test for '+project, file=logfile)
+print('****************************************', file=logfile)
+print('', file=logfile)
+print('', file=logfile)
+print('************ Benchmarking **************', file=logfile)
+print('*                                      *', file=logfile)
+print('Total wall clock time was: '+str(endTime - startTime), file=logfile)
+print('Total CPU        time was: '+str(endProc - startProc), file=logfile)
 #print >>logfile,'Processing rate MB/s  was: ', 35.1/(endTime - startTime)
 
 logfile.close()
@@ -412,16 +412,16 @@ difpass = difpass_max & difpass_rms & difpass_sum
 
 pass_regress = pass_regress & difpass
 
-if (difpass_max): print '* Passed spectrum max test '
-if (difpass_rms): print '* Passed spectrum rms test '
-if (difpass_sum): print '* Passed spectrum sum test'
+if (difpass_max): print('* Passed spectrum max test ')
+if (difpass_rms): print('* Passed spectrum rms test ')
+if (difpass_sum): print('* Passed spectrum sum test')
 if (difpass):
-        print '---Passed Stat test for '+project
+        print('---Passed Stat test for '+project)
 else:
-        print '---FAILED Stat test for '+project
-print ' '
-print 'Total wall clock time was: '+str(endTime - startTime)
-print 'Total CPU        time was: '+str(endProc - startProc)
+        print('---FAILED Stat test for '+project)
+print(' ')
+print('Total wall clock time was: '+str(endTime - startTime))
+print('Total CPU        time was: '+str(endProc - startProc))
 #print 'Processing rate MB/s  was: ', 35.1/(endTime - startTime)
 
 #
@@ -432,36 +432,36 @@ datestring=datetime.datetime.isoformat(datetime.datetime.today())
 outfile=prolog+datestring+'.log'
 logfile=open(outfile,'w')
 
-print >>logfile,''
-print >>logfile,'************ Regression ****************'
-print >>logfile,'*                                      *'
-if (difpass_max < 0.05): print >>logfile,'* Passed spectrum max test '
-print >>logfile,'*  Spectrum max '+str(new_max)
-if (difpass_rms < 0.05): print >>logfile,'* Passed spectrum rms test '
-print >>logfile,'*  Spectrum rms '+str(new_rms)
-if (difpass_sum < 0.05): print >>logfile,'* Passed spectrum sum test'
-print >>logfile,'*  Spectrum sum '+str(new_sum)
+print('', file=logfile)
+print('************ Regression ****************', file=logfile)
+print('*                                      *', file=logfile)
+if (difpass_max < 0.05): print('* Passed spectrum max test ', file=logfile)
+print('*  Spectrum max '+str(new_max), file=logfile)
+if (difpass_rms < 0.05): print('* Passed spectrum rms test ', file=logfile)
+print('*  Spectrum rms '+str(new_rms), file=logfile)
+if (difpass_sum < 0.05): print('* Passed spectrum sum test', file=logfile)
+print('*  Spectrum sum '+str(new_sum), file=logfile)
 if (difpass):
-        print >>logfile,'---'
-        print >>logfile,'Passed Stat test for '+project
+        print('---', file=logfile)
+        print('Passed Stat test for '+project, file=logfile)
 else:
-        print >>logfile,'---'
-        print >>logfile,'FAILED Stat test for '+project
-print >>logfile,'****************************************'
-print >>logfile,''
-print >>logfile,''
-print >>logfile,'************ Benchmarking **************'
-print >>logfile,'*                                      *'
-print >>logfile,'Total wall clock time was: '+str(endTime - startTime)
-print >>logfile,'Total CPU        time was: '+str(endProc - startProc)
+        print('---', file=logfile)
+        print('FAILED Stat test for '+project, file=logfile)
+print('****************************************', file=logfile)
+print('', file=logfile)
+print('', file=logfile)
+print('************ Benchmarking **************', file=logfile)
+print('*                                      *', file=logfile)
+print('Total wall clock time was: '+str(endTime - startTime), file=logfile)
+print('Total CPU        time was: '+str(endProc - startProc), file=logfile)
 #print >>logfile,'Processing rate MB/s  was: ', 35.1/(endTime - startTime)
 
 logfile.close()
 
 if ( pass_regress ):
-	print "All regressions passed"
+	print("All regressions passed")
 else:
-	print "WARNING: There were some regressions FAILED"
+	print("WARNING: There were some regressions FAILED")
 
 ##########################
 #

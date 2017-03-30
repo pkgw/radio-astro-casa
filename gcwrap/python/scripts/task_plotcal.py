@@ -121,7 +121,7 @@ def plotcal(caltable=None,xaxis=None,yaxis=None,
                 if ((type(caltable)==str) & (os.path.exists(caltable))):
 			cp.open(caltable)
                 else:
-                        raise Exception, 'Calibration table not found - please verify the name'
+                        raise Exception('Calibration table not found - please verify the name')
 
 		# If the user wants the plot window cleared then clear it.
 		#if ( clearpanel.lower()=='current' ) :
@@ -151,6 +151,6 @@ def plotcal(caltable=None,xaxis=None,yaxis=None,
 		if ( len(figfile) > 0 ) :
 			cp.savefig( figfile ); 
 
-	except Exception, instance:
-		print '*** Error ***',instance
+	except Exception as instance:
+		print('*** Error ***',instance)
 		cp.close()

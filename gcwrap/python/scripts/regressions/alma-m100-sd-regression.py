@@ -25,7 +25,7 @@ import shutil
 
 casapath = os.environ['CASAPATH']
 datapath = casapath.split()[0]+'/data/regression/alma-sd/M100/uid___A002_X6218fb_X264'
-print datapath
+print(datapath)
 shutil.copytree(datapath, 'uid___A002_X6218fb_X264') 
 
 
@@ -39,13 +39,13 @@ startProc=time.clock()
 
 version = casadef.casa_version
 
-print "You are using " + version
+print("You are using " + version)
 
 if (version < '4.3.0'):
-    print "YOUR VERSION OF CASA IS TOO OLD FOR THIS GUIDE."
-    print "PLEASE UPDATE IT BEFORE PROCEEDING."
+    print("YOUR VERSION OF CASA IS TOO OLD FOR THIS GUIDE.")
+    print("PLEASE UPDATE IT BEFORE PROCEEDING.")
 else:
-    print "Your version of CASA is appropriate for this guide."
+    print("Your version of CASA is appropriate for this guide.")
 
 
 
@@ -58,7 +58,7 @@ basename = ['uid___A002_X6218fb_X264']
 # Create Measurement Sets from ASDM Data ##
 # importasdm func converts ASDM format to MS format
 
-print '--Import--'
+print('--Import--')
 
 for name in basename:
     importasdm(asdm = name)
@@ -95,7 +95,7 @@ plotms()
 
 # Convert MS to ASAP format #
 
-print '--Split & Save--'
+print('--Split & Save--')
 
 default(sdsave)
 infile= 'uid___A002_X6218fb_X264.ms'
@@ -180,7 +180,7 @@ sdplot()
 
 
 # Flagging #
-print '--Flagging--'
+print('--Flagging--')
 
 default(sdflag)
 infile = 'uid___A002_X6218fb_X264.ms_saved.PM03'
@@ -213,7 +213,7 @@ flagtime = time.time()
 
 # Apply Calibration and Inspect #
 
-print '--Calibration sdcal2--'
+print('--Calibration sdcal2--')
 
 default(sdcal2)
 infile  = 'uid___A002_X6218fb_X264.ms_saved.PM03'
@@ -259,7 +259,7 @@ sdcal2time=time.time()
 
 # Baseline Subtraction and Inspect #
 
-print '--Caribration Baseline --'
+print('--Caribration Baseline --')
 
 default(sdbaseline)
 infile = 'uid___A002_X6218fb_X264.ms_saved.PM03.cal'
@@ -430,7 +430,7 @@ sdplot()
 
 # Convert ASAP to MS #
 
-print '--Save calibrated data (from asap to MS2)--'
+print('--Save calibrated data (from asap to MS2)--')
 
 default(sdsave)
 infile = 'uid___A002_X6218fb_X264.ms_saved.PM03.cal.bl'
@@ -463,7 +463,7 @@ savetime=time.time()
 
 # Combine all MSs to one MS #
 
-print '--Combine MSs to one MS--'
+print('--Combine MSs to one MS--')
 
 # PM #
 default(sdimaging)
@@ -635,81 +635,81 @@ print >>logfile,' *  diff_imquartile',diff_imquartile
 print >>logfile,' *  diff_imsumsq',diff_imsumsq
 """
 
-print >>logfile,''
-print >>logfile,'********** Regression ***********'
-print >>logfile,'*                               *'
+print('', file=logfile)
+print('********** Regression ***********', file=logfile)
+print('*                               *', file=logfile)
 
 if all(thistest_immaxpos == immaxpos):
-    print '* Passed image maxpos test'
-    print >> logfile, '*  Image maxpos', thistest_immaxpos
+    print('* Passed image maxpos test')
+    print('*  Image maxpos', thistest_immaxpos, file=logfile)
 
 if all(thistest_imminpos == imminpos):
-    print '* Passed image minpos test'
-    print >> logfile, '*  Image minpos', thistest_imminpos
+    print('* Passed image minpos test')
+    print('*  Image minpos', thistest_imminpos, file=logfile)
 
 if (diff_immax < 0.01): 
-    print '* Passed image max test '
-    print >>logfile,'*  Image max ',thistest_immax
+    print('* Passed image max test ')
+    print('*  Image max ',thistest_immax, file=logfile)
 
 if (diff_immin < 0.01): 
-    print '* Passed image min test '
-    print >>logfile,'*  Image mmin ',thistest_immin
+    print('* Passed image min test ')
+    print('*  Image mmin ',thistest_immin, file=logfile)
 
 if (diff_imrms < 0.01): 
-    print '* Passed image rms test '
-    print >>logfile,'*  Image rms ',thistest_imrms
+    print('* Passed image rms test ')
+    print('*  Image rms ',thistest_imrms, file=logfile)
 
 if (diff_imflux < 0.01):
-    print '* Passed image flux test '
-    print >>logfile,'*  Image flux ',thistest_imflux
+    print('* Passed image flux test ')
+    print('*  Image flux ',thistest_imflux, file=logfile)
 
 if (diff_immean< 0.01):
-    print '* Passed image mean test '
-    print >>logfile,'*  Image mean ',thistest_immean
+    print('* Passed image mean test ')
+    print('*  Image mean ',thistest_immean, file=logfile)
 
 if (diff_immedian<0.01):
-    print '* Passed image median test '
-    print >>logfile,'*  Image median ',thistest_immedian
+    print('* Passed image median test ')
+    print('*  Image median ',thistest_immedian, file=logfile)
 
 if (diff_imnpts< 0.01):
-    print '* Passed image npts test '
-    print >>logfile,'*  Image npts ',thistest_imnpts 
+    print('* Passed image npts test ')
+    print('*  Image npts ',thistest_imnpts, file=logfile) 
 
 if (diff_imsum< 0.01):
-    print '* Passed image sum test '
-    print >>logfile,'*  Image sum ',thistest_imsum
+    print('* Passed image sum test ')
+    print('*  Image sum ',thistest_imsum, file=logfile)
 
 if (diff_imsigma< 0.01):
-    print '* Passed image sigma test '
-    print >>logfile,'*  Image sigma ',thistest_imsigma
+    print('* Passed image sigma test ')
+    print('*  Image sigma ',thistest_imsigma, file=logfile)
 
 if (diff_immedabsdevmed< 0.01):
-    print '* Passed image medabsdevmed test '
-    print >>logfile,'*  Image medabsdevmed ',thistest_immedabsdevmed
+    print('* Passed image medabsdevmed test ')
+    print('*  Image medabsdevmed ',thistest_immedabsdevmed, file=logfile)
 
 if (diff_imquartile< 0.01):
-    print '* Passed image quartile test '
-    print >>logfile,'*  Image quartile ',thistest_imquartile
+    print('* Passed image quartile test ')
+    print('*  Image quartile ',thistest_imquartile, file=logfile)
 
 if (diff_imsumsq< 0.01):
-    print '* Passed image sumsq test '
-    print >>logfile,'*  Image sumsq ',thistest_imsumsq
+    print('* Passed image sumsq test ')
+    print('*  Image sumsq ',thistest_imsumsq, file=logfile)
 
 
 if ((diff_immax<0.01) & (diff_imrms<0.01) & (diff_immin<0.01) &(diff_imflux<0.01) & (diff_immean<0.01) & (diff_immedian<0.01) & (diff_imnpts<0.01) & (diff_imsum<0.01) & (diff_imsigma<0.01) & (diff_immedabsdevmed<0.01) & (diff_imquartile<0.01) & (diff_imsumsq<0.01) & all(thistest_imminpos == imminpos) & all(thistest_immaxpos == immaxpos)): 
     regstate=True
-    print >>logfile,'---'
-    print >>logfile,'Passed Regression test for M100_SD_PM_03_04'
-    print >>logfile,'---'
-    print ''
-    print 'Regression PASSED'
-    print ''
+    print('---', file=logfile)
+    print('Passed Regression test for M100_SD_PM_03_04', file=logfile)
+    print('---', file=logfile)
+    print('')
+    print('Regression PASSED')
+    print('')
 else: 
     regstate=False
-    print ''
-    print 'Regression FAILED'
-    print ''
-    print >>logfile,'----FAILED Regression test for M100_SD_PM_03_04'
+    print('')
+    print('Regression FAILED')
+    print('')
+    print('----FAILED Regression test for M100_SD_PM_03_04', file=logfile)
 
 """
 print >>logfile,'*********************************'

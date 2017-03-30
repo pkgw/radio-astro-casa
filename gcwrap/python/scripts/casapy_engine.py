@@ -1,5 +1,5 @@
 import os
-if os.environ.has_key('LD_PRELOAD'):
+if 'LD_PRELOAD' in os.environ:
     del os.environ['LD_PRELOAD']
 import sys
 import time
@@ -8,29 +8,29 @@ import signal
 
 homedir = os.getenv('HOME')
 if homedir == None :
-   print "Environment variable HOME is not set, please set it"
+   print("Environment variable HOME is not set, please set it")
    sys.exit(1)
 home=os.environ['HOME']
 
 
 try:
    import IPython
-except ImportError, e:
-   print 'Failed to load IPython: ', e
+except ImportError as e:
+   print('Failed to load IPython: ', e)
    exit(1)
    
    
 try:
     import matplotlib
-except ImportError, e:
-    print "failed to load matplotlib:\n", e
-    print "sys.path =", "\n\t".join(sys.path)
+except ImportError as e:
+    print("failed to load matplotlib:\n", e)
+    print("sys.path =", "\n\t".join(sys.path))
 
 
 try:
     import casac 
-except ImportError, e:
-    print "failed to load casa:\n", e
+except ImportError as e:
+    print("failed to load casa:\n", e)
     sys.exit(1)
     
     
@@ -70,10 +70,10 @@ casa = { 'build': {
 
 
 # Set up casa root
-if os.environ.has_key('CASAPATH') :
+if 'CASAPATH' in os.environ :
     __casapath__ = os.environ['CASAPATH'].split(' ')[0]
     if not os.path.exists(__casapath__ + "/data") :
-        raise RuntimeError, "Unable to find the data repository directory in your CASAPATH. Please fix."
+        raise RuntimeError("Unable to find the data repository directory in your CASAPATH. Please fix.")
     else :
         casa['dirs']['root'] = __casapath__
         casa['dirs']['data'] = __casapath__ + "/data"
@@ -84,7 +84,7 @@ else :
             break
         __casapath__ = os.path.dirname(__casapath__)
     if not os.path.exists(__casapath__ + "/data") :
-        raise RuntimeError, "casa path could not be determined"
+        raise RuntimeError("casa path could not be determined")
     else :
         casa['dirs']['root'] = __casapath__
         casa['dirs']['data'] = __casapath__ + "/data"
@@ -103,7 +103,7 @@ if os.uname()[0]=='Darwin' :
     if not os.path.exists(casa['helpers']['viewer']) :
         casa['helpers']['viewer'] = casa_path[0]+'/MacOS/casaviewer'
 
-    if casa['flags'].has_key('--maclogger') :
+    if '--maclogger' in casa['flags'] :
         casa['helpers']['logger'] = 'console'
     else:
         casa['helpers']['logger'] = casa_path[0]+'/'+casa_path[1]+'/apps/casalogger.app/Contents/MacOS/casalogger'
@@ -122,10 +122,10 @@ if os.uname()[0]=='Darwin' :
 ## ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 if os.path.exists( casa['dirs']['rc'] + '/prelude.py' ) :
     try:
-        execfile ( casa['dirs']['rc'] + '/prelude.py' )
+        exec(compile(open( casa['dirs']['rc'] + '/prelude.py' ).read(), casa['dirs']['rc'] + '/prelude.py', 'exec'))
     except:
-        print str(sys.exc_info()[0]) + ": " + str(sys.exc_info()[1])
-        print 'Could not execute initialization file: ' + casa['dirs']['rc'] + '/prelude.py'
+        print(str(sys.exc_info()[0]) + ": " + str(sys.exc_info()[1]))
+        print('Could not execute initialization file: ' + casa['dirs']['rc'] + '/prelude.py')
         sys.exit(1)
 
 
@@ -133,14 +133,14 @@ if os.path.exists( casa['dirs']['rc'] + '/prelude.py' ) :
 ipythonenv  = casa['dirs']['rc'] + '/ipython'
 ipythonpath = casa['dirs']['rc'] + '/ipython'
 try :
-   os.makedirs(ipythonpath, 0755)
+   os.makedirs(ipythonpath, 0o755)
 except :
    pass
 
-if(not os.environ.has_key('IPYTHONDIR')):
+if('IPYTHONDIR' not in os.environ):
     os.environ['IPYTHONDIR']=ipythonpath
 if(not os.path.exists(os.environ['IPYTHONDIR'])):
-    os.makedirs(os.environ['IPYTHONDIR'], 0755)
+    os.makedirs(os.environ['IPYTHONDIR'], 0o755)
 
 
 os.environ['__CASARCDIR__']=casa['dirs']['rc']
@@ -154,7 +154,7 @@ if matplotlib.get_backend() == "MacOSX" :
 
 # Check if the display environment is set if not
 # switch the backend to Agg only if it's TkAgg
-if not os.environ.has_key('DISPLAY') and matplotlib.get_backend() == "TkAgg" :
+if 'DISPLAY' not in os.environ and matplotlib.get_backend() == "TkAgg" :
    matplotlib.use('Agg')
 
 
@@ -171,7 +171,7 @@ from parameter_check import *
 import platform
 import pylab as pl
 if (platform.architecture()[0]=='64bit'):
-    if os.environ.has_key('DISPLAY') and os.environ['DISPLAY']!="" and not casa['flags'].has_key('--nogui'):
+    if 'DISPLAY' in os.environ and os.environ['DISPLAY']!="" and '--nogui' not in casa['flags']:
         pl.ioff( )
         pl.clf( )
         pl.ion( )
@@ -201,10 +201,10 @@ from task_help import *
 ## ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 if os.path.exists( casa['dirs']['rc'] + '/init.py' ) :
     try:
-        execfile ( casa['dirs']['rc'] + '/init.py' )
+        exec(compile(open( casa['dirs']['rc'] + '/init.py' ).read(), casa['dirs']['rc'] + '/init.py', 'exec'))
     except:
-        print str(sys.exc_info()[0]) + ": " + str(sys.exc_info()[1])
-        print 'Could not execute initialization file: ' + casa['dirs']['rc'] + '/init.py'
+        print(str(sys.exc_info()[0]) + ": " + str(sys.exc_info()[1]))
+        print('Could not execute initialization file: ' + casa['dirs']['rc'] + '/init.py')
         sys.exit(1)
 
 

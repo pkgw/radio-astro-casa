@@ -6,11 +6,11 @@ projname="cltest"
 if os.path.exists(projname): shutil.rmtree(projname)
 
 l=locals() 
-if not l.has_key("repodir"): 
+if "repodir" not in l: 
     repodir=os.getenv("CASAPATH").split(' ')[0]
 
-print casa['build']
-print 'I think the data repository is at '+repodir
+print(casa['build'])
+print('I think the data repository is at '+repodir)
 datadir=repodir+"/data/regression/simdata/"
 if os.path.exists("6334.cl"): shutil.rmtree("6334.cl")
 shutil.copytree(datadir+"6334.cl","6334.cl")
@@ -33,7 +33,7 @@ totaltime          =  "7200s"
 antennalist        =  "alma.cycle0.extended.cfg"
 thermalnoise       =  ""
 
-if not l.has_key('interactive'): interactive=False
+if 'interactive' not in l: interactive=False
 if interactive:
     graphics="both"
 else:
@@ -57,7 +57,7 @@ niter              =  500
 threshold          =  "0.1mJy"
 analyze            =  True
 
-if not l.has_key('interactive'): interactive=False
+if 'interactive' not in l: interactive=False
 if interactive:
     graphics="both"
 else:
@@ -90,51 +90,51 @@ datestring = datetime.datetime.isoformat(datetime.datetime.today())
 outfile    = project+"/"+project + '.' + datestring + '.log'
 logfile    = open(outfile, 'w')
 
-print 'Writing regression output to ' + outfile + "\n"
+print('Writing regression output to ' + outfile + "\n")
 
-print >> logfile,casa['build']
+print(casa['build'], file=logfile)
 
 regstate = True
-rskes = refstats.keys()
+rskes = list(refstats.keys())
 rskes.sort()
 for ke in rskes:
     adiff=abs(hii_stats[ke][0] - refstats[ke])/abs(refstats[ke])
     if adiff < reftol[ke]:
-        print >> logfile, "* Passed %-5s image test, got % -11.5g expected % -11.5g." % (ke, hii_stats[ke][0], refstats[ke])
+        print("* Passed %-5s image test, got % -11.5g expected % -11.5g." % (ke, hii_stats[ke][0], refstats[ke]), file=logfile)
     else:
-        print >> logfile, "* FAILED %-5s image test, got % -11.5g instead of % -11.5g." % (ke, hii_stats[ke][0], refstats[ke])
+        print("* FAILED %-5s image test, got % -11.5g instead of % -11.5g." % (ke, hii_stats[ke][0], refstats[ke]), file=logfile)
         regstate = False
 
-print >> logfile,'---'
+print('---', file=logfile)
 if regstate:
-    print >> logfile, 'Passed',
-    print ''
-    print 'Regression PASSED'
-    print ''
+    print('Passed', end=' ', file=logfile)
+    print('')
+    print('Regression PASSED')
+    print('')
 else:
-    print >> logfile, 'FAILED',
-    print ''
-    print 'Regression FAILED'
-    print ''
+    print('FAILED', end=' ', file=logfile)
+    print('')
+    print('Regression FAILED')
+    print('')
 
-print >> logfile, 'regression test for component-only simdata'
-print >>logfile,'---'
-print >>logfile,'*********************************'
+print('regression test for component-only simdata', file=logfile)
+print('---', file=logfile)
+print('*********************************', file=logfile)
     
-print >>logfile,''
-print >>logfile,'********** Benchmarking **************'
-print >>logfile,''
-print >>logfile,'Total wall clock time was: %8.3f s.' % (endTime - startTime)
-print >>logfile,'Total CPU        time was: %8.3f s.' % (endProc - startProc)
-print >>logfile,'Wall processing  rate was: %8.3f MB/s.' % (17896.0 /
-                                                            (endTime - startTime))
+print('', file=logfile)
+print('********** Benchmarking **************', file=logfile)
+print('', file=logfile)
+print('Total wall clock time was: %8.3f s.' % (endTime - startTime), file=logfile)
+print('Total CPU        time was: %8.3f s.' % (endProc - startProc), file=logfile)
+print('Wall processing  rate was: %8.3f MB/s.' % (17896.0 /
+                                                            (endTime - startTime)), file=logfile)
 
 msfstat = os.stat(project+"/"+project+'.alma.cycle0.extended.ms')
-print >>logfile,'* Breakdown:                           *'
-print >>logfile,'*  generating visibilities took %8.3fs,' % (msfstat[8] - startTime)
-print >>logfile,'*  deconvolution with %d iterations took %8.3fs.' % ( niter,
-                                                                       endTime - msfstat[8])
-print >>logfile,'*************************************'
+print('* Breakdown:                           *', file=logfile)
+print('*  generating visibilities took %8.3fs,' % (msfstat[8] - startTime), file=logfile)
+print('*  deconvolution with %d iterations took %8.3fs.' % ( niter,
+                                                                       endTime - msfstat[8]), file=logfile)
+print('*************************************', file=logfile)
     
 logfile.close()
 

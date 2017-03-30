@@ -4,7 +4,7 @@ if not MPIEnvironment.is_mpi_enabled: from IPython.kernel import client
 from subprocess import *
 import os
 import sys
-import commands
+import subprocess
 import string
 import atexit
 import time
@@ -31,7 +31,7 @@ for k in range(len(a)):
 
 myf=sys._getframe(stacklevel).f_globals
 
-if myf.has_key('casa') :
+if 'casa' in myf :
    casa = myf['casa']
 else:
    casa = { }
@@ -47,7 +47,7 @@ class cluster(object):
    __timestamp=None
    __engines=[]
    __ipythondir=os.environ['PWD']+'/ipython'
-   if(os.environ.has_key('IPYTHONDIR')):
+   if('IPYTHONDIR' in os.environ):
       __ipythondir=os.environ['IPYTHONDIR']
    __homepath=os.environ['HOME'] 
    __start_controller_file='start_controller.sh'   
@@ -84,7 +84,7 @@ class cluster(object):
       self.__timestamp=None
       self.__engines=[]
       self.__ipythondir=os.environ['PWD']+'/ipython'
-      if(os.environ.has_key('IPYTHONDIR')):
+      if('IPYTHONDIR' in os.environ):
          self.__ipythondir=os.environ['IPYTHONDIR']
       else:
          os.environ['IPYTHONDIR']=self.__ipythondir
@@ -297,10 +297,10 @@ class cluster(object):
       """
 
       ef=open(self.__ipythondir+'/'+self.__start_engine_file, 'w')
-      bash=commands.getoutput("which bash")
+      bash=subprocess.getoutput("which bash")
       ef.write('#!%s\n' % bash)
       ef.write('. %s%s\n' % (self.__prefix, self.__cluster_rc_file))
-      cmd=commands.getoutput("which ipengine")
+      cmd=subprocess.getoutput("which ipengine")
       ef.write('export contrid=%s\n' % self.__controller)
       ef.write('export stamp=%s\n' % self.__timestamp)
       ef.write(cmd+' --furl-file='+self.__ipythondir+'/security/casacontroller-engine-'+self.__timestamp+'.furl --logfile='+self.__ipythondir+'/log/casaengine-'+self.__timestamp+'-'+str(self.__controller)+'- 2>&1 | grep -v NullSelection &\n')
@@ -312,14 +312,14 @@ class cluster(object):
       """
 
       ef=open(self.__ipythondir+'/'+self.__start_controller_file, 'w')
-      bash=commands.getoutput("which bash")
+      bash=subprocess.getoutput("which bash")
       ef.write('#!%s\n' % bash)
       ef.write('. %s/%s\n' % (self.__ipythondir, self.__cluster_rc_file))
       lfile=self.__ipythondir+'/log/casacontroller-'+timestamp+'-'
       ffile=self.__ipythondir+'/security/casacontroller-engine-'+timestamp+'.furl'
       efile=self.__ipythondir+'/security/casacontroller-mec-'+timestamp+'.furl'
       tfile=self.__ipythondir+'/security/casacontroller-tc-'+timestamp+'.furl'
-      cmd = commands.getoutput("which ipcontroller")
+      cmd = subprocess.getoutput("which ipcontroller")
       cmd += ' -xy '
       cmd += ' --engine-furl-file=' + ffile
       cmd += ' --multiengine-furl-file=' + efile
@@ -336,7 +336,7 @@ class cluster(object):
 
       """
       ef=open(self.__ipythondir+'/'+self.__stop_node_file, 'w')
-      bash=commands.getoutput("which bash")
+      bash=subprocess.getoutput("which bash")
       ef.write('#!%s\n' % bash)
       # Stop all engines started by the current controller
       ef.write("ps -fu `whoami` | grep ipengine | grep -v grep | grep "+self.__timestamp+" | awk '{print $2}' | xargs kill -TERM>/dev/null")
@@ -349,7 +349,7 @@ class cluster(object):
 
       """
       ef=open(self.__ipythondir+'/'+self.__stop_controller_file, 'w')
-      bash=commands.getoutput("which bash")
+      bash=subprocess.getoutput("which bash")
       ef.write('#!%s\n' % bash)
       ef.write("ps -ef | grep `whoami` | grep ipcontroller | grep -v grep | awk '{print $2}' | xargs kill -TERM >/dev/null")
       ef.close()
@@ -361,7 +361,7 @@ class cluster(object):
 
       """
       bashrc=open(self.__ipythondir+'/'+self.__cluster_rc_file, 'w')
-      bash=commands.getoutput("which bash")
+      bash=subprocess.getoutput("which bash")
       bashrc.write("#!%s\n" % bash)
       envList=['PATH', 'LD_LIBRARY_PATH', 'IPYTHONDIR', 
                'CASAPATH', 'CASAARCH',
@@ -404,7 +404,7 @@ class cluster(object):
           return
 
       ef=open(self.__ipythondir+'/'+self.__stop_engine_file, 'w')
-      bash=commands.getoutput("which bash")
+      bash=subprocess.getoutput("which bash")
       ef.write('#!%s\n' % bash)
       ef.write("kill -9 %d" % procid)
       ef.close()
@@ -476,8 +476,8 @@ class cluster(object):
       if (self.__controller==None):
          return True
 
-      import commands
-      node_name=commands.getoutput("uname -n")
+      import subprocess
+      node_name=subprocess.getoutput("uname -n")
       out=open('/dev/null', 'w')
       err=open('/dev/null', 'w')
       cmd = self._cp(self.__ipythondir+'/'+self.__stop_controller_file,
@@ -658,7 +658,7 @@ class cluster(object):
      try:
         self.__client.execute("execfile(scriptdir+'casa_in_py.py')", i)
         self.__client.execute('inited=True', i)
-     except client.CompositeError, exception:
+     except client.CompositeError as exception:
          casalog.post("Error initializing engine %s: %s" % (str(i), str(exception)),"SEVERE","init_nodes")
          exception.print_tracebacks()
      except:
@@ -825,7 +825,7 @@ class cluster(object):
 
       int_id=True
       for j in task_id:
-         if type(j)!=types.IntType or j<0:
+         if type(j)!=int or j<0:
             casalog.post("Task id %s must be a positive integer" % str(j),"WARN","pad_task_id")
             int_id=False
             break
@@ -838,7 +838,7 @@ class cluster(object):
                b[j]=str(b[j])
 
       if len(task_id)==0:
-         task_id=list(xrange(0, len(self.__engines))) 
+         task_id=list(range(0, len(self.__engines))) 
       if type(b)==str:
          for j in task_id:
             base[j]=b+'-'+str(j)
@@ -855,7 +855,7 @@ class cluster(object):
                base[task_id[j]]=b[k-1]+'-'+str(task_id[j])
 
       if type(b)==dict:
-          for i in b.keys():
+          for i in list(b.keys()):
              base[i]=b[i]+'-'+str(i)
 
       return base
@@ -878,7 +878,7 @@ class cluster(object):
       base={} 
       int_id=True
       for j in task_id:
-         if type(j)!=types.IntType or j<0:
+         if type(j)!=int or j<0:
             casalog.post("Task id %s must be a positive integer" % str(j),"WARN","one_to_n")
             int_id=False
             break
@@ -886,7 +886,7 @@ class cluster(object):
          return base
 
       if len(task_id)==0:
-         task_id=list(xrange(0, len(self.__engines))) 
+         task_id=list(range(0, len(self.__engines))) 
       for j in task_id:
          base[j]=arg
       return base
@@ -913,7 +913,7 @@ class cluster(object):
 
       int_id=True
       for j in task_id:
-         if type(j)!=types.IntType or j<0:
+         if type(j)!=int or j<0:
             casalog.post("Task id %s must be a positive integer" % str(j),"WARN","n_to_n")
             int_id=False
             break
@@ -921,7 +921,7 @@ class cluster(object):
          return base
 
       if len(task_id)==0:
-         task_id=list(xrange(0, len(self.__engines))) 
+         task_id=list(range(0, len(self.__engines))) 
 
       i=-1
       for j in task_id:
@@ -948,7 +948,7 @@ class cluster(object):
       
       base={}
       if len(task_id)==0:
-         task_id=list(xrange(0, len(self.__engines))) 
+         task_id=list(range(0, len(self.__engines))) 
 
       if len(task_id)==0:
          casalog.post("There are no engines available","WARN","split_int")
@@ -1000,7 +1000,7 @@ class cluster(object):
       
       base={}
       if len(task_id)==0:
-         task_id=list(xrange(0, len(self.__engines))) 
+         task_id=list(range(0, len(self.__engines))) 
 
       if len(task_id)==0:
          casalog.post("There are no engines available","WARN","split_channel")
@@ -1059,22 +1059,22 @@ class cluster(object):
          tasks[j]=[]
       
       for i in args:
-         if type(i)==types.DictType:
-            for j in i.keys():
-               if type(j)!=types.IntType or j<0:
+         if type(i)==dict:
+            for j in list(i.keys()):
+               if type(j)!=int or j<0:
                   casalog.post("task id %s must be a positive integer" % str(j),"WARN","pgc")
                   pass
                else:
                   st=''
-                  if type(i[j])==types.StringType:
+                  if type(i[j])==bytes:
                      st=i[j]
                   else:
                      pass
                   if st!='':
                      tasks[j].append(st)
-         elif type(i)==types.StringType:
+         elif type(i)==bytes:
             # For all tasks
-            for j in xrange(0, len(self.__engines)): 
+            for j in range(0, len(self.__engines)): 
                tasks[j].append(i)
          else:
             casalog.post("command %s must be a string or a dictionary" % str(i),"WARN","pgc")
@@ -1084,7 +1084,7 @@ class cluster(object):
       # How to give name, say 'cmd_name', to a set of commands a name such
       # that cluster.pull('cmd_name') returns the script is excuteded?
      
-      keys = kwargs.keys()
+      keys = list(kwargs.keys())
       job='NoName'
       block=True
       for kw in keys:
@@ -1093,12 +1093,12 @@ class cluster(object):
          if kw.lower()=='block':
             block=kwargs[kw]
  
-      for i in tasks.keys():      
+      for i in list(tasks.keys()):      
          cmd=string.join(tasks[i], '\n')
          self.__client.push(dict(job=cmd), i)
 
       return self.__client.execute('exec(job)',
-              block=block,targets=tasks.keys())
+              block=block,targets=list(tasks.keys()))
 
    def parallel_go_commands(self,*args,**kwargs):
       """Parallel execution of commands and/or dictionary 
@@ -1134,22 +1134,22 @@ class cluster(object):
       for j in self.__client.get_ids():
          tasks[j]=dict()
       
-      keys = kwargs.keys()
+      keys = list(kwargs.keys())
 
       for kw in keys: 
          vals=kwargs[kw]
-         if type(vals)==types.DictType:
-            for j in vals.keys():
-               if type(j)!=types.IntType or j<0:
+         if type(vals)==dict:
+            for j in list(vals.keys()):
+               if type(j)!=int or j<0:
                   casalog.post("task id %s must be a positive integer" % str(j),"WARN","pgk")
                   pass
                else:
                   tasks[j][kw]=vals[j]
          else:
-            for j in tasks.keys():
+            for j in list(tasks.keys()):
                tasks[j][kw]=vals
 
-      for i in tasks.keys():      
+      for i in list(tasks.keys()):      
          self.__client.push(tasks[i], i, True)
          
       return tasks
@@ -1188,9 +1188,9 @@ class cluster(object):
       func=str.strip(func)
 
       cmds=dict()
-      for i in tasks.keys(): 
+      for i in list(tasks.keys()): 
         cmd=''
-        for (k, v) in tasks[i].iteritems():
+        for (k, v) in tasks[i].items():
           cmd+=k+'='
           if type(v)==str:
               cmd+='"'+v+'"'
@@ -1283,7 +1283,7 @@ class cluster(object):
 
 
       """
-      return commands.getstatusoutput(cmd)      
+      return subprocess.getstatusoutput(cmd)      
 
    def pdo(self,job):
       """parallel execution of a job
@@ -1403,7 +1403,7 @@ class cluster(object):
 
 
       """
-      return self.__client.keys()
+      return list(self.__client.keys())
 
    def push(self, **kwargs):
       """set values to the engines
@@ -1427,7 +1427,7 @@ class cluster(object):
       
       casalog.origin("parallel_go")
 
-      keys = kwargs.keys()
+      keys = list(kwargs.keys())
       #keys.sort()
       if len(keys)==0:
           return False
@@ -1441,10 +1441,10 @@ class cluster(object):
 
       if targets=='all' or targets==None or \
          type(targets)==list and len(targets)==0:
-          tgt=list(xrange(0, len(self.__engines))) 
+          tgt=list(range(0, len(self.__engines))) 
       elif type(targets)==list:
           for j in targets:
-              if type(j)==types.IntType and j>=0:
+              if type(j)==int and j>=0:
                   tgt.append(j)
       elif type(targets)==int and targets>=0:
           tgt.append(targets)
@@ -1485,10 +1485,10 @@ class cluster(object):
       tgt=[]
       if targets=='all' or \
          type(targets)==list and len(targets)==0:
-          tgt=list(xrange(0, len(self.__engines))) 
+          tgt=list(range(0, len(self.__engines))) 
       elif type(targets)==list:
           for j in targets:
-              if type(j)==types.IntType and j>=0:
+              if type(j)==int and j>=0:
                   tgt.append(j)
       elif type(targets)==int and targets>=0:
           tgt.append(targets)
@@ -1521,7 +1521,7 @@ class cluster(object):
       # jagonzal (CAS-4375): We have to capture the engine's exceptions at this level
       try:
            res = self.__client.get_result()[i]
-      except client.CompositeError, exception:
+      except client.CompositeError as exception:
            casalog.post("Error retrieving result from engine %s: %s" % (str(i),str(exception)),"SEVERE","get_result")
            exception.print_tracebacks()
            res = None
@@ -1569,12 +1569,12 @@ class cluster(object):
        
        base={} 
        for j in target:
-           if type(j)!=types.IntType or j<0:
+           if type(j)!=int or j<0:
                casalog.post("engine id %s must be a positive integer" % str(j),"WARN","pgt")
                return base
 
        if len(target)==0:
-           target=list(xrange(0, len(self.__engines))) 
+           target=list(range(0, len(self.__engines))) 
        if len(target)==0:
            casalog.post("There are no target engines","WARN","pgt")
            return base
@@ -1595,7 +1595,7 @@ class cluster(object):
                outfile=taskname+'.parallel'
    
            tname=myf[taskname]
-           if not myf.has_key(taskname) and \
+           if taskname not in myf and \
               str(type(tname))!="<type 'instance'>" and \
               not hasattr(tname,"defaults"):
                raise TypeError("task %s is not defined " %
@@ -1611,8 +1611,8 @@ class cluster(object):
                    par=myf[taskname].parameters[k]
                    if type(par)==dict:  
                        val=par
-                       for v in par.keys():
-                           if type(v)==types.IntType and j==v:
+                       for v in list(par.keys()):
+                           if type(v)==int and j==v:
                                val=par[v]
                                break
                            elif type(v)==str:
@@ -1638,7 +1638,7 @@ class cluster(object):
                script=script+')'
                base[j]=script
            return base
-       except TypeError, e:
+       except TypeError as e:
            casalog.post("TypeError: %s" % str(e),"SEVERE","pgt")
 
 
@@ -1651,7 +1651,7 @@ class cluster(object):
       casalog.origin("parallel_go")
       
       if type(job)==type(None):
-          print "job None has no status"
+          print("job None has no status")
           return True
       try:
          x=job.get_result(block=False)
@@ -1663,7 +1663,7 @@ class cluster(object):
             if verbose:
                casalog.post("job '%s' done" % job,"INFO","check_job")
             return True         
-      except client.CompositeError, exception:
+      except client.CompositeError as exception:
          casalog.post("Error retrieving result of job from engine: %s, backtrace:" % (str(exception)),"SEVERE","check_job")
          exception.print_tracebacks()
          raise
@@ -1673,7 +1673,7 @@ class cluster(object):
          raise
 
    def howto(self):
-      print """A simple example for use the cluster
+      print("""A simple example for use the cluster
 from parallel_go import *
 c=cluster()
 c.start_engine('casa-dev-08',2,'/home/casa-dev-08/hye/cluster')
@@ -1709,10 +1709,10 @@ c.pgc('inp("clean")')
 c.pgc('go("clean")')
 c.pgc('import commands')
 c.pgc('a=commands.getstatusoutput("ls ")')
-"""
+""")
 
    def use_often(self):
-      print """Frequently used commands
+      print("""Frequently used commands
 from parallel_go import *
 c=cluster()
 c.hello()
@@ -1733,10 +1733,10 @@ c.get_result(1)
 
 #pg.activate()
 #px 'from casa_in_py import *'
-"""
+""")
 
    def example(self):
-      print """example: run clean on 4 engines
+      print("""example: run clean on 4 engines
 
 from parallel_go import *
 c=cluster()
@@ -1775,7 +1775,7 @@ c.check_job(job[0])
 
 c.get_result(0)
 
-"""
+""")
 
 
 cluster=cluster()

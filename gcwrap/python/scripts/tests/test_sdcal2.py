@@ -12,12 +12,12 @@ import re
 import string
 
 try:
-    import selection_syntax
+    from . import selection_syntax
 except:
     import tests.selection_syntax as selection_syntax
 
 try:
-    from testutils import copytree_ignore_subversion
+    from .testutils import copytree_ignore_subversion
 except:
     from tests.testutils import copytree_ignore_subversion
     
@@ -110,7 +110,7 @@ class sdcal2_caltest_base(sdcal2_unittest_base):
                                           msg='column %s differ'%(name))
 
             # check calibration data
-            for irow in xrange(tout.nrows()):
+            for irow in range(tout.nrows()):
                 sp = tout.getcell(col, irow)
                 spref = tref.getcell(col, irow)
                 diff=self._diff(sp,spref)
@@ -121,7 +121,7 @@ class sdcal2_caltest_base(sdcal2_unittest_base):
                             diff[i] = simple_diff
                 self.assertTrue(numpy.all(diff < 0.02),
                                 msg='calibrated result is wrong (irow=%s): maxdiff=%s'%(irow,diff.max()) )
-        except Exception, e:
+        except Exception as e:
             raise e
         finally:
             tout.close()
@@ -138,7 +138,7 @@ class sdcal2_caltest_base(sdcal2_unittest_base):
                              msg='number of rows differ.')
             # check SPECTRA
             col = 'SPECTRA'
-            for irow in xrange(tout.nrows()):
+            for irow in range(tout.nrows()):
                 sp = tout.getcell(col, irow)
                 spref = tref.getcell(col, irow)
                 diff=self._diff(sp,spref)
@@ -148,7 +148,7 @@ class sdcal2_caltest_base(sdcal2_unittest_base):
             # check Tsys if necessary
             if tsys:
                 col = 'TSYS'
-                for irow in xrange(tout.nrows()):
+                for irow in range(tout.nrows()):
                     sp = tout.getcell(col, irow)
                     spref = tref.getcell(col, irow)
                     self.assertEqual(len(sp), len(spref),
@@ -157,7 +157,7 @@ class sdcal2_caltest_base(sdcal2_unittest_base):
                     self.assertTrue(numpy.all(diff < 0.01),
                                     msg='Tsys is wrong (irow=%s): maxdiff=%s'%(irow,diff.max()) )
                 
-        except Exception, e:
+        except Exception as e:
             raise e
         finally:
             tout.close()
@@ -215,7 +215,7 @@ class sdcal2_exceptions(sdcal2_unittest_base,unittest.TestCase):
             self.res=sdcal2(infile=self.rawfile,calmode='apply')
             self.assertTrue(False,
                             msg='The task must throw exception')
-        except Exception, e:
+        except Exception as e:
             pos=str(e).find('Name of the apply table must be given.')
             self.assertNotEqual(pos,-1,
                                 msg='Unexpected exception was thrown: %s'%(str(e)))
@@ -227,7 +227,7 @@ class sdcal2_exceptions(sdcal2_unittest_base,unittest.TestCase):
             self.res=sdcal2(infile=self.rawfile,calmode='apply',applytable=[self.skytable,self.tsystable],interp=interp,spwmap=self.spwmap)
             self.assertTrue(False,
                             msg='The task must throw exception')
-        except Exception, e:
+        except Exception as e:
             pos=str(e).find('Interpolation type \'%s\' is invalid or not supported yet.'%(interp))
             self.assertNotEqual(pos,-1,
                                 msg='Unexpected exception was thrown: %s'%(str(e)))
@@ -256,7 +256,7 @@ class sdcal2_exceptions(sdcal2_unittest_base,unittest.TestCase):
             self.res=sdcal2(infile=self.rawfile,calmode='ps',outfile=self.outfile,overwrite=False)
             self.assertTrue(False,
                             msg='The task must throw exception')
-        except Exception, e:
+        except Exception as e:
             pos=str(e).find('Output file \'%s\' exists.'%(self.outfile))
             self.assertNotEqual(pos,-1,
                                 msg='Unexpected exception was thrown: %s'%(str(e)))
@@ -268,7 +268,7 @@ class sdcal2_exceptions(sdcal2_unittest_base,unittest.TestCase):
             self.res=sdcal2(infile=self.rawfile,calmode='apply',spwmap=self.spwmap,applytable=[dummytable,self.tsystable],outfile=self.outfile)
             #self.assertFalse(self.res)
             self.fail("The task must throw exception.")
-        except Exception, e:
+        except Exception as e:
             pos=str(e).find("Apply table \'%s\' does not exist."%(dummytable))
             self.assertNotEqual(pos,-1,
                                 msg='Unexpected exception was thrown: %s'%(str(e)))
@@ -280,7 +280,7 @@ class sdcal2_exceptions(sdcal2_unittest_base,unittest.TestCase):
             self.res=sdcal2(infile=self.rawfile,calmode='apply',spwmap=self.spwmap,applytable=[self.skytable,dummytable],outfile=self.outfile)
             #self.assertFalse(self.res)
             self.fail("The task must throw exception.")
-        except Exception, e:
+        except Exception as e:
             pos=str(e).find("Apply table \'%s\' does not exist."%(dummytable))
             self.assertNotEqual(pos,-1,
                                 msg='Unexpected exception was thrown: %s'%(str(e)))
@@ -292,7 +292,7 @@ class sdcal2_exceptions(sdcal2_unittest_base,unittest.TestCase):
             self.res=sdcal2(infile=self.rawfile,calmode='apply',applytable=[self.skytable,self.tsystable],interp=interp,spwmap=self.spwmap)
             self.assertTrue(False,
                             msg='The task must throw exception')
-        except Exception, e:
+        except Exception as e:
             pos=str(e).find('Invalid format of the parameter interp: \'%s\''%(interp))
             self.assertNotEqual(pos,-1,
                                 msg='Unexpected exception was thrown: %s'%(str(e)))
@@ -303,7 +303,7 @@ class sdcal2_exceptions(sdcal2_unittest_base,unittest.TestCase):
             self.res=sdcal2(infile=self.rawfile,calmode='apply',applytable=[self.skytable,self.tsystable],spwmap=self.spwmap)
             self.assertTrue(False,
                             msg='The task must throw exception')
-        except Exception, e:
+        except Exception as e:
             pos=str(e).find('You should set overwrite to True if you want to update infile.')
             self.assertNotEqual(pos,-1,
                                 msg='Unexpected exception was thrown: %s'%(str(e)))
@@ -325,7 +325,7 @@ class sdcal2_exceptions(sdcal2_unittest_base,unittest.TestCase):
             self.res=sdcal2(infile=self.skytable,calmode='ps',outfile=self.outfile)
             self.assertTrue(False,
                             msg='The task must throw exception')
-        except Exception, e:
+        except Exception as e:
             pos=str(e).find('infile must be in scantable format.')
             self.assertNotEqual(pos,-1,
                                 msg='Unexpected exception was thrown: %s'%(str(e)))
@@ -600,7 +600,7 @@ class sdcal2_tsyscal_average(sdcal2_caltest_base,unittest.TestCase):
                                           msg='column %s differ'%(name))
 
             # check calibration data
-            for irow in xrange(tout.nrows()):
+            for irow in range(tout.nrows()):
                 sp = tout.getcell(col, irow)
                 spref = tref.getcell(col, irow)
                 #print 'sp =', sp
@@ -619,7 +619,7 @@ class sdcal2_tsyscal_average(sdcal2_caltest_base,unittest.TestCase):
                 diff=self._diff(sp,averaged_value)
                 self.assertTrue(numpy.all(diff < 1e-5),
                                 msg='calibrated result is wrong (irow=%s): maxdiff=%s'%(irow,diff.max()) )
-        except Exception, e:
+        except Exception as e:
             raise e
         finally:
             tout.close()
@@ -1182,7 +1182,7 @@ class sdcal2_test_selection(selection_syntax.SelectionSyntaxTest,
         spref=self._getspectra_selected(self.reffile, tbsel)
         self._checkshape( sp, spref )
         
-        for irow in xrange(sp.shape[0]):
+        for irow in range(sp.shape[0]):
             diff=self._diff(sp[irow],spref[irow])
             for i in range(len(diff)):
                 if (diff[i] > 0.02):
@@ -1212,7 +1212,7 @@ class sdcal2_test_selection(selection_syntax.SelectionSyntaxTest,
             sp=tb.getcol('SPECTRA').transpose()
         else:
             command = ''
-            for key, val in tbsel.items():
+            for key, val in list(tbsel.items()):
                 if len(command) > 0:
                     command += ' AND '
                 command += ('%s in %s' % (key, str(val)))
@@ -1277,12 +1277,12 @@ class sdcal2_flag_base(sdcal2_caltest_base, unittest.TestCase):
 
         def gen_result(fr, fl, sp):
             nchan,nrow = fl.shape
-            for ichan in xrange(nchan):
+            for ichan in range(nchan):
                 _fl = fl[ichan,:]
                 _sp = sp[ichan,:]
                 wsum = 0.0
                 dsum = 0.0
-                for irow in xrange(nrow):
+                for irow in range(nrow):
                     if fr[irow] == 0 and _fl[irow] == 0:
                         dsum += _sp[irow]
                         wsum += 1.0
@@ -1340,7 +1340,7 @@ class sdcal2_flag_base(sdcal2_caltest_base, unittest.TestCase):
             timestamp = tb.getcol('TIME')
         nchan,nrow = flag.shape
 
-        for irow in xrange(nrow):
+        for irow in range(nrow):
             result_data = data[:,irow]
             result_flag = flag[:,irow]
             result_time = timestamp[irow]
@@ -1348,7 +1348,7 @@ class sdcal2_flag_base(sdcal2_caltest_base, unittest.TestCase):
             expected_flag = expected[irow][1]
             expected_time = expected[irow][0]
             self._is_diff_lt_tol('timestamp', result_time, expected_time, row=irow)
-            for ichan in xrange(nchan):
+            for ichan in range(nchan):
                 # check flag
                 self._is_equal('flag', result_flag[ichan], expected_flag[ichan], row=irow, channel=ichan)
 
@@ -1379,14 +1379,14 @@ class sdcal2_flag_base(sdcal2_caltest_base, unittest.TestCase):
         self._is_equal('number of rows', nrow_result, nrow_expected)
 
         # check timestamp
-        for irow in xrange(nrow_result):
+        for irow in range(nrow_result):
             self._is_equal('timestamp', time_result[irow], time_expected[irow], row=irow)
 
         # evaluate expected data and flag
         expected_cal = self._expected_calibration(expected_sky, expected_tsys)
 
         # iterate rows:
-        for (irow, cal) in zip(xrange(nrow_result), expected_cal):
+        for (irow, cal) in zip(list(range(nrow_result)), expected_cal):
             cal_flag = cal[0]
             cal_data = cal[1]
             cal_tsys = cal[2]
@@ -1400,7 +1400,7 @@ class sdcal2_flag_base(sdcal2_caltest_base, unittest.TestCase):
             #print cal_tsys, tsys
             #print 'flagrow: result', flagrow, 'expected', expected_flagrow[irow]
             self._is_equal('flagrow', flagrow, expected_flagrow[irow], row=irow)
-            for ichan in xrange(nchan):
+            for ichan in range(nchan):
                 self._is_equal('flag', flag[ichan], cal_flag[ichan], row=irow, channel=ichan)
                 self._is_diff_lt_tol('Tsys', tsys[ichan], cal_tsys[ichan], row=irow, channel=ichan)
                 self._is_diff_lt_tol('spectral data', data[ichan], cal_data[ichan], row=irow, channel=ichan)
@@ -1420,7 +1420,7 @@ class sdcal2_flag_base(sdcal2_caltest_base, unittest.TestCase):
             def interp(t, tref, data, flag):
                 nrow, nchan = data.shape
                 factor = (t - tref[0]) / (tref[1] - tref[0])
-                for ichan in xrange(nchan):
+                for ichan in range(nchan):
                     if flag[0,ichan] == flag[1,ichan]:
                         yield data[0,ichan] + (data[1,ichan] - data[0,ichan]) * factor
                     elif flag[0,ichan] == 0:
@@ -1448,7 +1448,7 @@ class sdcal2_flag_base(sdcal2_caltest_base, unittest.TestCase):
             itsys = numpy.ones(len(calibrated), dtype=float) * scalar_tsys
             return (flag, calibrated, itsys)
             
-        for irow in xrange(nrow):
+        for irow in range(nrow):
             yield gen_calibration(time_result[irow], flagtra_result[:,irow], spectra_result[:,irow], expected_sky, expected_tsys)
             
 
@@ -1612,10 +1612,10 @@ class sdcal2_applycal_flag2(sdcal2_flag_base):
         _getattr = lambda x: getattr(self, x)
         self.assertTrue(hasattr(self, skyname))
         if tsys_stat is None:
-            tables = map(_getattr, [skyname])
+            tables = list(map(_getattr, [skyname]))
         else:
             tsysname = 'tsys_%s'%(tsys_stat)
-            tables = map(_getattr, [skyname, tsysname])
+            tables = list(map(_getattr, [skyname, tsysname]))
         for table in tables:
             copytree_ignore_subversion(self.datapath, table)
             self.assertTrue(os.path.exists(table))

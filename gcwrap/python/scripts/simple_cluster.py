@@ -1,8 +1,8 @@
 import os
 import math
 import time
-import thread
-import commands
+import _thread
+import subprocess
 import numpy as np
 from taskinit import *
 from tasksinfo import *
@@ -81,7 +81,7 @@ class simple_cluster:
         # created.
         # The cluster object is returned.
         myf = sys._getframe(len(inspect.stack())-1).f_globals
-        if not 'procCluster' in myf.keys():
+        if not 'procCluster' in list(myf.keys()):
             sc = simple_cluster()
             if (sc.init_cluster()):
                 return myf['procCluster']
@@ -319,17 +319,17 @@ class simple_cluster:
         ncores = 0
         memory = 0.
         cmd_os = self.shell(hostname) + " 'uname -s'"
-        os = commands.getoutput(cmd_os)
+        os = subprocess.getoutput(cmd_os)
         if (os == "Linux"):
             try:
                 # affinity aware processor count (~= len(sched_getaffinity))
                 # ignore thread settings, to avoid unexpected behaviour based
                 # on the users environment
                 cmd_ncores = self.shell(hostname) + " 'OMP_NUM_THREADS= nproc' "
-                ncores = int(commands.getoutput(cmd_ncores))
+                ncores = int(subprocess.getoutput(cmd_ncores))
             except:
                 cmd_ncores = self.shell(hostname) + " 'cat /proc/cpuinfo' "
-                res_ncores = commands.getoutput(cmd_ncores)
+                res_ncores = subprocess.getoutput(cmd_ncores)
                 str_ncores = res_ncores.count("processor")
 
                 try:
@@ -344,7 +344,7 @@ class simple_cluster:
                             'Cached' # "Cached" has a the problem that there can also be "SwapCached"
                             ]:
                 cmd_memory = self.shell(hostname) + " 'cat /proc/meminfo | grep -v SwapCached | grep "+memtype+"'"
-                str_memory = commands.getoutput(cmd_memory)
+                str_memory = subprocess.getoutput(cmd_memory)
                 str_memory = string.replace(str_memory,memtype+':','')
                 str_memory = string.replace(str_memory,"kB","")
                 str_memory = string.replace(str_memory," ","")
@@ -356,7 +356,7 @@ class simple_cluster:
                     break
             
             cmd_cpu = self.shell(hostname) + " 'top -b -n 1 | grep Cpu' "
-            str_cpu = commands.getoutput(cmd_cpu)
+            str_cpu = subprocess.getoutput(cmd_cpu)
             list_cpu = string.split(str_cpu,',')
             str_cpu = "100"
             for item in list_cpu:
@@ -371,7 +371,7 @@ class simple_cluster:
             
         else: # Mac OSX
             cmd_ncores = self.shell(hostname) + " '/usr/sbin/sysctl -n hw.ncpu'"
-            res_ncores = commands.getoutput(cmd_ncores)
+            res_ncores = subprocess.getoutput(cmd_ncores)
             str_ncores = res_ncores
             
             try:
@@ -387,7 +387,7 @@ class simple_cluster:
 
             # jagonzal: Adapt command for MACOX 10.0 backwrads compatible with 10.9 and 10.8
             cmd_memory = self.shell(hostname) + " 'vm_stat | grep free | cut -d : -f2' "
-            str_memory = commands.getoutput(cmd_memory)
+            str_memory = subprocess.getoutput(cmd_memory)
             str_memory = string.replace(str_memory," ","")
 
             try:
@@ -400,7 +400,7 @@ class simple_cluster:
                 pass
             
             cmd_cpu = self.shell(hostname) + " 'top -l1 | grep usage' "
-            str_cpu = commands.getoutput(cmd_cpu)
+            str_cpu = subprocess.getoutput(cmd_cpu)
             list_cpu = string.split(str_cpu,',')
             str_cpu = "100"
             for item in list_cpu:
@@ -935,7 +935,7 @@ class simple_cluster:
             return
         self._resource_on=True 
         self._rsrc={}
-        return thread.start_new_thread(self.update_resource, ())
+        return _thread.start_new_thread(self.update_resource, ())
     
     def update_resource(self):
         """Set up repeated resource checking.
@@ -953,7 +953,7 @@ class simple_cluster:
         if not self._configdone:
             return
         while self._resource_on:
-            if ((len(self._jobs.keys())>0) or (len(self._rsrc.keys())==0)):
+            if ((len(list(self._jobs.keys()))>0) or (len(list(self._rsrc.keys()))==0)):
                 self.check_resource()
             time.sleep(5)
         self._resource_running=False
@@ -982,7 +982,7 @@ class simple_cluster:
         """
         if not self._configdone:
             return
-        if long:
+        if int:
             return self.check_resource(False)
         else:
             self.check_resource(True)
@@ -1042,11 +1042,11 @@ class simple_cluster:
         fid = open(self._monitoringFile + ".tmp", 'w')
 		
         # Print header
-        print >> fid, "%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "Host","Engine","Status","CPU[%]","Memory[%]","Time[s]",
-                                                                             "Read[MB]","Write[MB]","Read[MB/s]","Write[MB/s]","Job","Sub-MS")
+        print("%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "Host","Engine","Status","CPU[%]","Memory[%]","Time[s]",
+                                                                             "Read[MB]","Write[MB]","Read[MB/s]","Write[MB/s]","Job","Sub-MS"), file=fid)
         if (verbose):
-            print "%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ("Host","Engine","Status","CPU[%]","Memory[%]","Time[s]",
-                                                                        "Read[MB]","Write[MB]","Read[MB/s]","Write[MB/s]","Job","Sub-MS")
+            print("%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ("Host","Engine","Status","CPU[%]","Memory[%]","Time[s]",
+                                                                        "Read[MB]","Write[MB]","Read[MB/s]","Write[MB/s]","Job","Sub-MS"))
 
         result = {}
         engines_list = self._cluster.get_engines()
@@ -1054,36 +1054,36 @@ class simple_cluster:
             hostname = str(engine[1])            
             # First of all get operating system
             cms_os = self.shell(hostname) + " 'uname -s'"
-            os = commands.getoutput(cms_os)
+            os = subprocess.getoutput(cms_os)
             # Get read/write activity
             read_bytes = 0.0
             write_bytes = 0.0
             if (os == "Linux"):
                 # Get read activity
                 cmd_read_bytes = self.shell(hostname) + " 'cat /proc/" + str(engine[2]) + "/io | grep read_bytes'"
-                read_bytes=commands.getoutput(cmd_read_bytes)
+                read_bytes=subprocess.getoutput(cmd_read_bytes)
                 read_bytes = read_bytes.split(":")
                 try:
                     read_bytes = float(read_bytes[1])
                 except:
                     if (verbose):
-                        print "Problem converting read_bytes into float for engine " + str(engine[0]) + " running in host " + str(engine[1])
-                        print "read_bytes: [" +  str(read_bytes) + "]"
+                        print("Problem converting read_bytes into float for engine " + str(engine[0]) + " running in host " + str(engine[1]))
+                        print("read_bytes: [" +  str(read_bytes) + "]")
                     read_bytes = 0
                 # Get write activity
                 cmd_write_bytes = self.shell(hostname) + " 'cat /proc/" + str(engine[2]) + "/io | grep write_bytes | head -1'"
-                write_bytes=commands.getoutput(cmd_write_bytes)
+                write_bytes=subprocess.getoutput(cmd_write_bytes)
                 write_bytes = write_bytes.split(":")
                 try:
                     write_bytes = float(write_bytes[1])
                 except:
                     if (verbose):
-                        print "Problem converting write_bytes into float for engine " + str(engine[0]) + " running in host " + str(engine[1])
-                        print "write_bytes: [" +  str(write_bytes) + "]"
+                        print("Problem converting write_bytes into float for engine " + str(engine[0]) + " running in host " + str(engine[1]))
+                        print("write_bytes: [" +  str(write_bytes) + "]")
                     write_bytes = 0.0
             # Get resources usage (cpu, mem, elapsed time since start)
             cmd_resources = self.shell(hostname) + " 'ps -p " + str(engine[2]) + " -o %cpu,%mem,etime' | tail -1"
-            resources=commands.getoutput(cmd_resources)
+            resources=subprocess.getoutput(cmd_resources)
             resources = resources.split(" ")
             while resources.count('')>0:
                 resources.remove('')
@@ -1093,24 +1093,24 @@ class simple_cluster:
                 cpu = round(float(resources[0]))
             except:
                 if (verbose):
-                        print "Problem converting CPU into float for engine " + str(engine[0]) + " running in host " + str(engine[1])
-                        print "CPU: [" +  resources[0] + "]"
+                        print("Problem converting CPU into float for engine " + str(engine[0]) + " running in host " + str(engine[1]))
+                        print("CPU: [" +  resources[0] + "]")
             # Convert Memory into number
             memory = 0
             try:
                 memory = round(float(resources[1]))
             except:
                 if (verbose):
-                        print "Problem converting memory into float for engine " + str(engine[0]) + " running in host " + str(engine[1])
-                        print "Memory: [" +  resources[1] + "]"
+                        print("Problem converting memory into float for engine " + str(engine[0]) + " running in host " + str(engine[1]))
+                        print("Memory: [" +  resources[1] + "]")
             # Initialize engine RW offsets map
-            if not self._enginesRWoffsets.has_key(engine[0]):
+            if engine[0] not in self._enginesRWoffsets:
                 self._enginesRWoffsets[engine[0]] = {}
             # Store engine RW offsets values
             self._enginesRWoffsets[engine[0]]['read_offset'] = read_bytes
             self._enginesRWoffsets[engine[0]]['write_offset'] = write_bytes
             # Initialize host map
-            if not result.has_key(engine[1]):
+            if engine[1] not in result:
                 result[engine[1]] = {}
                 result[engine[1]]["CPU"] = 0.0
                 result[engine[1]]["Memory"] = 0.0
@@ -1119,7 +1119,7 @@ class simple_cluster:
                 result[engine[1]]["ReadRate"] = 0.0
                 result[engine[1]]["WriteRate"] = 0.0
             # Initialize engine map
-            if not result[engine[1]].has_key(engine[0]):
+            if engine[0] not in result[engine[1]]:
                 result[engine[1]][engine[0]] = {}
             # Store default engine values
             result[engine[1]][engine[0]]["CPU"] = cpu
@@ -1133,7 +1133,7 @@ class simple_cluster:
             result[engine[1]][engine[0]]["Time"] = 0
             result[engine[1]][engine[0]]["Job"] = ""
             # Retrieve job status information from job structure
-            for job in self._jobs.keys():
+            for job in list(self._jobs.keys()):
                 jobEngine = self._jobs[job]['engine']
                 if (jobEngine == engine[0]):           
                     result[engine[1]][engine[0]]["Sub-MS"] = self._jobs[job]['subms']
@@ -1154,7 +1154,7 @@ class simple_cluster:
             result[engine[1]]["ReadRate"] += result[engine[1]][engine[0]]["ReadRate"]
             result[engine[1]]["WriteRate"] += result[engine[1]][engine[0]]["WriteRate"]
             # Print nodes info
-            print >> fid, "%20s%10d%10s%10d%10d%10d%10d%10d%15d%15d%20s%30s" % ( engine[1],engine[0],
+            print("%20s%10d%10s%10d%10d%10d%10d%10d%15d%15d%20s%30s" % ( engine[1],engine[0],
                                                                                  result[engine[1]][engine[0]]["Status"],
                                                                                  result[engine[1]][engine[0]]["CPU"],
                                                                                  result[engine[1]][engine[0]]["Memory"],
@@ -1164,9 +1164,9 @@ class simple_cluster:
                                                                                  result[engine[1]][engine[0]]["ReadRate"],
                                                                                  result[engine[1]][engine[0]]["WriteRate"],
                                                                                  result[engine[1]][engine[0]]["Job"],
-                                                                                 result[engine[1]][engine[0]]["Sub-MS"])
+                                                                                 result[engine[1]][engine[0]]["Sub-MS"]), file=fid)
             if (verbose):
-                print "%20s%10d%10s%10d%10d%10d%10d%10d%15d%15d%20s%30s" % ( engine[1],engine[0],
+                print("%20s%10d%10s%10d%10d%10d%10d%10d%15d%15d%20s%30s" % ( engine[1],engine[0],
                                                                              result[engine[1]][engine[0]]["Status"],
                                                                              result[engine[1]][engine[0]]["CPU"],
                                                                              result[engine[1]][engine[0]]["Memory"],
@@ -1176,10 +1176,10 @@ class simple_cluster:
                                                                              result[engine[1]][engine[0]]["ReadRate"],
                                                                              result[engine[1]][engine[0]]["WriteRate"],
                                                                              result[engine[1]][engine[0]]["Job"],
-                                                                             result[engine[1]][engine[0]]["Sub-MS"])
+                                                                             result[engine[1]][engine[0]]["Sub-MS"]))
 
         # Print separation between nodes and hosts info
-        print >> fid, "%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "====================",
+        print("%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "====================",
                                                                              "==========",
                                                                              "==========",
                                                                              "==========",
@@ -1190,10 +1190,10 @@ class simple_cluster:
                                                                              "===============",
                                                                              "===============",
                                                                              "====================",
-                                                                             "==============================")
+                                                                             "=============================="), file=fid)
 
         if (verbose):
-            print "%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "====================",
+            print("%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "====================",
                                                                          "==========",
                                                                          "==========",
                                                                          "==========",
@@ -1204,11 +1204,11 @@ class simple_cluster:
                                                                          "===============",
                                                                          "===============",
                                                                          "====================",
-                                                                         "==============================")
+                                                                         "=============================="))
 
         # Print hosts info
         for host in result:
-            print >> fid, "%20s%10s%10s%10d%10d%10s%10d%10d%15d%15d%20s%30s" % ( host,"Total","",
+            print("%20s%10s%10s%10d%10d%10s%10d%10d%15d%15d%20s%30s" % ( host,"Total","",
                                                                                  result[host]["CPU"],
                                                                                  result[host]["Memory"],
                                                                                  "",
@@ -1216,10 +1216,10 @@ class simple_cluster:
                                                                                  result[host]["Write"],
                                                                                  result[host]["ReadRate"],
                                                                                  result[host]["WriteRate"],
-                                                                                 "","")
+                                                                                 "",""), file=fid)
         if (verbose):
             for host in result:
-                print "%20s%10s%10s%10d%10d%10s%10d%10d%15d%15d%20s%30s" % ( host,"Total","",
+                print("%20s%10s%10s%10d%10d%10s%10d%10d%15d%15d%20s%30s" % ( host,"Total","",
                                                                              result[host]["CPU"],
                                                                              result[host]["Memory"],
                                                                              "",
@@ -1227,10 +1227,10 @@ class simple_cluster:
                                                                              result[host]["Write"],
                                                                              result[host]["ReadRate"],
                                                                              result[host]["WriteRate"],
-                                                                             "","")
+                                                                             "",""))
 
         # Print final separator
-        print >> fid, "%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "====================",
+        print("%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "====================",
                                                                              "==========",
                                                                              "==========",
                                                                              "==========",
@@ -1241,9 +1241,9 @@ class simple_cluster:
                                                                              "===============",
                                                                              "===============",
                                                                              "====================",
-                                                                             "==============================")
+                                                                             "=============================="), file=fid)
         if (verbose):
-            print "%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "====================",
+            print("%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "====================",
                                                                          "==========",
                                                                          "==========",
                                                                          "==========",
@@ -1254,13 +1254,13 @@ class simple_cluster:
                                                                          "===============",
                                                                          "===============",
                                                                          "====================",
-                                                                         "==============================")
+                                                                         "=============================="))
 
         # Close monitoring file
         fid.close()
 
         # Rename monitoring file
-        commands.getstatusoutput("mv " + self._monitoringFile + ".tmp" + " " + self._monitoringFile)
+        subprocess.getstatusoutput("mv " + self._monitoringFile + ".tmp" + " " + self._monitoringFile)
 
         # Update resource member
         self._rsrc = result
@@ -1315,7 +1315,7 @@ class simple_cluster:
         while(not done):
             time.sleep(5)
             done=True
-            for i in sl._jobs.keys():
+            for i in list(sl._jobs.keys()):
                 try:
                     if not self._cluster.check_job(i):
                         done=False
@@ -1345,14 +1345,14 @@ class simple_cluster:
             curr={}
             try:
                 pend=self._cluster.queue_status()
-                for i in xrange(len(pend)):
+                for i in range(len(pend)):
                     (a, b)=pend[i]
                     curr[a]=b['pending']
             except:
                 # jagonzal (CAS-4106): Properly report all the exceptions and errors in the cluster framework
                 # traceback.print_tb(sys.exc_info()[2])
                 pass
-            for job in self._jobs.keys():
+            for job in list(self._jobs.keys()):
                 if type(job)==type(None):
                     self._jobs[job]['status']="unknown"
                 else:
@@ -1362,7 +1362,7 @@ class simple_cluster:
                         x=1
                         try:
                             x=job.get_result(block=False)
-                        except client.CompositeError, exception:
+                        except client.CompositeError as exception:
                             if notify and self._jobs[job]['status']=="scheduled":
                                 casalog.post("Error retrieving result of job %s from engine %s: %s, backtrace:" % (sht,str(eng),str(exception)),"SEVERE","check_status")
                                 exception.print_tracebacks()
@@ -1373,7 +1373,7 @@ class simple_cluster:
 
                         if x==None:
                             cmd=self._jobs[job]['command']
-                            if curr.has_key(eng):
+                            if eng in curr:
                                 wk=eval(curr[eng].lstrip('execute(').rstrip(')'))
                                 if wk==cmd:
                                     self._jobs[job]['status']="running"
@@ -1406,14 +1406,14 @@ class simple_cluster:
             # jagonzal (CAS-4324): This method consumes lots of resources, and the user terminal
             # is not very responsive while it's running, so we execute it only when there are jobs
             # beign processed.        
-            if (len(self._jobs.keys())>0):
+            if (len(list(self._jobs.keys()))>0):
                 try:
                     self.check_resource()
                 except:
                     pass
 
             gr=set()
-            for val in self._jobs.values():
+            for val in list(self._jobs.values()):
                 gr.add(val['jobgroup'])
     	    for i in list(gr):
                 eml=''
@@ -1428,7 +1428,7 @@ class simple_cluster:
                     jobname=i.strip()
                 
                 finish=True
-                for val in self._jobs.values():
+                for val in list(self._jobs.values()):
                     if val['jobgroup']==i and not (val['status']=='done' or 
                                                 val['status']=='broken'):
                         finish=False
@@ -1439,7 +1439,7 @@ class simple_cluster:
                           '#'*(68-len(jobname)-len(tm))+' '+tm+' ####'
                     msg+='\nengine    status  time(s)  command\n'
                     rmv=[]
-                    for job in self._jobs.keys():
+                    for job in list(self._jobs.keys()):
                         if self._jobs[job]['jobgroup']==i:
                             msg+="%6d%10s%9d%2s%s\n" % (self._jobs[job]['engine'], 
                                   self._jobs[job]['status'],
@@ -1494,7 +1494,7 @@ class simple_cluster:
         if not self._configdone:
             return
         self._monitor_on=True 
-        return thread.start_new_thread(self.check_status, (True,))
+        return _thread.start_new_thread(self.check_status, (True,))
     
     def stop_monitor(self): 
         """Stop monitoring execution status of submitted no-block jobs
@@ -1548,15 +1548,15 @@ class simple_cluster:
 
         if not self._configdone:
             return
-        if long:
+        if int:
             return self._jobs
         else:
-            if len(self._jobs.keys())==0:
+            if len(list(self._jobs.keys()))==0:
                 return self._jobs
             else:
-                print 'engine    status  time(s)     start  command   title'
-                for job in self._jobs.keys():
-                    print "%6d%10s%9d%10s%9s%8d" % (self._jobs[job]['engine'], 
+                print('engine    status  time(s)     start  command   title')
+                for job in list(self._jobs.keys()):
+                    print("%6d%10s%9d%10s%9s%8d" % (self._jobs[job]['engine'], 
                            self._jobs[job]['status'],
                            int(self._jobs[job]['time']), 
                            '' if type(self._jobs[job]['start'])==str 
@@ -1564,7 +1564,7 @@ class simple_cluster:
                                  time.strftime("%H:%M:%S", 
                                         time.localtime(self._jobs[job]['start'])),
                            self._jobs[job]['short'].strip()[:9],
-                           self._jobs[job]['jobname'])
+                           self._jobs[job]['jobname']))
 
     def get_jobId(self, status):
         """Get a list of jobs of the given status
@@ -1584,11 +1584,11 @@ class simple_cluster:
 
         if not self._configdone:
             return []
-        if len(self._jobs.keys())==0:
+        if len(list(self._jobs.keys()))==0:
             return [] 
         else:
             jobId=[] 
-            for job in self._jobs.keys():
+            for job in list(self._jobs.keys()):
                 if self._jobs[job]['status']==status:
                     jobId.append(self._jobs[job]['jobname'])
             return jobId
@@ -1605,7 +1605,7 @@ class simple_cluster:
         if not self._configdone:
             return
         
-        for job in self._jobs.keys():
+        for job in list(self._jobs.keys()):
             if jobname is None:
                 del self._jobs[job]
             elif type(jobname)==int and self._jobs[job]['jobname']==jobname:
@@ -1638,7 +1638,7 @@ class simple_cluster:
             casalog.post("Func must be a str and param must be a dictionary","WARN","make_call")
             return None 
         cmd=func+'('
-        for (k, v) in param.iteritems():
+        for (k, v) in param.items():
             cmd+=k+'='
             if type(v)==str:
                 cmd+='"'+v+'"'
@@ -1676,7 +1676,7 @@ class simple_cluster:
         self._jobs[job]={}
         self._jobs[job]['start']=''
         self._jobs[job]['time']=0
-        if self._enginesRWoffsets.has_key(id):
+        if id in self._enginesRWoffsets:
             self._jobs[job]['read_offset']=self._enginesRWoffsets[id]['read_offset']
             self._jobs[job]['write_offset']=self._enginesRWoffsets[id]['write_offset']
         else:
@@ -1785,7 +1785,7 @@ class simple_cluster:
         f.close()
         a=-1
         b=-1
-        for line in xrange(len(s)):
+        for line in range(len(s)):
             sLine=s[line].strip()
             if str.find(sLine, '#### ')==0:
                 if str.count(sLine, ' '+tm+' ')>0 and a==-1:
@@ -1939,22 +1939,22 @@ class simple_cluster:
                 return []
         
         e=dict()
-        for k in xrange(len(hst)):
+        for k in range(len(hst)):
             h=hst[k][0]
             e[h]=[]
             for i in self._cluster.get_engines():
                 if i[1]==h: 
                     e[h].append(i[0])
-        val=e.values()
-        key=e.keys()
+        val=list(e.values())
+        key=list(e.keys())
         lenth=[]
         pos=[]
-        for i in xrange(len(val)):
+        for i in range(len(val)):
             lenth.append(len(val[i]))
             pos.append(0)
         vec=[]
         for k in a:
-            for s in xrange(len(e)):
+            for s in range(len(e)):
                 if k==key[s]:
                     if pos[s]==lenth[s]:
                        pos[s]=0
@@ -2021,11 +2021,11 @@ class simple_cluster:
             for i in self._cluster.get_engines():
                 if i[1]==k: 
                     e[k].append(i[0])
-        val=e.values()
+        val=list(e.values())
         vec=[]
         if engines_each==0:
             engines_each=100
-        for i in xrange(len(val)):
+        for i in range(len(val)):
             j=0
             while j<min(engines_each, len(val[i])):
                 vec.append(val[i][j])
@@ -2072,15 +2072,15 @@ class simple_cluster:
                 e[hst[i][0]]=[]
             for i in self._cluster.get_engines():
                 e[i[1]].append(i[0])
-            val=e.values()
+            val=list(e.values())
             lenth=[]
             pos=[]
-            for i in xrange(len(val)):
+            for i in range(len(val)):
                 lenth.append(len(val[i]))
                 pos.append(0)
             vec=[]
             while len(vec)<len(self._cluster.get_ids()):
-                for i in xrange(len(val)):
+                for i in range(len(val)):
                    if pos[i]<lenth[i]:
                        vec.append(val[i][pos[i]])
                        pos[i]+=1
@@ -2385,13 +2385,13 @@ class simple_cluster:
            k+=1
         b={}
         tb.open(vis)
-        for i in xrange(k):
+        for i in range(k):
             field=tb.getcol('FIELD_ID', i*1000, 1000)
             desc=tb.getcol('DATA_DESC_ID', i*1000, 1000)
-            fd=zip(field, desc)
+            fd=list(zip(field, desc))
             newset=set(fd)
             for j in newset:
-                if b.has_key(j):
+                if j in b:
                    b[j]['nrows']=b[j]['nrows']+fd.count(j)
                 else:
                    a={}
@@ -2401,16 +2401,16 @@ class simple_cluster:
                    b[j]=a
         tb.done()
         d=0
-        for i in b.keys():
+        for i in list(b.keys()):
             b[i]['pol']=self.get_pol_id(vis, b[i]['desc'])
             b[i]['spw']=self.get_spw_id(vis, b[i]['desc'])
             b[i]['ncorr']=self.get_pol_corr(vis, b[i]['pol'])
             b[i]['nchan']=self.get_spw_chan(vis, b[i]['spw'])
             b[i]['cost']=b[i]['nchan']*b[i]['ncorr']*b[i]['nrows']
             d+=b[i]['cost']
-        d/=len(b.keys()) 
-        for i in b.keys():
-            b[i]['cost']=[b[i]['cost']/d, len(b.keys())]
+        d/=len(list(b.keys())) 
+        for i in list(b.keys()):
+            b[i]['cost']=[b[i]['cost']/d, len(list(b.keys()))]
         return b
     
     
@@ -2589,7 +2589,7 @@ class simple_cluster:
         if len(fdspw)>len(ids):
             # More job chunks than engines, simply distribute by field and spw
             i=0
-            for k in fdspw.values():
+            for k in list(fdspw.values()):
                 id_i=ids[i]
                 s={}
                 s['vis']=vis
@@ -2614,7 +2614,7 @@ class simple_cluster:
         else:
             # Less job chanks than engines, need further devide by channel
             i=0
-            for k in fdspw.values():
+            for k in list(fdspw.values()):
                 spwchan=self.get_spw_chan(vis, k['spw'])
         
                 nengs=len(ids)
@@ -2626,7 +2626,7 @@ class simple_cluster:
                     # traceback.print_tb(sys.exc_info()[2])
                     pass
         
-                for j in xrange(len(ids)):
+                for j in range(len(ids)):
                     id_i=ids[i]
                     start=j*nchan
                     s={}
@@ -2679,7 +2679,7 @@ class simple_cluster:
         msname=self.get_msname(vis)
     
         i=0
-        for k in fdspw.values():
+        for k in list(fdspw.values()):
             id_i=ids[i]
             s={}
             s['vis']=vis
@@ -2760,16 +2760,16 @@ class JobQueueManager:
         the entire list of output jobs is returned.
         """
         if status is None:
-            return self.__outputQueue.values()
+            return list(self.__outputQueue.values())
 
         returnList = []
-        for job in self.__outputQueue.values():
+        for job in list(self.__outputQueue.values()):
             if job.status == status:
                 returnList.append(job)
         return returnList
         
     def getAllJobs(self):
-        return self.__outputQueue.values()
+        return list(self.__outputQueue.values())
 
     def executeQueue(self):
         """
@@ -2819,13 +2819,13 @@ class JobQueueManager:
            * add the engine back to the engine list
            * remove the report from the status
         """
-        statusReport = self.__cluster.get_status(True).values()
+        statusReport = list(self.__cluster.get_status(True).values())
         if len(statusReport) == 0:
             # Nothing running
             return False
 
         # jagonzal: This seems to be a hook between the cluster queue ang the JobManager queue
-        for job in self.__cluster.get_status(True).values():
+        for job in list(self.__cluster.get_status(True).values()):
             # Update the status of the Job
             self.__outputQueue[job['jobname']].status = job['status']
             

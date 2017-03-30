@@ -183,9 +183,9 @@ def immath(
     tmpFilePrefix='_immath_tmp'
     try:
         _immath_cleanup( tmpFilePrefix )
-    except Exception, e:
+    except Exception as e:
         casalog.post( 'Unable to cleanup working directory '+os.getcwd()+'\n'+str(e), 'SEVERE' )
-        raise Exception, str(e)
+        raise Exception(str(e))
 
 
     # Keep track of which LEL functions are upper-case and
@@ -260,7 +260,7 @@ def immath(
             # check if it is one of varnames, if not check the files in expr exist 
             if(not varnamesSet.issuperset(imname)):
                if( not os.path.exists(imname)):
-                   raise Exception, 'Image data set not found - please verify '+imname
+                   raise Exception('Image data set not found - please verify '+imname)
                else:
                    count=count+1            
         if len(tmpfilenames)==count:
@@ -270,7 +270,7 @@ def immath(
         for i in range( len(filenames) ):
             if ( not os.path.exists(filenames[i]) ):
                 casalog.post("Image data set not found - please verify " +filenames[i], "SEVERE")
-                raise Exception, 'Image data set not found - please verify '+filenames[i]
+                raise Exception('Image data set not found - please verify '+filenames[i])
 
        
     # Remove spaces from the expression.
@@ -283,7 +283,7 @@ def immath(
     if mode=='spix':
         # calculate a spectral index distribution image
         if len(filenames) != 2:
-            raise Exception, 'Requires two images at different frequencies'
+            raise Exception('Requires two images at different frequencies')
 
         expr = 'spectralindex('+varnames[0]+', '+varnames[1]+')'
     elif mode=='pola':
@@ -299,9 +299,9 @@ def immath(
                 polithresh = qa.convert(polithresh, bunit)
                 _myia.done()
                 if (qa.getunit(polithresh) != bunit):
-                    raise Exception, "Units of polithresh " + initUnit \
+                    raise Exception("Units of polithresh " + initUnit \
                     + " do not conform to input image units of " + bunit \
-                    + " so cannot perform thresholding. Please correct units and try again."
+                    + " so cannot perform thresholding. Please correct units and try again.")
                 polithresh = qa.getvalue(polithresh)[0]
             doPolThresh = True
             [lpolexpr, isLPol, isTPol] = _doPolI(filenames, varnames, tmpFilePrefix, False, False)
@@ -322,7 +322,7 @@ def immath(
                     iunit = _myia.brightnessunit()
                     _myia.done()
                 except:
-                    raise Exception, 'Unable to get brightness unit from image file '+filenames[0]
+                    raise Exception('Unable to get brightness unit from image file '+filenames[0])
                 if sigmaunit!=iunit:
                     newsigma=qa.convert(qsigma,iunit)
                 else:
@@ -357,7 +357,7 @@ def immath(
             if (doPolThresh):
                 _immath_createPolMask(polithresh, lpol, outfile)
             return True
-        except Exception, error:
+        except Exception as error:
             try:
                 _myia.done()
             except:
@@ -400,7 +400,7 @@ def immath(
                           image, 'DEBUG1' )
             i = i + 1
 
-        except Exception, e:
+        except Exception as e:
             casalog.post( 'Exception caught is: '+str(e), 'DEBUG2' )
             casalog.post( 'Unable to apply region to file: '\
                   + image\
@@ -419,7 +419,7 @@ def immath(
         raise Exception
     
     # because real file names also have to be mapped to a corresponding subimage, CAS-1830
-    for k in file_map.keys():
+    for k in list(file_map.keys()):
         # we require actual image names to be in quotes when used in the expression
         varnames.extend(["'" + k + "'", '"' + k + '"'])
         subImages.extend(2 * [file_map[k]])
@@ -428,7 +428,7 @@ def immath(
     try:
         expr = _immath_expr_from_varnames(expr, varnames, subImages)
 
-    except Exception, e:
+    except Exception as e:
         casalog.post(
             "Unable to construct pixel expression aborting immath: " + str(e),
             'SEVERE'
@@ -456,7 +456,7 @@ def immath(
         _immath_cleanup( tmpFilePrefix )
                     
         return True
-    except Exception, error:
+    except Exception as error:
         try:
             _myia.done()
             _immath_cleanup( tmpFilePrefix )
@@ -531,7 +531,7 @@ def _immath_expr_from_varnames(expr, varnames, filenames):
         tmpfiles = {}
         for i in range(len(filenames)):
                 tmpfiles[varnames[i]] = filenames[i]
-        tmpvars = tmpfiles.keys()
+        tmpvars = list(tmpfiles.keys())
 
         tmpvars.sort()
         tmpvars.reverse()
@@ -547,11 +547,11 @@ def _doPolA(filenames, varnames, tmpFilePrefix):
     if len(filenames) == 1:
         # FIXME I really hate creating subimages like this, the poli and pola routines really belong in the as of now non-existant squah task
         if (type(stkslist) != list):
-            raise Exception, filenames[0] + " is the only image specified but it is not multi-stokes so cannot do pola calculation"
+            raise Exception(filenames[0] + " is the only image specified but it is not multi-stokes so cannot do pola calculation")
         _myia.open(filenames[0])
         spixels = _myia.coordsys().findcoordinate('stokes')['pixel']
         if (len(spixels) != 1):
-            raise Exception, filenames[i] + "does not have exactly one stokes axis, cannot do pola calculation"
+            raise Exception(filenames[i] + "does not have exactly one stokes axis, cannot do pola calculation")
         stokesPixel = spixels[0]
         trc = _myia.shape()
         blc = []
@@ -560,8 +560,8 @@ def _doPolA(filenames, varnames, tmpFilePrefix):
             trc[i] = trc[i] - 1
         for stokes in (['Q', 'U']):
             if (stkslist.count(stokes) == 0):
-                raise Exception, filenames[0] + " is the only image specified but it does not contain stokes " + stokes \
-                + " so pola calculation cannot be done"
+                raise Exception(filenames[0] + " is the only image specified but it does not contain stokes " + stokes \
+                + " so pola calculation cannot be done")
             pixNum = stkslist.index(stokes)
             blc[stokesPixel] = pixNum
             trc[stokesPixel] = pixNum
@@ -581,8 +581,8 @@ def _doPolA(filenames, varnames, tmpFilePrefix):
             casalog.post( "More than two images. Take first two and ignore the rest. " ,'WARN' );
         for i in range(2):
             if type(stkslist[i]) == list:
-                raise Exception, filenames[i] + " is a mult-stokes image but multiple images are given for pola calculation. " \
-                + "Only a single multi-stokes image *or* multiple single stokes images can be specified for pola calculation"
+                raise Exception(filenames[i] + " is a mult-stokes image but multiple images are given for pola calculation. " \
+                + "Only a single multi-stokes image *or* multiple single stokes images can be specified for pola calculation")
             else:
                 if stkslist[i] == 'U':
                     Uimage = varnames[i]
@@ -592,7 +592,7 @@ def _doPolA(filenames, varnames, tmpFilePrefix):
             missing = []
             if len(Qimage)<1: missing.append('Q')
             if len(Uimage)<1: missing.append('U')
-            raise Exception, 'Missing Stokes %s image(s)' % missing
+            raise Exception('Missing Stokes %s image(s)' % missing)
     expr = 'pa(%s,%s)' % (Uimage, Qimage)
     return expr
 
@@ -604,7 +604,7 @@ def _doPolI(filenames, varnames, tmpFilePrefix, createSubims, tpol):
     # if 2 files (or file file with Q, U) given linear pol intensity image
     # FIXME I really hate creating subimages like this, the poli and pola routines really belong in the as of now non-existant squah task
     if len(filenames) < 1 or len(filenames) > 3:
-        raise Exception, 'poli requires one multistokes with Q, U, and optionally V stokes or two single stokes (Q, U) images or three single Stokes (Q,U,V) images'
+        raise Exception('poli requires one multistokes with Q, U, and optionally V stokes or two single stokes (Q, U) images or three single Stokes (Q,U,V) images')
     isQim = False
     isUim = False
     isVim = False
@@ -615,13 +615,13 @@ def _doPolI(filenames, varnames, tmpFilePrefix, createSubims, tpol):
     if len(filenames) == 1:
         # do multistokes image
         if (len(stkslist) < 2):
-            raise Exception, filenames[0] + " is the only image specified but it is not multi-stokes so cannot do poli calculation"
+            raise Exception(filenames[0] + " is the only image specified but it is not multi-stokes so cannot do poli calculation")
         _myia = iatool()
         _myia.open(filenames[0])
         spixels = _myia.coordsys().findcoordinate('stokes')['pixel']
         if (len(spixels) != 1):
             _myia.close()
-            raise Exception, filenames[i] + "does not have exactly one stokes axis, cannot do pola calculation"
+            raise Exception(filenames[i] + "does not have exactly one stokes axis, cannot do pola calculation")
 
         stokesPixel = spixels[0]
         trc = _myia.shape()
@@ -637,8 +637,8 @@ def _doPolI(filenames, varnames, tmpFilePrefix, createSubims, tpol):
         for stokes in (neededStokes):
             if ((stokes == 'Q' or stokes == 'U') and stkslist.count(stokes) == 0):
                 _myia.close()
-                raise Exception, filenames[0] + " is the only image specified but it does not contain stokes " + stokes \
-                + " so poli calculation cannot be done"
+                raise Exception(filenames[0] + " is the only image specified but it does not contain stokes " + stokes \
+                + " so poli calculation cannot be done")
             myfile = tmpFilePrefix + '_' + stokes
             if (stokes == 'Q'):
                 Qimage = myfile
@@ -667,7 +667,7 @@ def _doPolI(filenames, varnames, tmpFilePrefix, createSubims, tpol):
         for i in range(len(stkslist)):
             if type(stkslist[i])==list:
                 casalog.post("stokes " + str(stkslist[i]),'SEVERE')
-                raise Exception, 'Cannot handle %s, a multi-Stokes image when more than one image supplied.' % filenames[i]
+                raise Exception('Cannot handle %s, a multi-Stokes image when more than one image supplied.' % filenames[i])
             else:
                 if stkslist[i]=='Q':isQim=True
                 if stkslist[i]=='U':isUim=True
@@ -677,7 +677,7 @@ def _doPolI(filenames, varnames, tmpFilePrefix, createSubims, tpol):
             if not isQim: missing.append('Q')
             if not isUim: missing.append('U')
             if not isVim: missing.append('V')
-            raise Exception, 'Missing Stokes %s image(s)' % missing
+            raise Exception('Missing Stokes %s image(s)' % missing)
         expr='sqrt('+varnames[0]+'*'+varnames[0]\
                 +'+'+varnames[1]+'*'+varnames[1]\
                 +'+'+varnames[2]+'*'+varnames[2]
@@ -685,7 +685,7 @@ def _doPolI(filenames, varnames, tmpFilePrefix, createSubims, tpol):
     elif len(filenames) == 2:
         for i in range(len(stkslist)):
             if type(stkslist[i])==list:
-                raise Exception, 'Cannot handle %s, a multi-Stokes image when multiple images supplied.' % filenames[i]
+                raise Exception('Cannot handle %s, a multi-Stokes image when multiple images supplied.' % filenames[i])
             else:
                 if stkslist[i]=='Q':isQim=True
                 if stkslist[i]=='U':isUim=True
@@ -693,7 +693,7 @@ def _doPolI(filenames, varnames, tmpFilePrefix, createSubims, tpol):
             missing = []
             if not isQim: missing.append('Q')
             if not isUim: missing.append('U')
-            raise Exception, 'Missing Stokes %s image(s)' % missing
+            raise Exception('Missing Stokes %s image(s)' % missing)
         expr='sqrt('+varnames[0]+'*'+varnames[0]\
                 +'+'+varnames[1]+'*'+varnames[1]
         isLPol = True

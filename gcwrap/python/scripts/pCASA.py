@@ -93,17 +93,17 @@ class pCASA:
         for host in self.hosts:
 
             if debug:
-                print "new host: ", host, _ip(host)
-                print "existing hosts:", already_running_nodes_ip
+                print("new host: ", host, _ip(host))
+                print("existing hosts:", already_running_nodes_ip)
             if not _ip(host) in already_running_nodes_ip:
                 if debug:
-                    print "Start engines on host", host
+                    print("Start engines on host", host)
                 self.cluster.start_engine(host,
                                           self.engines_per_host,
                                           os.getcwd())
 
                 if debug:
-                    print "ipengines started on host", host
+                    print("ipengines started on host", host)
 
 def _load(mms_name):
     """Returns the multiMS object, or throws
@@ -145,12 +145,12 @@ def list(mms_name):
     """
     mms = _load(mms_name)
 
-    print mms_name, "(multiMS v" + str(mms.version) + "):"
+    print(mms_name, "(multiMS v" + str(mms.version) + "):")
     
     for s in mms.sub_mss:
-        print "  %s %s" % (s.host, s.ms)
+        print("  %s %s" % (s.host, s.ms))
     if len(mms.sub_mss) == 0:
-        print "  <empty>"
+        print("  <empty>")
 
 def create(mms_name):
     """Create an empty multiMS"""
@@ -189,14 +189,14 @@ def remove(mms_name, subms_name, hostname = ""):
         hoststr = ""
         if hostname != "":
             hoststr = " on host " + str(hostname)
-        print ("%s does not contain a subMS with name %s" % (mms_name, subms_name)) + hoststr
+        print(("%s does not contain a subMS with name %s" % (mms_name, subms_name)) + hoststr)
     else:
         f = open(mms_name, "w")
         pickle.dump(mms, f)
         f.close()
         
         if debug:
-            print "Removed %s from %s" %(subms_name, mms_name)
+            print("Removed %s from %s" %(subms_name, mms_name))
        
 def _ip(host):
     """Returns a unique IP address of the given hostname,
@@ -210,8 +210,8 @@ def _ip(host):
             ip = socket.gethostbyname(socket.gethostname())
 
         return ip
-    except Exception, e:
-        print "Could not get IP address of host '%s': %s" %  (host, str(e))
+    except Exception as e:
+        print("Could not get IP address of host '%s': %s" %  (host, str(e)))
         raise
                         
 
@@ -219,11 +219,11 @@ def _ip(host):
 def _launch(engine, taskname, ms, parameters):
     """Launches a job"""
 
-    print "%s engine %s: %s(\"%s\", ...)" % \
-          (engine['host'], engine['id'], taskname, ms)
+    print("%s engine %s: %s(\"%s\", ...)" % \
+          (engine['host'], engine['id'], taskname, ms))
 
     args = []
-    for (p, val) in parameters.items():
+    for (p, val) in list(parameters.items()):
         if p == "vis":
             args.append(p + " = '" + ms + "'")
         else:
@@ -234,7 +234,7 @@ def _launch(engine, taskname, ms, parameters):
                 
     cmd = taskname + "(" + ", ".join(args) + ")"
     if debug:
-        print cmd
+        print(cmd)
     engine['job'] = pc.cluster.odo(cmd, engine['id'])
     engine['ms'] = ms
     engine['idle'] = False
@@ -249,7 +249,7 @@ def _poor_mans_wait(engines, taskname):
     terminated. But that 'wait' function does not seem to exist."""
 
     while True:
-        for engine in engines.values():
+        for engine in list(engines.values()):
             if not engine['idle']:
                 ex = None
                 try:
@@ -258,7 +258,7 @@ def _poor_mans_wait(engines, taskname):
                     #   return ResultList: if the job is done
                     #   rethrow the job's exception if the job threw
                     r = engine['job'].get_result(block = False)
-                except Exception, e:
+                except Exception as e:
                     ex = e
 
                 if ex != None or r != None:
@@ -266,9 +266,9 @@ def _poor_mans_wait(engines, taskname):
                         state = "success"
                     else:
                         state = "fail"
-                    print "%s engine %s: %s(\"%s\", ...) %s" % \
+                    print("%s engine %s: %s(\"%s\", ...) %s" % \
                       (engine['host'], engine['id'], taskname, engine['ms'],
-                       state)
+                       state))
                     engine['idle'] = True
                     return (engine['id'], ex)
 
@@ -304,7 +304,7 @@ def execute(taskname, parameters):
 
     n = len(engines)
 
-    print "Process %s using %s engines" % (mms_name, n)
+    print("Process %s using %s engines" % (mms_name, n))
 
     non_processed_submss = mms.sub_mss[:]
 
@@ -329,19 +329,19 @@ def execute(taskname, parameters):
     #
     while len(non_processed_submss) > 0 and status == None:
         if debug:
-            print "Still to process =", non_processed_submss
-            print "Engines =", engines
+            print("Still to process =", non_processed_submss)
+            print("Engines =", engines)
 
         found = False
         
-        for engine in engines.values():
+        for engine in list(engines.values()):
             if engine['idle']:
                 if debug:
-                    print "idle engine", engine['id'], "is", engine['host'], _ip(engine['host'])
+                    print("idle engine", engine['id'], "is", engine['host'], _ip(engine['host']))
             
                 for subms in non_processed_submss:
                     if debug:
-                        print "subMS", subms.ms, "is", subms.host, _ip(subms.host)
+                        print("subMS", subms.ms, "is", subms.host, _ip(subms.host))
 
                     if _ip(engine['host']) == _ip(subms.host):
                     
@@ -357,7 +357,7 @@ def execute(taskname, parameters):
 
         if not found:
             pending_job = False
-            for engine in engines.values():
+            for engine in list(engines.values()):
                 if not engine['idle']:
                     pending_job = True
                     break
@@ -374,18 +374,18 @@ def execute(taskname, parameters):
 
 
         if debug:
-            print "Still to process =", non_processed_submss
-            print "casalogs =", pc.cluster.get_casalogs()
-            print "ids =", pc.cluster.get_ids()
-            print "properties =", pc.cluster.get_properties()
-            print "engines =", pc.cluster.get_engines()
-            print "nodes = ", pc.cluster.get_nodes()
+            print("Still to process =", non_processed_submss)
+            print("casalogs =", pc.cluster.get_casalogs())
+            print("ids =", pc.cluster.get_ids())
+            print("properties =", pc.cluster.get_properties())
+            print("engines =", pc.cluster.get_engines())
+            print("nodes = ", pc.cluster.get_nodes())
 
     pending_job = True
     while pending_job:
         pending_job = False
         
-        for engine in engines.values():
+        for engine in list(engines.values()):
             if not engine['idle']:
                 pending_job = True
                 break
@@ -397,8 +397,8 @@ def execute(taskname, parameters):
                 status = (engine_id, s)
 
     if status != None:
-        print >> sys.stderr, "Engine %s error while processing %s" % \
-              (status[0], engines[status[0]]['ms'])
+        print("Engine %s error while processing %s" % \
+              (status[0], engines[status[0]]['ms']), file=sys.stderr)
         
         raise status[1]
 

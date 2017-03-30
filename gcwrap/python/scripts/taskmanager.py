@@ -19,7 +19,7 @@ from IPython.Release import version
 casalog = casac.logsink()
 
 def log_message( state, file, lines ) :
-    if not (state['engine'].has_key('current task')) :
+    if not ('current task' in state['engine']) :
 	    state['engine']['current task'] = 'taskmanager'
     casalog.origin(str(state['engine']['current task']))
     if state['out'] == "stderr" :
@@ -52,32 +52,32 @@ class taskmanager(object):
                     result_name = "result_%04d" % receipt
                     self.__hub['result map'][receipt]['result'] = { 'result': self.__hub['mec'].pull( result_name, targets=[target] )[0], 'status': 'done' }
                     self.__hub['result map'][receipt]['result output'] = result[0]
-                    if self.__hub['result map'][receipt]['result output'].has_key('stdout') :
+                    if 'stdout' in self.__hub['result map'][receipt]['result output'] :
                         engine = self.__hub['result map'][receipt]['engine']
                         log_message({'out': 'stdout', 'engine': engine}, 1, self.__hub['result map'][receipt]['result output']['stdout'].splitlines() )
-                    if self.__hub['result map'][receipt]['result output'].has_key('stderr') :
+                    if 'stderr' in self.__hub['result map'][receipt]['result output'] :
                         log_message({'out': 'stderr', 'engine': engine}, 2, self.__hub['result map'][receipt]['result output']['stderr'].splitlines() )
                     return self.__hub['result map'][receipt]['result']
                 else:
                     return { 'result': None, 'status': 'pending' }
 
         except iperror.InvalidEngineID:
-            if self.__hub['result map'].has_key(receipt):
+            if receipt in self.__hub['result map']:
                 self.__hub['result map'][receipt]['result'] = { 'result': None,
                                                                 'status': 'died' }
             pass
 
         except:
             #print ">>>>>>>>>>>>", sys.exc_info()[0]
-            if self.__hub['result map'].has_key(receipt):
+            if receipt in self.__hub['result map']:
                 self.__hub['result map'][receipt]['result'] = { 'result': None,
                                                                 'status': 'failed' }
             pass
 
-        if self.__hub['result map'].has_key(receipt):
+        if receipt in self.__hub['result map']:
             return self.__hub['result map'][receipt]['result']
         else:
-            raise Exception, "invalid receipt: " + str(receipt)
+            raise Exception("invalid receipt: " + str(receipt))
 
     def execute(self, taskname, *args, **kwargs):
 
@@ -99,7 +99,7 @@ class taskmanager(object):
         except:
             already_initialized = False
 
-        if not engine['loaded tasks'].has_key(taskname) :
+        if taskname not in engine['loaded tasks'] :
             self.__hub['mec'].execute( "from task_" + taskname + " import " + taskname, block=False, targets=targets )
             engine['loaded tasks'][taskname] = True
 
@@ -157,7 +157,7 @@ class taskmanager(object):
         try:
             os.rename(self.__dir['session log root'], self.__dir['log root'] + '/last')
         except:
-            print "could not rename " + self.__dir['session log root'] + " to " + self.__dir['log root'] + '/last' + " ..."
+            print("could not rename " + self.__dir['session log root'] + " to " + self.__dir['log root'] + '/last' + " ...")
 
 
     def __find_engine( self ) :
@@ -175,14 +175,14 @@ class taskmanager(object):
                     if engine['active'] and ( status == 'None' or re.match('^get_properties',status) is not None ):
                         return engine
                 time.sleep(0.25)
-        raise Exception, "no engines available"
+        raise Exception("no engines available")
 
     def __start_engine(self,host='localhost',num=1):
 
         if host != 'localhost':
-            raise Exception, "remote hosts not currently supported...\nplease report as JIRA ticket so that we know someone is interested in remote tasks"
+            raise Exception("remote hosts not currently supported...\nplease report as JIRA ticket so that we know someone is interested in remote tasks")
         if num <= 0 :
-            raise Exception, "__start_engine called with num == 0"
+            raise Exception("__start_engine called with num == 0")
 
         if not os.path.exists(self.__dir['session log root']):
             self.__mkdir(self.__dir['session log root'])
@@ -233,7 +233,7 @@ class taskmanager(object):
                     ids = [ ]
                 postset = sets.Set( ids )
                 if try_count > 20 :
-                    raise Exception, "could not start ipengine"
+                    raise Exception("could not start ipengine")
                 time.sleep(0.5)
                 try_count += 1
 
@@ -261,17 +261,17 @@ class taskmanager(object):
 
         ipcontroller_path = None
         ipengine_path = None
-        if type(myf) == dict and myf.has_key('casa') and type(myf['casa']) == dict and \
-                myf['casa'].has_key('helpers') and type(myf['casa']['helpers']) == dict:
+        if type(myf) == dict and 'casa' in myf and type(myf['casa']) == dict and \
+                'helpers' in myf['casa'] and type(myf['casa']['helpers']) == dict:
 
-            if myf['casa']['helpers'].has_key('ipcontroller'):
+            if 'ipcontroller' in myf['casa']['helpers']:
                 self.__helpers['ipcontroller'] = myf['casa']['helpers']['ipcontroller']   #### set in casapy.py
-            if myf['casa']['helpers'].has_key('ipengine'):
+            if 'ipengine' in myf['casa']['helpers']:
                 self.__helpers['ipengine'] = myf['casa']['helpers']['ipengine']           #### set in casapy.py
 
 
     def __initialize(self):
-        for host in self.__hub['engine hosts'].keys( ):
+        for host in list(self.__hub['engine hosts'].keys( )):
             if self.__hub['engine hosts'][host] > 0 :
                 self.__start_engine(host,self.__hub['engine hosts'][host])
         self.__hub['initialized'] = True
@@ -346,7 +346,7 @@ class taskmanager(object):
 
         self.__initialize_helpers( )
 
-        if os.environ.has_key('__CASARCDIR__'):
+        if '__CASARCDIR__' in os.environ:
             self.__dir['home'] = os.environ['__CASARCDIR__'] + "/tm"
 
         self.__dir['rc'] = self.__dir['home'] + '/rc'
@@ -423,22 +423,22 @@ class taskmanager(object):
                     try:
                         os.remove( p + dirsep + f )
                     except:
-                        print "could not remove:", p + dirsep + f
+                        print("could not remove:", p + dirsep + f)
                 elif os.path.isdir( p + dirsep + f ):
                     self.__rmdir( p + dirsep + f )
             try:
                 os.rmdir(p)
             except:
-                print "could not remove:", p
-                print "renaming to:     ", p + ".nfs-" + str(os.getpid())
+                print("could not remove:", p)
+                print("renaming to:     ", p + ".nfs-" + str(os.getpid()))
                 try:
                     os.rename( p, p + ".nfs-" + str(os.getpid()) )
                 except:
-                    print "               ...renaming failed!!!"
+                    print("               ...renaming failed!!!")
 
 # jagonzal (CAS-4322): Don't load task manager at the engine level
-if not os.environ.has_key('CASA_ENGINE'):
-    if os.environ.has_key('__CASAPY_PYTHONDIR'):
+if 'CASA_ENGINE' not in os.environ:
+    if '__CASAPY_PYTHONDIR' in os.environ:
         tm = taskmanager( task_path=[ '', os.environ['__CASAPY_PYTHONDIR'] ] )
     else:
         tm = taskmanager( task_path=[ '', casadef.python_library_directory ] )

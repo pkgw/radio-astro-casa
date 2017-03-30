@@ -72,7 +72,7 @@ class csvclean_test1(unittest.TestCase):
                 results['error_msgs']=results['error_msgs']\
                      +"\nError: Statistics failed for %s. "%r
                 
-                print 'expected %s=%s, got %s=%s'%(r,stats[r], r,ref[r])
+                print('expected %s=%s, got %s=%s'%(r,stats[r], r,ref[r]))
                 
         return results
 
@@ -112,7 +112,7 @@ class csvclean_test1(unittest.TestCase):
                     break
 
         if ((RA != mRA) or (DEC != mDEC)):
-            print 'ERROR: MS: RA=%s, DEC=%s and IMG: RA=%s, DEC=%s'%(mRA,mDEC,RA,DEC)
+            print('ERROR: MS: RA=%s, DEC=%s and IMG: RA=%s, DEC=%s'%(mRA,mDEC,RA,DEC))
             return False
         
         return True
@@ -243,7 +243,7 @@ class csvclean_test1(unittest.TestCase):
         ia.open(self.img+'.image')
         stats = ia.statistics(list=True, verbose=True)
         ia.close()
-        print stats
+        print(stats)
         retValue = self.verify_stats(stats)
         
         ####Forcing True 

@@ -1,7 +1,7 @@
 import os
 import sys
 import shutil
-import commands
+import subprocess
 import numpy
 from __main__ import default
 from tasks import *
@@ -334,7 +334,7 @@ class clean_test1(unittest.TestCase):
         '''Clean 38: Test freeing of resource for mask (checks CAS-954)'''
         self.res=clean(vis=self.msfile,imagename=self.img,mask=[115,115,145,145],imagermode='')
         cmd='/usr/sbin/lsof|grep %s' % self.img+'.mask'
-        output=commands.getoutput(cmd)
+        output=subprocess.getoutput(cmd)
         ret=output.find(self.img+'.mask')
         self.assertTrue(ret==-1)
 
@@ -629,7 +629,7 @@ class clean_multiterm_multifield_test(unittest.TestCase):
     def checkdatacols(self,vis=''):
         tb.open(vis)
         colnames = tb.colnames()
-        print 'data : ', colnames.count('DATA'), '  model : ', colnames.count('MODEL_DATA'),  ' corrected : ', colnames.count('CORRECTED_DATA')
+        print('data : ', colnames.count('DATA'), '  model : ', colnames.count('MODEL_DATA'),  ' corrected : ', colnames.count('CORRECTED_DATA'))
         #os.system('du -khs '+vis)
         return [ colnames.count('DATA') , colnames.count('MODEL_DATA') , colnames.count('CORRECTED_DATA') ]
 
@@ -760,7 +760,7 @@ class clean_multiterm_multifield_test(unittest.TestCase):
         # State-checker...
         rstate = True
         
-        print '(0) Start with only data column'
+        print('(0) Start with only data column')
         self.delmodelcorrcols(msname);
         rstate = rstate &  ( self.checkdatacols(msname) == [1,0,0] )
 
@@ -780,10 +780,10 @@ class clean_multiterm_multifield_test(unittest.TestCase):
                   nterms=2,\
                   usescratch=usescratch);
 
-        print '(1) After first run'
+        print('(1) After first run')
         rstate = rstate &  ( self.checkdatacols(msname) == [1,int(usescratch),0] )
         if rstate==False:
-            print 'FAIL : usescratch=', usescratch, '  in clean'
+            print('FAIL : usescratch=', usescratch, '  in clean')
         self.assertTrue( rstate )
 
         ## (2) Run clean with two fields, 100, 50, both with 2 terms
@@ -803,18 +803,18 @@ class clean_multiterm_multifield_test(unittest.TestCase):
                   nterms=2,\
                   usescratch=usescratch);
         
-        print '(2) After the multi-field run'
+        print('(2) After the multi-field run')
         rstate = rstate &  ( self.checkdatacols(msname) == [1,int(usescratch),0] )
         if rstate==False:
-            print 'FAIL : usescratch=', usescratch, '  in clean'
+            print('FAIL : usescratch=', usescratch, '  in clean')
         self.assertTrue( rstate )
             
         if testmschange == True:
             self.delmodelcorrcols(msname);
-            print '(2.5) Deleting model col again'
+            print('(2.5) Deleting model col again')
             rstate = rstate &  ( self.checkdatacols(msname) == [1,0,0] )
             if rstate==False:
-                print 'FAIL : Error in deleting columns'
+                print('FAIL : Error in deleting columns')
                 
         ## (3) Run clean with niter=0 and only the second field model (2 terms)
         clean(vis = msname, \
@@ -828,19 +828,19 @@ class clean_multiterm_multifield_test(unittest.TestCase):
                   nterms=2,\
                   usescratch=usescratch);
         
-        print '(3) After the niter=0 prediction run with usescratch=', usescratch
+        print('(3) After the niter=0 prediction run with usescratch=', usescratch)
         rstate = rstate &  ( self.checkdatacols(msname) == [1,int(usescratch),0] )
         if rstate==False:
-            print 'FAIL : usescratch=', usescratch, '  in clean'
+            print('FAIL : usescratch=', usescratch, '  in clean')
         self.assertTrue( rstate )
             
         ## (4) uvsub
         uvsub(vis = msname)   
 
-        print '(4) After uvsub'
+        print('(4) After uvsub')
         rstate = rstate &  ( self.checkdatacols(msname) == [1,int(usescratch),1] )
         if rstate==False:
-            print 'FAIL : uvsub scratch-column construction. Should be ', [1,int(usescratch),1]
+            print('FAIL : uvsub scratch-column construction. Should be ', [1,int(usescratch),1])
         self.assertTrue( rstate )
             
         ## (5) Repeat (1) and sidelobes from the faraway source should have gone.
@@ -859,19 +859,19 @@ class clean_multiterm_multifield_test(unittest.TestCase):
                   nterms=2,\
                   usescratch=usescratch);
         
-        print '(5) Finished second clean run'
+        print('(5) Finished second clean run')
         rstate = rstate &  ( self.checkdatacols(msname) == [1,int(usescratch),1] )
         if rstate==False:
-            print 'FAIL : usescratch in clean'
+            print('FAIL : usescratch in clean')
         self.assertTrue( rstate )
             
-        print '(6) Check that try_uvsub_3.image.tt0  looks like try_uvsub_2_main.image.tt0  and not have huge circles of try_uvsub_1.image.tt0 in the top right corner'
+        print('(6) Check that try_uvsub_3.image.tt0  looks like try_uvsub_2_main.image.tt0  and not have huge circles of try_uvsub_1.image.tt0 in the top right corner')
 
         stat1 = imstat('try_uvsub_1.image.tt0')
         stat2 = imstat('try_uvsub_2_main.image.tt0')
         stat3 = imstat('try_uvsub_3.image.tt0')
         
-        print "Peak positions : ", stat1['maxpos'] , stat2['maxpos'] , stat3 ['maxpos']
+        print("Peak positions : ", stat1['maxpos'] , stat2['maxpos'] , stat3 ['maxpos'])
 
         rstate = rstate & all(stat1['maxpos']==numpy.array([50,50,0,0]))
         rstate = rstate & all(stat1['maxpos']==numpy.array([50,50,0,0]))
@@ -881,7 +881,7 @@ class clean_multiterm_multifield_test(unittest.TestCase):
         statcorner2 = imstat('try_uvsub_2_main.image.tt0', box='70,70,99,99')
         statcorner3 = imstat('try_uvsub_3.image.tt0', box='70,70,99,99')
         
-        print "Corner RMS : ", statcorner1['rms'] , statcorner2['rms'] , statcorner3 ['rms']
+        print("Corner RMS : ", statcorner1['rms'] , statcorner2['rms'] , statcorner3 ['rms'])
         
         rstate = rstate & (float(statcorner1['rms']) > 0.049 and float(statcorner1['rms']) < 0.05)
         rstate = rstate & (float(statcorner2['rms']) > 0.0020 and float(statcorner2['rms']) < 0.0022)

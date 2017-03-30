@@ -205,7 +205,7 @@ class imsmooth_test(unittest.TestCase):
         self.assertTrue(_near(beam1["minor"], beam2["minor"], 2e-5))
         pa = []
         for b in [beam1, beam2]:
-            if (b.has_key("positionangle")):
+            if ("positionangle" in b):
                 pa.append(b["positionangle"])
             else:
                 pa.append(b["pa"])
@@ -327,7 +327,7 @@ class imsmooth_test(unittest.TestCase):
         results = None
         try:
             results=imsmooth( tiny, kernel='gauss', outfile='input_test5', beam=beam)
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Gaussian smoothing failed."
@@ -344,7 +344,7 @@ class imsmooth_test(unittest.TestCase):
         pa = "0deg"
         try:
             results=imsmooth( tiny, kernel='boxcar', outfile='input_test6', major=major, minor=minor, pa=pa )
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Boxcar smoothing failed. " \
@@ -471,11 +471,11 @@ class imsmooth_test(unittest.TestCase):
                     retValue['error_msgs']=retValue['error_msgs']\
                               + "\nError: Bad region file, 'garbage.rgn',"\
                               + " was not reported as bad."
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Unable to create bad region file.\n\t"
-            raise Exception, err
+            raise Exception(err)
     
         
         results = None
@@ -678,7 +678,7 @@ class imsmooth_test(unittest.TestCase):
             ia.fromarray( pixels=inputArray, csys=csys.torecord(), \
                           outfile='smooth.pointsrc.image' )
             ia.done()
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Unable to create point source image."\
@@ -694,7 +694,7 @@ class imsmooth_test(unittest.TestCase):
         try:
             results=imsmooth( 'smooth.pointsrc.image', kernel='gauss', \
                               major=50, minor=25, pa=0, outfile='smooth_test1' )
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: boxcar smooth failed on point source file."
@@ -737,7 +737,7 @@ class imsmooth_test(unittest.TestCase):
         try:
             results=imsmooth( 'smooth.pointsrc.image', kernel='boxcar', \
                               major=20, minor=10, pa=0, outfile='smooth_test2' )
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: boxcar smooth failed on point source file."
@@ -830,7 +830,7 @@ class imsmooth_test(unittest.TestCase):
             ia.fromarray( pixels=inputArray, csys=csys.torecord(), \
                           outfile='rgn.pointsrc.image' )
             ia.done()
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Unable to create point source image."\
@@ -849,7 +849,7 @@ class imsmooth_test(unittest.TestCase):
             results=imsmooth( 'rgn.pointsrc.image', kernel='gauss', \
                               major=50, minor=25, pa=0, outfile='rgn_test1', \
                               box='350,350,375,390')
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Smoothng failed on region 250,250,275,290." + str(err)
@@ -878,7 +878,7 @@ class imsmooth_test(unittest.TestCase):
             results=imsmooth( 'rgn.pointsrc.image', kernel='gauss', \
                               major=50, minor=25, pa=0, outfile='rgn_test2', \
                               chans='22')
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Smoothng failed on channel 22."
@@ -915,7 +915,7 @@ class imsmooth_test(unittest.TestCase):
             results=imsmooth( 'rgn.pointsrc.image', kernel='gauss', \
                               major=10, minor=5, pa=0, outfile='rgn_test3', \
                               chans='14', box='0,0,200,200')
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Smoothng failed on channel 14, box 0,0,200,200."
@@ -959,7 +959,7 @@ class imsmooth_test(unittest.TestCase):
             results=imsmooth( 'rgn.pointsrc.image', kernel='gauss', \
                               major=2, minor=1, pa=0, outfile = output, \
                               region='g192_a2.image:testregion')
-        except Exception, err:
+        except Exception as err:
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Smoothing failed with internal image region 'testregion'."
@@ -1392,7 +1392,7 @@ class imsmooth_test(unittest.TestCase):
         conv = myia.getchunk()
         myia.done()
         ratio = conv/bessel
-        print "max",abs(ratio - ratio[50,50]).max()
+        print("max",abs(ratio - ratio[50,50]).max())
         self.assertTrue((abs(ratio - ratio[50,50]) < 2e-4).all())
         self.assertTrue(
             imsmooth(

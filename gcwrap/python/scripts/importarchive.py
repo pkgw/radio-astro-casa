@@ -50,9 +50,9 @@ def importarchive(
         # ##
         # Handle globals or user over-ride of arguments
     function_signature_defaults = \
-        dict(zip(importarchive.func_code.co_varnames,
-             importarchive.func_defaults))
-    for item in function_signature_defaults.iteritems():
+        dict(list(zip(importarchive.__code__.co_varnames,
+             importarchive.__defaults__)))
+    for item in function_signature_defaults.items():
         (key, val) = item
         keyVal = eval(key)
         if keyVal == None:
@@ -88,11 +88,11 @@ def importarchive(
             'K',
             'Q',
             ])
-    except TypeError, e:
-        print 'importarchive -- TypeError: ', e
+    except TypeError as e:
+        print('importarchive -- TypeError: ', e)
         return
-    except ValueError, e:
-        print 'importarchive -- OptionError: ', e
+    except ValueError as e:
+        print('importarchive -- OptionError: ', e)
         return
     # ##
 
@@ -112,8 +112,7 @@ def importarchive(
         if (type(vis) == str) & os.path.exists(vis):
             ms.open(vis, nomodify=False)
         else:
-            raise Exception, \
-                'Visibility data set not found - please verify the name'
+            raise Exception('Visibility data set not found - please verify the name')
         ms.writehistory(message='taskname = importuvfits',
                         origin='importuvfits')
         ms.writehistory(message='fitsfile    = "' + str(fitsfile) + '"'
@@ -123,7 +122,7 @@ def importarchive(
         ms.close()
     except:
 
-        print '*** Error ***'
+        print('*** Error ***')
 
     ok = aflocal.open(vis)
     ok = aflocal.saveflagversion('Original',

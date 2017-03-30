@@ -12,7 +12,7 @@ def uvmodelfit(vis=None,
                 if ((type(vis)==str) & (os.path.exists(vis))):
                         cb.open(vis)
                 else:
-                        raise Exception, 'Visibility data set not found - please verify the name'
+                        raise Exception('Visibility data set not found - please verify the name')
 
 		# Do data selection according to selectdata
 		if (selectdata):
@@ -29,8 +29,8 @@ def uvmodelfit(vis=None,
 
 		cb.modelfit(niter=niter,compshape=comptype,par=sourcepar,vary=varypar,file=outfile)
 		cb.close()
-	except Exception, instance:
-		print '*** Error ***',instance
+	except Exception as instance:
+		print('*** Error ***',instance)
 		cb.close()
-		raise Exception, instance
+		raise Exception(instance)
 

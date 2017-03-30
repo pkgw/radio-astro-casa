@@ -18,7 +18,7 @@ def blcal(vis=None,caltable=None,
                 if ((type(vis)==str) & (os.path.exists(vis))):
                         cb.open(filename=vis,compress=False,addcorr=False,addmodel=False)
                 else:
-                        raise Exception, 'Visibility data set not found - please verify the name'
+                        raise Exception('Visibility data set not found - please verify the name')
 
 		cb.reset()
 
@@ -91,7 +91,7 @@ def blcal(vis=None,caltable=None,
 
 		cb.solve()
 		cb.close()
-	except Exception, instance:
-		print '*** Error ***',instance
+	except Exception as instance:
+		print('*** Error ***',instance)
 		cb.close()
-		raise Exception, instance
+		raise Exception(instance)

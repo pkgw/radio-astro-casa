@@ -33,13 +33,13 @@ def makePB(vis='',field='',spw='',timerange='',uvrange='',antenna='',observation
     me = casac.measures()
     qa = casac.quanta()
 
-    print 'MAKEPB : Making a PB image using the imager tool'
+    print('MAKEPB : Making a PB image using the imager tool')
 
     tb.open(vis+'/OBSERVATION')
     tel = tb.getcol('TELESCOPE_NAME')[0]
     tb.close()
 
-    print 'MAKEPB : Making PB for ', tel
+    print('MAKEPB : Making PB for ', tel)
 
     ia.open(imtemplate)
     csysa = ia.coordsys()
@@ -60,7 +60,7 @@ def makePB(vis='',field='',spw='',timerange='',uvrange='',antenna='',observation
     if nchan>1:
         smode='frequency'
 
-    print 'MAKEPB : Starting imager tool'
+    print('MAKEPB : Starting imager tool')
 
     im.open(vis)
     im.selectvis(field=field,spw=spw,time=timerange,intent=intent,scan=scan,uvrange=uvrange,baseline=antenna,observation=observation)
@@ -69,13 +69,13 @@ def makePB(vis='',field='',spw='',timerange='',uvrange='',antenna='',observation
     im.makeimage(type='pb',image=outimage+'.tmp')
     im.close()
 
-    print 'MAKEPB : Regrid to desired coordinate system'
+    print('MAKEPB : Regrid to desired coordinate system')
     
     imregrid(imagename=outimage+'.tmp', template=imtemplate,output=outimage,overwrite=True,asvelocity=False)
 
     shutil.rmtree(outimage+'.tmp')
 
-    print 'MAKEPB : Set mask to pblimit'
+    print('MAKEPB : Set mask to pblimit')
 
     ia.open(outimage)
     ia.calcmask( "'"+outimage+"'>"+str(pblimit) )

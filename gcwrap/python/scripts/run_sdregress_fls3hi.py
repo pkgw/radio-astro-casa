@@ -30,7 +30,7 @@ startProc=time.clock()
 
 importtime=time.time()
 splittime=time.time()
-print '--Import and Calibrate --'
+print('--Import and Calibrate --')
 
 storage_sav=sd.rcParams['scantable.storage']
 sd.rc('scantable',storage='disk')               # Note this enables handling of large datasets with limited memory
@@ -107,16 +107,16 @@ ia.close()
 diff_max = abs((prev_max-maxl)/prev_max)
 diff_rms = abs((prev_rms-rmsl)/prev_rms)
 
-if (diff_max < 0.05): print '* Passed image max test '
-if (diff_rms < 0.05): print '* Passed image rms test '
+if (diff_max < 0.05): print('* Passed image max test ')
+if (diff_rms < 0.05): print('* Passed image rms test ')
 if ((diff_max<0.05) & (diff_rms<0.05)):
-        print '---Passed Stat test for '+project
+        print('---Passed Stat test for '+project)
 else:
-        print '---FAILED Stat test for '+project
-print ' '
-print 'Total wall clock time was: '+str(endTime - startTime)
-print 'Total CPU        time was: '+str(endProc - startProc)
-print 'Processing rate MB/s  was: '+str(4100/(endTime - startTime))
+        print('---FAILED Stat test for '+project)
+print(' ')
+print('Total wall clock time was: '+str(endTime - startTime))
+print('Total CPU        time was: '+str(endProc - startProc))
+print('Processing rate MB/s  was: '+str(4100/(endTime - startTime)))
 
 #
 # NOW TO REGRESSION LOGFILE 
@@ -126,34 +126,34 @@ datestring=datetime.datetime.isoformat(datetime.datetime.today())
 outfile=prolog+datestring+'.log'
 logfile=open(outfile,'w')
 
-print >>logfile,''
-print >>logfile,'************ Regression ****************'
-print >>logfile,'*                                      *'
-if (diff_max < 0.05): print >>logfile,'* Passed image max test '
-print >>logfile,'*  Image max '+str(maxl)
-if (diff_rms < 0.05): print >>logfile,'* Passed image rms test '
-print >>logfile,'*  Image rms '+str(rmsl)
+print('', file=logfile)
+print('************ Regression ****************', file=logfile)
+print('*                                      *', file=logfile)
+if (diff_max < 0.05): print('* Passed image max test ', file=logfile)
+print('*  Image max '+str(maxl), file=logfile)
+if (diff_rms < 0.05): print('* Passed image rms test ', file=logfile)
+print('*  Image rms '+str(rmsl), file=logfile)
 if ((diff_max<0.05) & (diff_rms<0.05)):
-        print >>logfile,'---'
-        print >>logfile,'Passed Stat test for '+project
+        print('---', file=logfile)
+        print('Passed Stat test for '+project, file=logfile)
 else:
-        print >>logfile,'---'
-        print >>logfile,'FAILED Stat test for '+project
-print >>logfile,'****************************************'
-print >>logfile,''
-print >>logfile,''
-print >>logfile,'************ Benchmarking **************'
-print >>logfile,'*                                      *'
-print >>logfile,'Total wall clock time was: '+str(endTime - startTime)
-print >>logfile,'Total CPU        time was: '+str(endProc - startProc)
-print >>logfile,'Processing rate MB/s  was: '+str(4100/(endTime - startTime))
-print >>logfile,'* Breakdown: '
-print >>logfile,'*   import       time was: '+str(importtime-startTime)
-print >>logfile,'*   split        time was: '+str(splittime-importtime)
-print >>logfile,'*   calibration  time was: '+str(caltime-splittime)
-print >>logfile,'*   save         time was: '+str(savetime-caltime)
-print >>logfile,'*   image        time was: '+str(imagetime-savetime)
-print >>logfile,'*****************************************'
+        print('---', file=logfile)
+        print('FAILED Stat test for '+project, file=logfile)
+print('****************************************', file=logfile)
+print('', file=logfile)
+print('', file=logfile)
+print('************ Benchmarking **************', file=logfile)
+print('*                                      *', file=logfile)
+print('Total wall clock time was: '+str(endTime - startTime), file=logfile)
+print('Total CPU        time was: '+str(endProc - startProc), file=logfile)
+print('Processing rate MB/s  was: '+str(4100/(endTime - startTime)), file=logfile)
+print('* Breakdown: ', file=logfile)
+print('*   import       time was: '+str(importtime-startTime), file=logfile)
+print('*   split        time was: '+str(splittime-importtime), file=logfile)
+print('*   calibration  time was: '+str(caltime-splittime), file=logfile)
+print('*   save         time was: '+str(savetime-caltime), file=logfile)
+print('*   image        time was: '+str(imagetime-savetime), file=logfile)
+print('*****************************************', file=logfile)
 
 logfile.close()
 

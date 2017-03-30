@@ -89,13 +89,13 @@ class __msview_class(object):
 				if self.local_vi is not None:
 					vwr = self.local_vi
 				else:
-					vwr = viewertool.viewertool( True, True, (type(myf) == dict and myf.has_key('casa') and type(myf['casa']) == type(os)) )
+					vwr = viewertool.viewertool( True, True, (type(myf) == dict and 'casa' in myf and type(myf['casa']) == type(os)) )
 					self.local_vi = vwr
 			else:
 				if self.local_ving is not None:
 					vwr = self.local_ving
 				else:
-					vwr = viewertool.viewertool( False, True, (type(myf) == dict and myf.has_key('casa') and type(myf['casa']) == type(os)) )
+					vwr = viewertool.viewertool( False, True, (type(myf) == dict and 'casa' in myf and type(myf['casa']) == type(os)) )
 					self.local_ving = vwr
 
 		if type(vwr) != type(None) :
@@ -105,23 +105,23 @@ class __msview_class(object):
 			try:
 				old_path = vwr.cwd( )
 			except:
-				raise Exception, "msview() failed to get the current working directory"
+				raise Exception("msview() failed to get the current working directory")
 
 			try:
 				vwr.cwd(os.path.abspath(os.curdir))
 			except:
-				raise Exception, "msview() failed to change to the new working directory"
+				raise Exception("msview() failed to change to the new working directory")
 				
 			data = None
 			if type(infile) == str and len(infile) > 0 :
 				info = vwr.fileinfo(infile);
 				if info['type'] != 'ms' :
 					if info['type'] == 'image' :
-						raise Exception, "msview() only displays images, try 'imview()'..."
+						raise Exception("msview() only displays images, try 'imview()'...")
 					elif info['type'] == 'nonexistent' :
-						raise Exception, "ms (" + infile + ") could not be found..."
+						raise Exception("ms (" + infile + ") could not be found...")
 					else :
-						raise Exception, "unknow error..."
+						raise Exception("unknow error...")
 
 				panel = vwr.panel("viewer")
 				if type(displaytype) == str:
@@ -160,7 +160,7 @@ class __msview_class(object):
 			try:
 				vwr.cwd(old_path)
 			except:
-				raise Exception, "msview() failed to restore the old working directory"
+				raise Exception("msview() failed to restore the old working directory")
 
 		else:
 			viewer_path = myf['casa']['helpers']['viewer']   #### set in casapy.py
@@ -177,7 +177,7 @@ class __msview_class(object):
 			elif (os.uname()[0]=='Linux'):
 				vwrpid=os.spawnlp( os.P_NOWAIT, viewer_path, *args )
 			else:
-				print 'Unrecognized OS: No msview available'
+				print('Unrecognized OS: No msview available')
 
 		return None
 

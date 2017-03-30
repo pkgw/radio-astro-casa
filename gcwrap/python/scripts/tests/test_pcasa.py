@@ -8,7 +8,7 @@ class pcasa_test(unittest.TestCase):
         return "Test of pCASA parallel task wrapper"
 
     def setUp(self):
-        print "Importing data..."
+        print("Importing data...")
         self.vis = ["ngc5921-1.ms",
                     "ngc5921-2.ms",
                     "ngc5921-3.ms",
@@ -42,7 +42,7 @@ class pcasa_test(unittest.TestCase):
         
         pCASA.list(vis)
 
-        print "Remove a few subMSs"
+        print("Remove a few subMSs")
         pCASA.remove(vis, self.vis[0])
         pCASA.remove(vis, self.vis[3])
         pCASA.remove(vis, self.vis[4])
@@ -51,7 +51,7 @@ class pcasa_test(unittest.TestCase):
 
         listobs(vis)
 
-        print "Re-add what was removed, on default=localhost"
+        print("Re-add what was removed, on default=localhost")
         pCASA.add(vis, self.vis[0])
         pCASA.add(vis, self.vis[3])
         pCASA.add(vis, self.vis[4])

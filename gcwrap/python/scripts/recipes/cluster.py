@@ -36,7 +36,7 @@ def pinit(message="Hello CASA Cluster"):
     casalog.post("Setting up the connection to the remote nodes...",origin="PDeconv::pinit");
     mec = client.MultiEngineClient();
     ids=mec.get_ids();
-    print "Connected to IDs ",ids;
+    print("Connected to IDs ",ids);
 #        tt='print '+"'"+message+"'";
     mec.activate();
 #	mec.execute(tt);
@@ -128,12 +128,12 @@ def mkContResImgNotInUse(rmec,nodes,iatool,
     for i in range(n):
         imagename=mkname(nodes[i],rootdir,workdir,imagebasename,extension);
         imagenames.append(imagename);
-    print imagenames;
+    print(imagenames);
     tmpimagename=outimagename+".sum";
     iatool.imageconcat(outfile=tmpimagename,infiles=imagenames,overwrite=true,relax=true);
     iatool.open(tmpimagename);
     shp=iatool.shape();
-    print "Averaging ",shp[3]," channels of '",tmpimagename,"'";
+    print("Averaging ",shp[3]," channels of '",tmpimagename,"'");
     iatool.rebin(outfile=outimagename,bin=[1,1,1,shp[3]],overwrite=true);
     iatool.close();
 #
@@ -154,7 +154,7 @@ def cpmodelimg(rmec,nodes,modelimage,
     for i in range(n):
         toimagename=mkname(nodes[i],rootdir,workdir,imagebasename,".image");
         cmd = "shutil.copytree('"+modelimage+"','"+toimagename+"')";
-        print cmd;
+        print(cmd);
 #        mec.execute(cmd,i);
 #
 #===============================================================
@@ -475,29 +475,29 @@ def pcontinuumdebugger(mec,iatool,deconvtool,nodes,
     
     major=0;
     if (dowhat == 1):
-        print "Making residual images for major cycle no. ", major, "(the scatter operation)";
+        print("Making residual images for major cycle no. ", major, "(the scatter operation)");
         mkResOnly(mec,nodes,configfile=majorconfigfile,rootdir=rootdir,workdir=workdir,
                   msbasename=msbasename,imagebasename=imagebasename);
         cmd="go('clean')"
         mec.execute(cmd);
 
     if (dowhat == 2):
-        print "Making continuum dirt image (the gather operation)"
-        print "   Making average dirty image...";
+        print("Making continuum dirt image (the gather operation)")
+        print("   Making average dirty image...");
         mkContResImgWorkaround(mec,nodes,iatool,imagebasename=imagebasename,
                                outimagename=dirtyimagename);
-        print "   Making average PSF image...";
+        print("   Making average PSF image...");
         mkContResImgWorkaround(mec,nodes,iatool,imagebasename=imagebasename,
                                extension=".psf",outimagename=avgpsfname);
 
     if (dowhat == 3):
-        print minorIterRemaining, minorIterPerMajor;
-        print "Doing the minor cycle (the serial operation)"
+        print(minorIterRemaining, minorIterPerMajor);
+        print("Doing the minor cycle (the serial operation)")
         if (minorIterRemaining > minorIterPerMajor):
             minorIterRemaining = minorIterPerMajor;
         if (minorIterRemaining > 0):
-            print "Doing ", minorIterRemaining, " minor cycle iterations...";
-            print dirtyimagename, avgpsfname;
+            print("Doing ", minorIterRemaining, " minor cycle iterations...");
+            print(dirtyimagename, avgpsfname);
             deconvtool.open(dirtyimagename, avgpsfname);
             deconvtool.clarkclean(niter=minorIterRemaining,model=tmpModelImageName);
             deconvtool.done();
@@ -505,7 +505,7 @@ def pcontinuumdebugger(mec,iatool,deconvtool,nodes,
         minorIterRemaining = minoriter - (major+1)*minorIterPerMajor;
 
     if (dowhat == 4):
-        print "Scattering the model image"
+        print("Scattering the model image")
         for i in range(n):
             remotemodelimage=mkname(nodes[i],rootdir,workdir,imagebasename,".model");
             cmd = "rm -rf " + remotemodelimage;
