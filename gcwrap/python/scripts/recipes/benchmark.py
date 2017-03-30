@@ -26,7 +26,7 @@ def benchmark(func, args, kwargs, nreps=5, nperrep=1):
     maxtime =  0.0
     print("Run", end='')
     for i in xrange(nreps):
-        print i + 1,
+        print(i + 1, end='')
         sys.stdout.flush()
         t0 = time.time()
         for j in xrange(nperrep):
