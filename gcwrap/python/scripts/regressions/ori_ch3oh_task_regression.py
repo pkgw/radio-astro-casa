@@ -1,7 +1,7 @@
 ###############################
 #
 # ORION-S CH3OH Reduction Script
-# using SD tasks 
+# using SD tasks
 # Position-Switched data
 #
 # used tasks
@@ -21,7 +21,7 @@ import os
 os.system('rm -rf OrionS_rawACSmod orions_ch3oh_reducedSCAN0_CYCLE0_BEAM0_IF0.txt orions_ch3oh_reduced.eps orions_ch3oh_fit.txt')
 
 #enable/disable plotting
-doplot = False 
+doplot = False
 
 casapath = os.environ['CASAPATH']
 datapath = casapath.split()[0]+'/data/regression/ATST5/OrionS/OrionS_rawACSmod'
@@ -61,12 +61,12 @@ startProc = time.clock()
 # Scans: 25-28  Setup 2 SiO et al
 
 asap_init()                             #load ASAP module
-					#Orion-S (SiO line reduction only)
-					#Notes:
-					#scan numbers (zero-based) as compared to GBTIDL
+                                        #Orion-S (SiO line reduction only)
+                                        #Notes:
+                                        #scan numbers (zero-based) as compared to GBTIDL
 
-					#changes made to get to OrionS_rawACSmod
-					#modifications to label sig/ref positions
+                                        #changes made to get to OrionS_rawACSmod
+                                        #modifications to label sig/ref positions
 #os.environ['CASAPATH'] = casapath
 
 
@@ -81,18 +81,18 @@ else:
    localplotlevel = 0
 
 # calibartion
-# calibrate position-switched CH3OH scans (IF=2) 
+# calibrate position-switched CH3OH scans (IF=2)
 default(sdcal)
 infile = 'OrionS_rawACSmod'
-fluxunit = 'K' 
+fluxunit = 'K'
 calmode = 'ps'
 #scanlist = [21,22,23,24]
 scan = '21~24'
 #iflist = [2]
 spw = '2'
-tau = 0.09         # do opacity correction 
+tau = 0.09         # do opacity correction
 overwrite = True
-plotlevel = localplotlevel  
+plotlevel = localplotlevel
 sdcal()
 
 # output
@@ -113,7 +113,7 @@ pweight = 'tsys'   # weighted by Tsys
 kernel = 'boxcar'
 kwidth = 10
 overwrite = True
-plotlevel = localplotlevel  
+plotlevel = localplotlevel
 sdaverage()
 
 localoutfile = infile+'_ave'
@@ -132,10 +132,10 @@ overwrite = True
 plotlevel = localplotlevel
 sdbaseline()
 localoutfile = infile+'_bs'
-#sd.plotter.plot(spave)			# plot						# baseline
+#sd.plotter.plot(spave)                 # plot                                          # baseline
 
 #plotting the reslut
-#plot the spectrum and save to a postscript file 
+#plot the spectrum and save to a postscript file
 if doplot:
    default(sdplot)
    infile = localoutfile
@@ -168,15 +168,15 @@ curr_sum = xstat['sum']
 # fitting
 default(sdfit)
 infile = localoutfile
-#sd.plotter.plot(spave)			# plot spectrum
+#sd.plotter.plot(spave)                 # plot spectrum
 fitmode = 'list'
-#maskline = [2900,3150]	# create region around line
+#maskline = [2900,3150] # create region around line
 spw = '*:2900~3150'       # create region around line
 nfit = 1
 plotlevel = localplotlevel
 outfile = 'orions_ch3oh_fit.txt'
 xstat = sdfit()
-xstat  # print fit statistics 
+xstat  # print fit statistics
 
 # Save the spectrum
 # in different formats
@@ -221,16 +221,16 @@ if (diff_rms < 0.05): print('* Passed spectrum rms test ', file=logfile)
 print('*  Spectrum rms '+str(curr_rms), file=logfile)
 if (diff_sum < 0.05): print('* Passed spectrum (line) sum test', file=logfile)
 print('*  Line integral '+str(curr_sum), file=logfile)
-if ((diff_max<0.05) & (diff_rms<0.05) & (diff_sum<0.05)): 
-	regstate = True
+if ((diff_max<0.05) & (diff_rms<0.05) & (diff_sum<0.05)):
+        regstate = True
         print('---', file=logfile)
         print('Passed Regression test for OrionS-CH3OH', file=logfile)
         print('---', file=logfile)
         print('')
         print('Regression PASSED')
         print('')
-else: 
-	regstate = False
+else:
+        regstate = False
         print('----FAILED Regression test for OrionS-CH3OH', file=logfile)
         print('')
         print('Regression FAILED')

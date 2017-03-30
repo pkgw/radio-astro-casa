@@ -974,7 +974,7 @@ def coordsystest():
         find coordinate and findaxis tests are now in test_coordsys.py
         # findcoordinate
         #local pa, wa
-        
+
         try:
             note('Expect SEVERE error and Exception here')
             ok = mycs.findcoordinate('fish', 1)['return']
@@ -1076,7 +1076,7 @@ def coordsystest():
 
         ###
         return T
- 
+
     def test7():
         info('')
         info('')
@@ -1247,7 +1247,7 @@ def coordsystest():
         # same presently
         #
         toworld = mycs.axesmap(toworld=T)
-	print(toworld)
+        print(toworld)
         if not len(toworld): fail()
         topixel = mycs.axesmap(toworld=F)
         if not len(topixel): fail()
@@ -1328,7 +1328,7 @@ def coordsystest():
         #
         freq = rv['numeric'][0]
         freqUnit = mycs.units();
-	print(freqUnit)
+        print(freqUnit)
         vel = mycs.frequencytovelocity(value=freq, frequnit=freqUnit[0],
                                        doppler='radio', velunit='km/s')
         if (abs(vel) > 1e-6):
@@ -1612,7 +1612,7 @@ def coordsystest():
         if not mycs.done(): fail()
         ###
         return T
- 
+
 
     def test13():
         info('')
@@ -1707,7 +1707,7 @@ def coordsystest():
         if len(p2)!=n: fail()
         w = mycs.torel(mycs.toworld(p2),T)['numeric']
         if not all(p,w,tol): fail('convert 5 gives wrong values')
-        
+
         # rel pix to abs world
         absin = n * [F]
         coordin = mycs.torel(mycs.referencepixel()['numeric']+2,F)
@@ -2528,7 +2528,7 @@ def coordsystest():
     test17()
     test18()
     test19()
-    
+
 
 Benchmarking = True
 if Benchmarking:

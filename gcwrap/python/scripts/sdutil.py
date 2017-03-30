@@ -46,17 +46,17 @@ def table_selector(table, taql, *args, **kwargs):
 
 def sdtask_decorator(func):
     """
-    This is a decorator function for sd tasks. 
+    This is a decorator function for sd tasks.
     Currently the decorator does:
 
-       1) set origin to the logger 
+       1) set origin to the logger
        2) handle exception
 
-    So, you don't need to set origin in the task any more. 
-    Also, you don't need to write anything about error 
-    handling in the task. If you have something to do 
-    at the end of the task execution, those should be 
-    written in the destructor of worker class, not in 
+    So, you don't need to set origin in the task any more.
+    Also, you don't need to write anything about error
+    handling in the task. If you have something to do
+    at the end of the task execution, those should be
+    written in the destructor of worker class, not in
     the 'finally' block.
     """
     @functools.wraps(func)
@@ -66,10 +66,10 @@ def sdtask_decorator(func):
 
         retval = None
         # Any errors are handled outside the task.
-        # however, the implementation below is effectively 
+        # however, the implementation below is effectively
         # equivalent to handling it inside the task.
         try:
-            # execute task 
+            # execute task
             retval = func(*args, **kwargs)
         except Exception as e:
             traceback_info = format_trace(traceback.format_exc())
@@ -126,7 +126,7 @@ class sdtask_interface(object, metaclass=abc.ABCMeta):
     Derived classes must implement the above three methods: initialize(),
     execute(), and finalize().
     """
-    
+
     def __init__(self, **kwargs):
         for (k,v) in list(kwargs.items()):
             setattr(self, k, v)
@@ -210,7 +210,7 @@ class sdtask_template(sdtask_interface, metaclass=abc.ABCMeta):
                 self.rasterrow = self.raster
             else:
                 self.rasteriter = self.raster
-        
+
         # set self.scan
         self.initialize_scan()
 
@@ -230,7 +230,7 @@ class sdtask_template(sdtask_interface, metaclass=abc.ABCMeta):
     def save(self):
         # do nothing by default
         pass
-        
+
     def cleanup(self):
         # do nothing by default
         pass
@@ -256,12 +256,12 @@ class sdtask_template(sdtask_interface, metaclass=abc.ABCMeta):
                 scantb = self.scan
             else:
                 raise Exception("Internal Error. No valid scantable.")
-        
+
         attributes = ['scanno','spw','polno','beamno','field']
         for a in attributes:
             if not hasattr(self,a): setattr(self,a,"")
 
-        
+
         self.scanlist = scantb.parse_idx_selection("SCAN",self.scanno)
         self.iflist = []
         if self.spw != "":
@@ -275,7 +275,7 @@ class sdtask_template(sdtask_interface, metaclass=abc.ABCMeta):
             self.iflist = list(masklist.keys())
         self.pollist = scantb.parse_idx_selection("POL",self.polno)
         self.beamlist = scantb.parse_idx_selection("BEAM",self.beamno)
-        
+
         attributes = ['scanlist','iflist','pollist','beamlist',
                       'rowlist','field']
         for a in attributes:
@@ -312,7 +312,7 @@ class sdtask_template(sdtask_interface, metaclass=abc.ABCMeta):
                 scantb = self.scan
             else:
                 raise Exception("Internal Error. No valid scantable.")
-    
+
         if base_selector is None:
             selector = sd.selector()
         else:
@@ -368,7 +368,7 @@ class sdtask_template(sdtask_interface, metaclass=abc.ABCMeta):
                         else:
                             selector.set_query(taql_for_raster)
                         casalog.post('taql: \'%s\''%(selector.get_query()), priority='INFO')
-                    
+
         return selector
 
     def set_selection(self, scantb=None):
@@ -402,7 +402,7 @@ class sdtask_template(sdtask_interface, metaclass=abc.ABCMeta):
             for if_idx in sel_ifno:
                 rf.append(self.restfreq[in_ifno.index(if_idx)])
             self.selected_restfreq = rf
-    
+
     def assert_no_channel_selection_in_spw(self, mode='warn'):
         """
         Assert 'spw' does not have channel selection
@@ -425,10 +425,10 @@ class sdtask_template(sdtask_interface, metaclass=abc.ABCMeta):
                 raise ValueError("spw parameter should not contain channel selection.")
             elif mode.upper().startswith('W'):
                 casalog.post("Channel selection found in spw parameter. It would be ignored", priority='WARN')
-        
+
         return has_chan
-        
-        
+
+
     def set_to_scan(self):
         if hasattr(self,'fluxunit'):
             set_fluxunit(self.scan, self.fluxunit, self.telescopeparam)
@@ -517,7 +517,7 @@ class sdtask_template_imaging(sdtask_interface):
             if not is_ms(self.infiles[idx]):
                 msg='input data sets must be in MS format'
                 raise Exception(msg)
-        
+
         self.parameter_check()
         self.compile()
 
@@ -532,7 +532,7 @@ class sdtask_template_imaging(sdtask_interface):
 
     def cleanup(self):
         pass
-        
+
     def __set_subtable_name(self):
         self.open_table(self.infiles[0])
         keys = self.table.getkeywords()
@@ -564,7 +564,7 @@ class sdtask_engine(sdtask_interface):
                 setattr(self, k, v)
         #super(sdtask_engine,self).__init__(**self.worker.__dict__)
         #if hasattr(self,'scan'): del self.scan
-    
+
 def get_abspath(filename):
     return os.path.abspath(expand_path(filename))
 
@@ -697,20 +697,20 @@ def get_restfreq_in_Hz(s_restfreq):
 #     value = 0.0
 #     unit = ""
 #     s = s_restfreq.replace(" ","")
-# 
+#
 #     for i in range(len(s))[::-1]:
 #         if s[i].isalpha():
 #             unit = s[i] + unit
 #         else:
 #             value = float(s[0:i+1])
 #             break
-# 
+#
 #     if (unit == "") or (unit.lower() == "hz"):
 #         return value
 #     elif (len(unit) == 3) and (unit[1:3].lower() == "hz"):
 #         unitprefix = unit[0]
 #         factor = 1.0
-# 
+#
 #         if (unitprefix == "a"):
 #             factor = 1.0e-18
 #         elif (unitprefix == "f"):
@@ -735,7 +735,7 @@ def get_restfreq_in_Hz(s_restfreq):
 #             factor = 1.0e+15
 #         elif (unitprefix == "E"):
 #             factor = 1.0e+18
-#         
+#
 #         return value*factor
 #     else:
 #         mesg = "wrong unit of restfreq."
@@ -754,7 +754,7 @@ def normalise_restfreq(in_restfreq):
             if len(in_restfreq.shape) > 1:
                 mesg = "given in numpy.ndarray, in_restfreq must be 1-D."
                 raise Exception(mesg)
-        
+
         res = []
         for i in range(len(in_restfreq)):
             elem = in_restfreq[i]
@@ -812,7 +812,7 @@ def set_freqframe(s, frame):
 
 def set_fluxunit(s, fluxunit, telescopeparam, insitu=True):
     ret = None
-    
+
     # check current fluxunit
     # for GBT if not set, set assumed fluxunit, Kelvin
     antennaname = s.get_antennaname()
@@ -833,7 +833,7 @@ def set_fluxunit(s, fluxunit, telescopeparam, insitu=True):
     else:
         fluxunit_local = fluxunit
 
-        
+
     # fix the fluxunit if necessary
     if ( telescopeparam == 'FIX' or telescopeparam == 'fix' ):
         if ( fluxunit_local != '' ):
@@ -900,19 +900,19 @@ def set_fluxunit(s, fluxunit, telescopeparam, insitu=True):
             #print "Assume phys.diam D = %5.1f m" % (D)
             casalog.post( "Assume phys.diam D = %5.1f m" % (D) )
             ret = s.convert_flux(eta=eta,d=D,insitu=insitu)
-            
+
             #print "Successfully converted fluxunit to "+fluxunit
             casalog.post( "Successfully converted fluxunit to "+fluxunit_local )
         elif ( antennaname in ['AT','ATPKSMB', 'ATPKSHOH', 'ATMOPRA', 'DSS-43', 'CEDUNA', 'HOBART']):
             ret = s.convert_flux(insitu=insitu)
-            
+
         else:
             # Unknown telescope type
             #print "Unknown telescope - cannot convert"
             casalog.post( "Unknown telescope - cannot convert", priority = 'WARN' )
 
     return ret
-    
+
 def save(s, outfile, outform, overwrite):
     assert_outfile_canoverwrite_or_nonexistent(outfile,
                                                outform,
@@ -976,7 +976,7 @@ def doaverage(s, scanaverage, timeaverage, tweight, polaverage, pweight,
         else:
             sret = stave
         #    spave=stave.copy()
-        
+
     else:
         #if ( scanaverage ):
         #        # scan average if the input is a scantable
@@ -1052,8 +1052,8 @@ class scantable_restore_null(scantable_restore_interface):
 
     def restore(self):
         pass
-    
-        
+
+
 class scantable_restore_impl(scantable_restore_interface):
     def __init__(self, s, fluxunit, specunit, frame, doppler, restfreq=''):
         super(scantable_restore_impl,self).__init__()
@@ -1079,12 +1079,12 @@ class scantable_restore_impl(scantable_restore_interface):
     def restore(self):
         if self.restore_not_done:
             self.scntab.set_selection()
-        
+
             casalog.post('Restoreing header information in input scantable')
             self._restore()
 
         self.restore_not_done = False
-                         
+
     def _restore(self):
         if self.fluxset:
             self.scntab.set_fluxunit(self.fluxunit)
@@ -1118,7 +1118,7 @@ def get_interactive_mask(obj, purpose=None):
 
 def finalize_interactive_mask(obj):
     obj.finish_selection()
-    
+
 def get_plotter(plotlevel=0):
     from matplotlib import rc as rcp
     rcp('lines', linewidth=1)
@@ -1156,7 +1156,7 @@ def get_cellx_celly(c,unit='arcsec'):
     else:
         cellx = celly = __to_quantity_string(c,unit)
     return (cellx, celly)
-                
+
 def get_map_center(c,frame='J2000',unit='rad'):
     map_center = ''
     if isinstance(c, str):
@@ -1222,7 +1222,7 @@ def split_date_string(date_string, full=True):
     if full and len(elements_list) > 1 and date_string.find('.') == -1:
         elements_list += ['0']
     return elements_list
-        
+
 def get_full_description(date_string, year='YYYY', month='MM', day='DD', hour='hh', minute='mm', second='ss', subsecond='ff', default=None):
     number_of_slashes = date_string.count('/')
     number_of_colons = date_string.count(':')
@@ -1238,7 +1238,7 @@ def get_full_description(date_string, year='YYYY', month='MM', day='DD', hour='h
         default_values = split_date_string(default)
         if len(default_values) < 7:
             default_values = default_values + ['00']
-            
+
     values = default_values[:7-len(elements_list)] + elements_list
 
     return template.safe_substitute(**dict(list(zip(keys, values))))
@@ -1266,7 +1266,7 @@ def to_timedelta(delta):
 def add_time(date, delta):
     t = to_datetime(date)
     dt = to_timedelta(delta)
-    return t+dt    
+    return t+dt
 
 def sub_time(date, delta):
     t = to_datetime(date)
@@ -1301,8 +1301,8 @@ def select_by_timerange(data, timerange):
                   'hour': str(date_dict['hour']),
                   'minute': str(date_dict['min']),
                   'second': str(date_dict['sec']),
-                  'subsecond': str(date_dict['usec'])}    
-    
+                  'subsecond': str(date_dict['usec'])}
+
     if re.match('.+~.+', timerange):
         # This is case 1: 'T0~T1'
         dates_list = split_timerange(timerange, '~')
@@ -1395,19 +1395,19 @@ def get_spwids(selection, infile=None):
     return ','.join(l)
 
 def get_spwchs(selection, infile):
-    # return a string containing spw IDs, nchans and edge 
-    # indices of selected regions. 
-    # parameters: 
+    # return a string containing spw IDs, nchans and edge
+    # indices of selected regions.
+    # parameters:
     #     selection: an output of ms.msseltoindex()
     # format of returned value:
-    #     one or more 'IFNO:NCHAN:IDX' strings connected 
-    #     by comma. 'IDX' contains edge indices of selected 
-    #     channel regions connected by semicolon. 
-    # example: 
-    #     if two channel regions from 100 to 200 and from 
-    #     250 to 350 are selected for IF=3 (nchan=1024) and 
-    #     all channels are selected for IF=4 (nchan=2048), 
-    #     the returned value will be 
+    #     one or more 'IFNO:NCHAN:IDX' strings connected
+    #     by comma. 'IDX' contains edge indices of selected
+    #     channel regions connected by semicolon.
+    # example:
+    #     if two channel regions from 100 to 200 and from
+    #     250 to 350 are selected for IF=3 (nchan=1024) and
+    #     all channels are selected for IF=4 (nchan=2048),
+    #     the returned value will be
     #     '3:1024:100;200;250;350,4:2048:0;2047'.
 
     with tbmanager(os.path.join(infile, 'SPECTRAL_WINDOW')) as tb:
@@ -1540,8 +1540,8 @@ def get_ms_sampling_arcsec(msname, spw='', antenna='', field='',
     dx_rad, dy_rad, pa = rasterutil._get_sampling(direction_rad,row_gap)
     rad_to_asec = 180./numpy.pi*3600
     return dx_rad*rad_to_asec, dy_rad*rad_to_asec, pa
-    
-    
+
+
 def parse_wavenumber_param(wn):
     if isinstance(wn, list):
         _check_positive_or_zero(wn)
@@ -1680,7 +1680,7 @@ def _to_list(param, ptype=int, convert=False):
     """
     if isinstance(param, ptype): # a string or a number
         if ptype is str: return param.split()
-        elif convert: 
+        elif convert:
             return [ ptype(param) ]
         else: return [ param ]
     if _is_sequence_or_number(param, ptype):

@@ -75,10 +75,10 @@ class pCASA:
         except (AttributeError,ValueError):
             # As fallback
             self.engines_per_host = 1
-        
+
         self.hosts = sets.Set()
         self.cluster = parallel_go.cluster()
-            
+
 
     def register_host(self, hostname):
         self.hosts.add(hostname)
@@ -89,7 +89,7 @@ class pCASA:
         # Convert to IP addresses, for reasons of uniqueness
         for node in self.cluster.get_nodes():
             already_running_nodes_ip.add(_ip(node))
-            
+
         for host in self.hosts:
 
             if debug:
@@ -112,7 +112,7 @@ def _load(mms_name):
 
     if not os.path.lexists(mms_name):
         raise Exception("%s does not exist" % mms_name)
-    
+
     try:
         f = open(mms_name, "r")
         mms = pickle.load(f)
@@ -123,7 +123,7 @@ def _load(mms_name):
     if not isinstance(mms, multiMS):
         raise Exception("%s is not a multiMS. Its python type is %s" % \
                         (mms_name, type(mms)))
-        
+
     if mms.version != multiMS.code_version:
         raise Exception(mms_name + " file version " + str(mms.version) +
                         " is incompatible with this code version: " +
@@ -146,7 +146,7 @@ def list(mms_name):
     mms = _load(mms_name)
 
     print(mms_name, "(multiMS v" + str(mms.version) + "):")
-    
+
     for s in mms.sub_mss:
         print("  %s %s" % (s.host, s.ms))
     if len(mms.sub_mss) == 0:
@@ -171,7 +171,7 @@ def add(mms_name, subms_name, hostname = "localhost"):
 
     s = subMS(subms_name, hostname)
     mms.add(s)
-    
+
     # Overwrite existing file
     f = open(mms_name, "w")
     pickle.dump(mms, f)
@@ -194,10 +194,10 @@ def remove(mms_name, subms_name, hostname = ""):
         f = open(mms_name, "w")
         pickle.dump(mms, f)
         f.close()
-        
+
         if debug:
             print("Removed %s from %s" %(subms_name, mms_name))
-       
+
 def _ip(host):
     """Returns a unique IP address of the given hostname,
     i.e. not 127.0.0.1 for localhost but localhost's global IP
@@ -205,7 +205,7 @@ def _ip(host):
 
     try:
         ip = socket.gethostbyname(host)
-    
+
         if ip == "127.0.0.1":
             ip = socket.gethostbyname(socket.gethostname())
 
@@ -213,7 +213,7 @@ def _ip(host):
     except Exception as e:
         print("Could not get IP address of host '%s': %s" %  (host, str(e)))
         raise
-                        
+
 
 
 def _launch(engine, taskname, ms, parameters):
@@ -231,7 +231,7 @@ def _launch(engine, taskname, ms, parameters):
                 args.append(p + " = '" + val + "'")
             else:
                 args.append(p + " = " + str(val))
-                
+
     cmd = taskname + "(" + ", ".join(args) + ")"
     if debug:
         print(cmd)
@@ -242,7 +242,7 @@ def _launch(engine, taskname, ms, parameters):
 def _poor_mans_wait(engines, taskname):
     """Returns engine id and any exception thrown by the job.
     The return value of the job is not made available.
-    
+
     Each pending job is polled once per second; this is inefficient
     and should be replaced with a 'wait' call that blocks
     until any job terminates and returns the ID of the job that
@@ -286,7 +286,7 @@ def execute(taskname, parameters):
 
     for s in mms.sub_mss:
         pc.register_host(s.host)
-        
+
     pc.start()
 
     # Convert engines to a more handy format (from lists to dictionaries),
@@ -299,7 +299,7 @@ def execute(taskname, parameters):
         engines[e[0]]['pid'] = e[2]
         engines[e[0]]['idle'] = True
         engines[e[0]]['job'] = None
-        
+
     m = len(mms.sub_mss)
 
     n = len(engines)
@@ -312,7 +312,7 @@ def execute(taskname, parameters):
 
     #  The availble engines will be assigned to the subMSs
     #  on the fly, as engines become idle
-    #  
+    #
     #  Pseudo code:
     #
     #  while still_data_to_process:
@@ -333,22 +333,22 @@ def execute(taskname, parameters):
             print("Engines =", engines)
 
         found = False
-        
+
         for engine in list(engines.values()):
             if engine['idle']:
                 if debug:
                     print("idle engine", engine['id'], "is", engine['host'], _ip(engine['host']))
-            
+
                 for subms in non_processed_submss:
                     if debug:
                         print("subMS", subms.ms, "is", subms.host, _ip(subms.host))
 
                     if _ip(engine['host']) == _ip(subms.host):
-                    
+
                         _launch(engine, taskname, subms.ms, parameters)
 
                         non_processed_submss.remove(subms)
-                        
+
                         found = True
                         break
 
@@ -367,10 +367,10 @@ def execute(taskname, parameters):
                 # If an exception was thrown, bail out ASAP
                 if s != None and status == None:
                     status = (engine_id, s)
-                    
+
             else:
                 raise Exception("All " + str(len(engines)) + \
-                                "engine(s) are idle but no engine has access to any subMS.")       
+                                "engine(s) are idle but no engine has access to any subMS.")
 
 
         if debug:
@@ -384,22 +384,22 @@ def execute(taskname, parameters):
     pending_job = True
     while pending_job:
         pending_job = False
-        
+
         for engine in list(engines.values()):
             if not engine['idle']:
                 pending_job = True
                 break
-            
+
         if pending_job:
             (engine_id, s) = _poor_mans_wait(engines, taskname)
-            
+
             if s != None and status == None:
                 status = (engine_id, s)
 
     if status != None:
         print("Engine %s error while processing %s" % \
               (status[0], engines[status[0]]['ms']), file=sys.stderr)
-        
+
         raise status[1]
 
 
@@ -431,7 +431,7 @@ class multiMS:
         Returns true if and only if a matching subMS existed"""
 
         found = False
-        
+
         while True:
             # Remove the first match, and repeat from the beginning until
             # there are no more matches
@@ -448,10 +448,10 @@ class multiMS:
                     f = True
                     self.sub_mss.remove(s)
                     break
-                
+
             if not f:
                 break
-                
+
         return found
 
 

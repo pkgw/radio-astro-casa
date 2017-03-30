@@ -20,9 +20,9 @@ from refimagerhelper import ImagerParameters, PerformanceMeasure
 
 def tclean(
     ####### Data Selection
-    vis,#='', 
+    vis,#='',
     selectdata,
-    field,#='', 
+    field,#='',
     spw,#='',
     timerange,#='',
     uvrange,#='',
@@ -53,9 +53,9 @@ def tclean(
 #    sysvel,#='',
 #    sysvelframe,#='',
     interpolation,#='',
-    ## 
+    ##
     ####### Gridding parameters
-    gridder,#='ft', 
+    gridder,#='ft',
     facets,#=1,
     chanchunks,#=1,
 
@@ -98,14 +98,14 @@ def tclean(
 
 
     ##### Iteration control
-    niter,#=0, 
+    niter,#=0,
     gain,#=0.1,
-    threshold,#=0.0, 
-    cycleniter,#=0, 
+    threshold,#=0.0,
+    cycleniter,#=0,
     cyclefactor,#=1.0,
     minpsffraction,#=0.1,
     maxpsffraction,#=0.8,
-    interactive,#=False, 
+    interactive,#=False,
 
     ##### (new) Mask parameters
     usemask,#='user',
@@ -121,7 +121,7 @@ def tclean(
     noisethreshold,#=3.0,
     lownoisethreshold,#=3.0,
     smoothfactor,#=1.0,
-    minbeamfrac,#=0.3, 
+    minbeamfrac,#=0.3,
     cutthreshold,#=0.01,
 
     ## Misc
@@ -140,8 +140,8 @@ def tclean(
     #####################################################
     #### Sanity checks and controls
     #####################################################
-    
-    ### Move these checks elsewhere ? 
+
+    ### Move these checks elsewhere ?
     if specmode=='mfs' and nterms==1 and deconvolver == "mtmfs":
         casalog.post( "The MTMFS deconvolution algorithm (deconvolver='mtmfs') needs nterms>1.Please set nterms=2 (or more). ", "WARN", "task_tclean" )
         return
@@ -157,7 +157,7 @@ def tclean(
     imager = None
     paramList = None
 
-    # Put all parameters into dictionaries and check them. 
+    # Put all parameters into dictionaries and check them.
     paramList = ImagerParameters(
         msname =vis,
         field=field,
@@ -173,8 +173,8 @@ def tclean(
         ### Image....
         imagename=imagename,
         #### Direction Image Coords
-        imsize=imsize, 
-        cell=cell, 
+        imsize=imsize,
+        cell=cell,
         phasecenter=phasecenter,
         stokes=stokes,
         projection=projection,
@@ -229,7 +229,7 @@ def tclean(
         loopgain=gain,
         threshold=threshold,
         cyclefactor=cyclefactor,
-        minpsffraction=minpsffraction, 
+        minpsffraction=minpsffraction,
         maxpsffraction=maxpsffraction,
         interactive=interactive,
 
@@ -238,7 +238,7 @@ def tclean(
         nterms=nterms,
         scalebias=smallscalebias,
         restoringbeam=restoringbeam,
-        
+
         ### new mask params
         usemask=usemask,
         mask=mask,
@@ -255,10 +255,10 @@ def tclean(
         smoothfactor=smoothfactor,
         minbeamfrac=minbeamfrac,
         cutthreshold=cutthreshold,
- 
+
         savemodel=savemodel
         )
-    
+
     #paramList.printParameters()
 
     pcube=False
@@ -272,7 +272,7 @@ def tclean(
 
     ## Setup Imager objects, for different parallelization schemes.
     if parallel==False and pcube==False:
-   
+
          imager = PySynthesisImager(params=paramList)
     elif parallel==True:
          imager = PyParallelContSynthesisImager(params=paramList)
@@ -286,12 +286,12 @@ def tclean(
 
     retrec={}
 
-    try: 
+    try:
     #if (1):
         ## Init major cycle elements
         t0=time.time();
         imager.initializeImagers()
-    
+
         # Construct the CFCache for AWProject-class of FTMs.  For
         # other choices the following three calls become NoOps.
         # imager.dryGridding();
@@ -315,7 +315,7 @@ def tclean(
             imager.initializeIterationControl()
             t1=time.time();
             casalog.post("***Time for initializing iteration controller: "+"%.2f"%(t1-t0)+" sec", "INFO3", "task_tclean");
-            
+
         ## Make PSF
         if calcpsf==True:
             t0=time.time();
@@ -330,7 +330,7 @@ def tclean(
             t2=time.time();
             casalog.post("***Time for making PB: "+"%.2f"%(t2-t1)+" sec", "INFO3", "task_tclean");
 
-        if niter >=0 : 
+        if niter >=0 :
 
             ## Make dirty image
             if calcres==True:
@@ -344,7 +344,7 @@ def tclean(
             if niter==0 and calcres==False:
                 if savemodel != "none":
                     imager.predictModel()
-        
+
             ## Do deconvolution and iterations
             if niter>0 :
                 while ( not imager.hasConverged() ):
@@ -362,7 +362,7 @@ def tclean(
                     retrec=imager.getSummary();
 
             ## Restore images.
-            if restoration==True:  
+            if restoration==True:
                 t0=time.time();
                 imager.restoreImages()
                 t1=time.time();
@@ -372,7 +372,7 @@ def tclean(
                     imager.pbcorImages()
                     t1=time.time();
                     casalog.post("***Time for pb-correcting images: "+"%.2f"%(t1-t0)+" sec", "INFO3", "task_tclean");
-                    
+
 
 
         if (pcube):
@@ -388,7 +388,7 @@ def tclean(
         #print 'Exception : ' + str(e)
         casalog.post('Exception from task_tclean : ' + str(e), "SEVERE", "task_tclean")
         if imager != None:
-            imager.deleteTools() 
+            imager.deleteTools()
 
         larg = list(e.args)
         larg[0] = 'Exception from task_tclean : ' + str(larg[0])

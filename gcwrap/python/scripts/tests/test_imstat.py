@@ -17,7 +17,7 @@ import numbers
 Unit tests for task imstat.
 '''
 class imstat_test(unittest.TestCase):
-    
+
     # Input and output names
     moment = 'moment_map.im'
     s150 = '150arcsec_pix.im'
@@ -70,7 +70,7 @@ class imstat_test(unittest.TestCase):
         self._myia = iatool()
         default(clean)
         self.datapath = os.environ.get('CASAPATH').split()[0] + '/data/regression/unittest/imstat/'
-    
+
     def tearDown(self):
         self._myia.done()
         for dir in [
@@ -105,7 +105,7 @@ class imstat_test(unittest.TestCase):
         got = stats['flux'][0]
         expected = (mean*npts/pixperbeam)[0]
         self.assertTrue(abs(got - expected) < 1e-11)
- 
+
     def test002(self):
         """ Test 2: test position format for 150 arcsec pixel image is correct """
         shutil.copytree(self.datapath+self.s150, self.s150)
@@ -113,7 +113,7 @@ class imstat_test(unittest.TestCase):
         _myia.open(self.s150)
         stats = _myia.statistics()
         _myia.close()
-        self.assertTrue(stats['blcf'] == '15:43:21.873, -00.17.47.274, I, 1.41332e+09Hz') 
+        self.assertTrue(stats['blcf'] == '15:43:21.873, -00.17.47.274, I, 1.41332e+09Hz')
         self.assertTrue(stats['maxposf'] == '15:22:40.165, +05.11.29.923, I, 1.41332e+09Hz')
         self.assertTrue(stats['minposf'] == '15:43:25.618, +04.22.40.617, I, 1.41332e+09Hz')
         self.assertTrue(stats['trcf'] == '15:00:27.115, +10.20.37.699, I, 1.41332e+09Hz')
@@ -136,8 +136,8 @@ class imstat_test(unittest.TestCase):
         _myia = iatool()
         _myia.open(self.s0_015)
         stats = _myia.statistics()
-        _myia.close() 
-        self.assertTrue(stats['blcf'] == '15:22:00.1285, +05.03.58.0800, I, 1.41332e+09Hz') 
+        _myia.close()
+        self.assertTrue(stats['blcf'] == '15:22:00.1285, +05.03.58.0800, I, 1.41332e+09Hz')
         self.assertTrue(stats['maxposf'] == '15:22:00.0040, +05.04.00.0450, I, 1.41332e+09Hz')
         self.assertTrue(stats['minposf'] == '15:22:00.1285, +05.03.59.7600, I, 1.41332e+09Hz')
         self.assertTrue(stats['trcf'] == '15:21:59.8725, +05.04.01.9050, I, 1.41332e+09Hz')
@@ -149,7 +149,7 @@ class imstat_test(unittest.TestCase):
         _myia.open(self.s0_0015)
         stats = _myia.statistics()
         _myia.close()
-        self.assertTrue(stats['blcf'] == '15:22:00.01285, +05.03.59.80800, I, 1.41332e+09Hz') 
+        self.assertTrue(stats['blcf'] == '15:22:00.01285, +05.03.59.80800, I, 1.41332e+09Hz')
         self.assertTrue(stats['maxposf'] == '15:22:00.00040, +05.04.00.00450, I, 1.41332e+09Hz')
         self.assertTrue(stats['minposf'] == '15:22:00.01285, +05.03.59.97600, I, 1.41332e+09Hz')
         self.assertTrue(stats['trcf'] == '15:21:59.98725, +05.04.00.19050, I, 1.41332e+09Hz')
@@ -161,7 +161,7 @@ class imstat_test(unittest.TestCase):
         _myia.open(self.s0_00015)
         stats = _myia.statistics()
         _myia.close()
-        self.assertTrue(stats['blcf'] == '15:22:00.001285, +05.03.59.980800, I, 1.41332e+09Hz') 
+        self.assertTrue(stats['blcf'] == '15:22:00.001285, +05.03.59.980800, I, 1.41332e+09Hz')
         self.assertTrue(stats['maxposf'] == '15:22:00.000040, +05.04.00.000450, I, 1.41332e+09Hz')
         self.assertTrue(stats['minposf'] == '15:22:00.001285, +05.03.59.997600, I, 1.41332e+09Hz')
         self.assertTrue(stats['trcf'] == '15:21:59.998725, +05.04.00.019050, I, 1.41332e+09Hz')
@@ -171,8 +171,8 @@ class imstat_test(unittest.TestCase):
         shutil.copytree(self.datapath+self.s0_00015, self.s0_00015)
         box = '0, 0,  1 ,   1'
         stats = imstat(imagename=self.s0_00015, box=box)
-        self.assertTrue(stats['npts'] == 4) 
-        
+        self.assertTrue(stats['npts'] == 4)
+
     def test008(self):
         """ Test 8: verify fix for CAS-2195"""
         def test_statistics(image):
@@ -181,10 +181,10 @@ class imstat_test(unittest.TestCase):
             stats = _myia.statistics()
             _myia.done()
             return stats
-        
+
         def test_imstat(image):
             return imstat(image)
-            
+
         myim = self.linear_coords
         shutil.copy(self.datapath + myim, myim)
         expected_max = [3, 10]
@@ -193,7 +193,7 @@ class imstat_test(unittest.TestCase):
             stats = code(myim)
             self.assertTrue((stats['maxpos'] == expected_max).all())
             self.assertTrue((stats['minpos'] == expected_min).all())
-            
+
     def test009(self):
         """ Test 9: choose axes works"""
         def test_statistics(image, axes):
@@ -202,10 +202,10 @@ class imstat_test(unittest.TestCase):
             stats = _myia.statistics(axes=axes)
             _myia.done()
             return stats
-        
+
         def test_imstat(image, axes):
             return imstat(image, axes=axes)
-            
+
         myim = self.fourdim
         shutil.copytree(self.datapath + myim, myim)
         axes = [-1, [0, 1, 2], [0, 1], 3]
@@ -256,7 +256,7 @@ class imstat_test(unittest.TestCase):
                 stats = code(myim, axes[i])
                 self.assertTrue((stats['mean'] == expected_mean[i]).all())
                 self.assertTrue((stats['sumsq'] == expected_sumsq[i]).all())
-            
+
             """
     def test_robust(self):
         *"" Confirm robust parameter*""
@@ -276,9 +276,9 @@ class imstat_test(unittest.TestCase):
                 self.assertTrue(stats.has_key('median') == robust)
                 self.assertTrue(stats.has_key('medabsdevmed') == robust)
                 self.assertTrue(stats.has_key('quartile') == robust)
-                
+
                 """
-                
+
     def test_stretch(self):
         """ ia.statistics(): Test stretch parameter"""
         yy = iatool()
@@ -300,7 +300,7 @@ class imstat_test(unittest.TestCase):
         )
         self.assertTrue(zz and type(zz) == type({}))
         yy.done()
-        
+
         zz = imstat(
             imagename=imagename, mask=mymask + ">0", stretch=False
         )
@@ -311,7 +311,7 @@ class imstat_test(unittest.TestCase):
         )
         self.assertTrue(type(zz) == type({}) and (not zz == {}))
         yy.done()
-   
+
     def test010(self):
         """test logfile """
         def test_statistics(image, axes, logfile, append):
@@ -322,10 +322,10 @@ class imstat_test(unittest.TestCase):
             )
             _myia.done()
             return stats
-        
+
         def test_imstat(image, axes, logfile, append):
             return imstat(image, axes=axes, logfile=logfile, append=append, verbose=True)
-            
+
         logfile = "imstat.log"
         i = 1
         myim = self.fourdim
@@ -356,12 +356,12 @@ class imstat_test(unittest.TestCase):
         self.assertTrue(bb["npts"][0] == 126)
         bb = imstat(imagename=myia.name(), chans=chans, box=box)
         self.assertTrue(bb["npts"][0] == 126)
-        
+
         rfilename = "myreg.reg"
         rg.tofile(rfilename, reg)
         bb = myia.statistics(region=rfilename)
         self.assertTrue(bb["npts"][0] == 126)
-            
+
     def test012(self):
         """ Test multi beam support"""
         myia = self._myia
@@ -386,7 +386,7 @@ class imstat_test(unittest.TestCase):
                         if (type(got[k]) == type(got["rms"])):
                             if (k != "blc" and k != "trc"):
                                 self.assertTrue((got[k] == exp[k][0][0]).all())
-                            
+
         axes = [0, 1]
         exp = myia.statistics(axes=axes)
         self.assertFalse("flux" in exp)
@@ -425,22 +425,22 @@ class imstat_test(unittest.TestCase):
         self.assertTrue(
             abs(1 - qa.getvalue(nmajor)*exp["flux"][1][1]/(qa.getvalue(major)*exp["flux"][0][0]))
             < 1e-7
-        )        
-        
+        )
+
     def test_CAS4545(self):
         """verify CAS-4545 fix: full support for >2Gpixel images"""
         myia = self._myia
         myia.fromshape("", [1291, 1290, 1290])
         stats = myia.statistics()
         self.assertTrue(stats['npts'][0] == myia.shape().prod())
-        
+
     def test_kflux(self):
         """Test flux determination for image with units of K - CAS-5779"""
         myia = self._myia
         myia.open(self.datapath + self.kimage)
         res = myia.statistics()
         self.assertTrue(abs(res['flux']/65265.98528085 - 1) < 1e-9)
-        
+
     def test_ranges(self):
         """test specifying ranges works correctly for median, medabsdevmed, and iqr"""
         data = []
@@ -467,7 +467,7 @@ class imstat_test(unittest.TestCase):
         self.assertTrue(stats['quartile'][0] == 499000)
 
         myia.done()
-        
+
     def test_hingesfences(self):
         """Test hinges-fences algorithm"""
         data = list(range(100))
@@ -488,13 +488,13 @@ class imstat_test(unittest.TestCase):
                         self.assertTrue((abs(hfall[k]/classic[k] - 1) < 1e-15).all())
                     else:
                         self.assertTrue((hfall[k] == classic[k]).all())
-                        
+
                 else:
                     self.assertTrue(hfall[k] == classic[k])
             self.assertTrue(hf0['npts'][0] == 51)
             self.assertTrue(hf0['mean'][0] == 49)
             self.assertTrue(hf0['q1'][0] == 36)
-    
+
     def test_fithalf(self):
         """Test fit to half algorithm"""
         data = numpy.array(list(range(100)))
@@ -550,7 +550,7 @@ class imstat_test(unittest.TestCase):
                             self.assertTrue(res['mean'][0] == 0)
                             self.assertTrue(res['median'][0] == 0)
                             self.assertTrue(res['q1'][0] == -2500.0)
-    
+
     def test_chauvenet(self):
         """Test Chauvenet's criterion algorithm"""
         data = [
@@ -625,7 +625,7 @@ class imstat_test(unittest.TestCase):
                             emax = data[99]
                     self.assertTrue(stats['npts'][0] == enpts)
                     self.assertTrue(abs(stats['max'][0] - emax) < 1e-6)
-    
+
     def test_CAS7472(self):
         """Verify stats of sub regions of temp images produce correct results when using originial (Kileen pointer) method"""
         myia = iatool()
@@ -644,7 +644,7 @@ class imstat_test(unittest.TestCase):
         self.assertTrue(resold['max'][0] == 200)
         self.assertTrue(resold['min'][0] == -200)
         self._compare(resold, resnew, "first")
-    
+
         myia.fromshape("", [100,100, 100])
         myia.addnoise()
         reg = rg.box([25,25,25],[75,75,25])
@@ -653,7 +653,7 @@ class imstat_test(unittest.TestCase):
             resold = myia.statistics(axes=axes, region=reg, clmethod="tiled")
             self._compare(resold, resnew, "axes=" + str(axes))
         myia.done()
-        
+
     def test_CAS7697(self):
         """verify fix to CAS-7697, min/max should be zero in masked plane"""
         myia = iatool()

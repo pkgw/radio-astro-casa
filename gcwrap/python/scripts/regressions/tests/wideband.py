@@ -17,7 +17,7 @@ gl=sys._getframe(stacklevel).f_globals
 def description():
     return "Images VLA multi-frequency 3C286 data and creates intensity, spectral-index and spectral-curvature maps."
 
-# Copy the Data ? Yes. 
+# Copy the Data ? Yes.
 def doCopy():
     return [1];
 
@@ -33,7 +33,7 @@ def run(fetch=False):
     if fetch:
         for f in data( ):
             copydata( f, os.getcwd( ) )
-    
+
     #####locate the regression script
     lepath=locatescript('wideband_regression.py')
     print('Script used is ',lepath)

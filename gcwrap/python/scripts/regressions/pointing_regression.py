@@ -38,7 +38,7 @@ def pointing_reg():
         os.system("cp -r " + REPOSNAME+TEMPLATEEPJ + " " + MYTEMPLATEEPJ);
 
     cb.open(MYMS);
-    
+
     cb.selectvis(time=TOTALTIME);
     cb.setsolve(type     = "EP",
                 t         = INTEG,
@@ -120,7 +120,7 @@ try:
     print('*                                      *', file=logfile)
     print('Total wall clock time was: ', endTime - startTime, file=logfile)
     print('Total CPU        time was: ', endProc - startProc, file=logfile)
-        
+
 
     logfile.close();
 

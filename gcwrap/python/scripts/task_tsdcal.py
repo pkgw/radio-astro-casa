@@ -14,15 +14,15 @@ import sdutil
 
 def tsdcal(infile=None, calmode='tsys', fraction='10%', noff=-1,
            width=0.5, elongated=False, applytable='',interp='', spwmap={},
-           outfile='', overwrite=False, field='', spw='', scan='',intent=''): 
-       
+           outfile='', overwrite=False, field='', spw='', scan='',intent=''):
+
     """ Externally specify calibration solutions of various types
     """
     # Composite mode: compute calibration table and calibrate
     if ',' in calmode:
         handle_composite_mode(locals())
         return
-            
+
     # Single mode: either calibrate or compute calibration table
     try:
         # Parameters check
@@ -41,8 +41,8 @@ def tsdcal(infile=None, calmode='tsys', fraction='10%', noff=-1,
 
         if not isinstance(calmode,str):
             raise Exception("Calmode must be a string")
-        
-        if calmode.lower() not in ['tsys', 'ps', 'otfraster', 'otf', 'apply']: 
+
+        if calmode.lower() not in ['tsys', 'ps', 'otfraster', 'otf', 'apply']:
             raise Exception("Calmode must be either 'ps' or 'otfraster' or  'otf' or 'tsys' or 'apply'.")
 
         if (not overwrite) and os.path.exists(outfile):
@@ -57,11 +57,11 @@ def tsdcal(infile=None, calmode='tsys', fraction='10%', noff=-1,
             # multiple calibration tables
             if isinstance(applytable, list) or isinstance(applytable, numpy.ndarray):
                 _table_list = applytable
-                
+
             # no calibration table
             if len(_table_list) == 0:
                 raise Exception('Applytable name must be specified.')
-            
+
             # check calibration table files
             for table in _table_list:
                 # empty string
@@ -70,7 +70,7 @@ def tsdcal(infile=None, calmode='tsys', fraction='10%', noff=-1,
                 # unexisting table
                 if not os.path.exists(table):
                     raise Exception("Table doesn't exist: {}".format(table))
-            
+
             # warning on usage difference with asap.sdcal2
             if (outfile != ''):
                 warning_msg = '\n'.join([
@@ -88,7 +88,7 @@ def tsdcal(infile=None, calmode='tsys', fraction='10%', noff=-1,
                 tb.open(MS+'/SPECTRAL_WINDOW')
                 total_spwID=tb.nrows()
                 tb.close()
-                
+
                 spwmap_dict = spwmap
                 spwmap_list = list(range(total_spwID))
 
@@ -99,7 +99,7 @@ def tsdcal(infile=None, calmode='tsys', fraction='10%', noff=-1,
                             spwmap_list[index]=int(key)
 
                 spwmap = spwmap_list
-                
+
             # Setup calibrator
             for _table in _table_list:
                 caltype = inspect_caltype(_table)
@@ -110,7 +110,7 @@ def tsdcal(infile=None, calmode='tsys', fraction='10%', noff=-1,
                 else:
                     # no spw mapping is needed for sky calibration
                     cb.setapply(table=_table, interp=interp, calwt=True)
-                    
+
             # Calibrate
             cb.correct(applymode='calflag')
 
@@ -122,10 +122,10 @@ def tsdcal(infile=None, calmode='tsys', fraction='10%', noff=-1,
                             'otfraster': 'sdsky_raster',
                             'otf': 'sdsky_otf'
                           }
-            
+
             if len(outfile) == 0:
                 raise RuntimeError('Output file name must be specified.')
-            
+
             if calmode == 'tsys':
                 cb.specifycal(caltable=outfile,time="",spw=spw,caltype=cpp_calmode[calmode])
             else:
@@ -164,7 +164,7 @@ def to_numeric_fraction(fraction):
             else:
                 pos = fraction.strip().find('%')
                 if pos != -1:
-                    # percentage 
+                    # percentage
                     fraction_numeric = float(fraction[:pos]) * 0.01
                 else:
                     # direct value
@@ -176,7 +176,7 @@ def to_numeric_fraction(fraction):
         raise RuntimeError('Invalid fraction value (original error message: "%s")'%(str(e)))
 
     return fraction_numeric
-    
+
 def temporary_name(calmode):
     num_trial = 100
     for i in range(num_trial):
@@ -214,7 +214,7 @@ def handle_composite_mode(args):
             precalibrations = []
     else:
         precalibrations = list(_applytable[:])
-    
+
     applytable_list = []
     try:
         # sky calibration

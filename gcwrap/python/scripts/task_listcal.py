@@ -5,7 +5,7 @@ def listcal(vis=None,caltable=None,field=None,antenna=None,spw=None,
             listfile=None,pagerows=None):
        """List calibration solutions (amp and phase)."""
 
-       
+
        casalog.origin('listcal')
 
        #Python script

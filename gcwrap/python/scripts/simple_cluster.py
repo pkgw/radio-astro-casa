@@ -15,14 +15,14 @@ class simple_cluster:
     """The simple_cluster creates and maintains an ipcluster environment
     for controlling parallel execution of casa tasks (tools and scripts)
     """
-    
+
     __default_mem_per_engine = 512
     __default_mem_fraction = 0.9
     __default_cpu_fraction = 0.9
-    
-    
+
+
     def __init__(self,monitoringFile='monitoring.log',verbose=False):
-        
+
         casalog.post("simple_cluster is deprecated. Please switch to "
                      "mpi4casa","WARN","config_cluster")
         self._project=""
@@ -45,7 +45,7 @@ class simple_cluster:
         # jagonzal: This is basically the destructor (i.e. for graceful finalization)
         atexit.register(simple_cluster.stop_cluster,self)
 
-    # jagonzal (CAS-4372): By-pass ssh redirection when deploying engines in localhost 
+    # jagonzal (CAS-4372): By-pass ssh redirection when deploying engines in localhost
     def shell(self, hostname):
       """Creates the command line to execute the give command on the given host.
       If and only if the host is not localhost, ssh is used."""
@@ -57,18 +57,18 @@ class simple_cluster:
          # q: Quiet mode.  Causes all warning and diagnostic messages to be suppressed.
          # x: Disables X11 forwarding.
          return "ssh -fqx " + hostname
-        
+
     def uniqueIP(self, hostname):
       """Returns a unique IP address of the given hostname,
       i.e. not 127.0.0.1 for localhost but localhost's global IP"""
-      
+
       ip = socket.gethostbyname(hostname)
-      
+
       if ip == "127.0.0.1":
          ip = socket.gethostbyname(socket.getfqdn())
-         
+
       return ip
-  
+
     ####################################################################
     # Static method that returns whatever the current definition of a
     # cluster is.  If none is defined the default cluster is created,
@@ -96,112 +96,112 @@ class simple_cluster:
                     return None
             else:
                 return myf['procCluster']
-    
-    @staticmethod 
+
+    @staticmethod
     def setDefaults(default_mem_per_engine=512,default_mem_fraction=0.9,default_cpu_fraction=0.9):
-        
+
         simple_cluster.__default_mem_per_engine = default_mem_per_engine
         simple_cluster.__default_mem_fraction = default_mem_fraction
         simple_cluster.__default_cpu_fraction = default_cpu_fraction
-        
+
     def isClusterRunning(self):
         return self.__running
-    
+
     ###########################################################################
     ###   cluster verifiction
     ###########################################################################
     def config_cluster(self, cfg, force=False):
-        """Read the configuration file and validate cluster definitions.  
+        """Read the configuration file and validate cluster definitions.
 
         Keyword arguments:
         cfg -- the name of cluster configuration file
         force -- whether or not to reconfigure if a configured cluster exists
 
         A configuration file is an ASCII text file. Each line defines a node
-        (also called host) with one line per host to be used, and the following 
-        format: 
-        
+        (also called host) with one line per host to be used, and the following
+        format:
+
         - <hostname>, <number of engines>, <work directory>
         - <hostname>, <number of engines>, <work directory>, <fraction of total RAM>
         - <hostname>, <number of engines>, <work directory>, <fraction of total RAM>, <RAM per engine>
-        
-        where the interpretation of the parameters is as follows: 
-        
-        - hostname: Hostname of the target node where the cluster is deployed 
-        
+
+        where the interpretation of the parameters is as follows:
+
+        - hostname: Hostname of the target node where the cluster is deployed
+
           NOTE: The hostname has to be provided w/o quotes
-        
-        - number of engines: Supports in turns 3 different formats 
-        
-            * If provided as an integer >1: It is interpreted as 
+
+        - number of engines: Supports in turns 3 different formats
+
+            * If provided as an integer >1: It is interpreted as
               the actual user-specified maximum number of engines
-              
-            * If provided as an integer =0: It will deploy as maximum 
-              engines as possible, according to the idle CPU capacity 
+
+            * If provided as an integer =0: It will deploy as maximum
+              engines as possible, according to the idle CPU capacity
               available at the target node
-              
-            * If provided as a float between 0 and 1: It is interpreted 
-              as the percentage of idle CPU capacity that the cluster 
+
+            * If provided as a float between 0 and 1: It is interpreted
+              as the percentage of idle CPU capacity that the cluster
               can use in total at the target node
 
-        - work directory: Area in which the cluster will put intermediate 
+        - work directory: Area in which the cluster will put intermediate
           files such as log files, configuration files, and monitoring files
-        
-          NOTE1: This area has to be accessible from the controller (user) machine, 
-                 and mounted in the same path of the filesystem 
-                 
+
+          NOTE1: This area has to be accessible from the controller (user) machine,
+                 and mounted in the same path of the filesystem
+
           NOTE2: The path name has to be provided w/o quotes
-        
+
         - fraction of total RAM: Supports in turns 3 different formats:
-        
-            * If provided as an integer >1: It is interpreted as the actual 
-              user-specified maximum amount of RAM to be used in total at 
+
+            * If provided as an integer >1: It is interpreted as the actual
+              user-specified maximum amount of RAM to be used in total at
               the target node
-              
-            * If provided as an integer =0: It will deploy as maximum engines 
+
+            * If provided as an integer =0: It will deploy as maximum engines
               as possible, according to the free RAM available at target node
-              
-            * If provided as a float between 0 and 1: It is interpreted as 
-              the percentage of free RAM that the cluster can use in total 
+
+            * If provided as a float between 0 and 1: It is interpreted as
+              the percentage of free RAM that the cluster can use in total
               at the target node
-            
-        - RAM per engine: Integer, which is interpreted as the required memory 
-          per engine in MB (default is 512MB) 
-          
-        It is also possible to add comments, by using the # character at the 
+
+        - RAM per engine: Integer, which is interpreted as the required memory
+          per engine in MB (default is 512MB)
+
+        It is also possible to add comments, by using the # character at the
         beginning of the line. Example:
-        
+
         #####################################################
-        
+
         # CASA cluster configuration file for expert user
         orion, 10, /home/jdoe/test/myclusterhome1
         m42, 4, /home/jdoe/test/myclusterhome2, 0.6, 1024
         antares, 0.6, /home/jdoe/test/myclusterhome3, 0, 2048
-        
+
         #####################################################
-        
-        - At host ``orion'': It will deploy up to 10 engines, with working 
-          directory /home/jdoe/test/myclusterhome1, and using as much free 
-          RAM available as possible (up to 90% by default), taking into 
+
+        - At host ``orion'': It will deploy up to 10 engines, with working
+          directory /home/jdoe/test/myclusterhome1, and using as much free
+          RAM available as possible (up to 90% by default), taking into
           account that each engine can use up to 512 MB (the default and minimum)
-          
-        - At host ``m42'': It will deploy up to 4 engines, with working directory 
-          /home/jdoe/test/myclusterhome2, and using at the most 60% of the free RAM 
-          available, taking into account that each engine can use up to 1024 MB.   
-          
-        - At host ``antares'': It will deploy as many engines as possible, with 
-          working directory /home/jdoe/test/myclusterhome3, using up to 60% of the 
-          idle CPU capacity / cores, and as much free RAM available as possible 
-          (up to 90% by default), taking into account that each engine can use up 
-          to 2048 MB.  
- 
-        Normally, one does not call this function directly. 
+
+        - At host ``m42'': It will deploy up to 4 engines, with working directory
+          /home/jdoe/test/myclusterhome2, and using at the most 60% of the free RAM
+          available, taking into account that each engine can use up to 1024 MB.
+
+        - At host ``antares'': It will deploy as many engines as possible, with
+          working directory /home/jdoe/test/myclusterhome3, using up to 60% of the
+          idle CPU capacity / cores, and as much free RAM available as possible
+          (up to 90% by default), taking into account that each engine can use up
+          to 2048 MB.
+
+        Normally, one does not call this function directly.
         The init_cluster function will trigger this function.
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if (len(self._hosts)>0 or self._configdone) and not force:
             casalog.post("Cluster already configured","WARN","config_cluster")
             return
@@ -234,10 +234,10 @@ class simple_cluster:
                 casalog.post("Workdir can not be empty","WARN","config_cluster")
                 casalog.post("The following entry will be ignored: %s" % sLine,"WARN","config_cluster")
                 continue
-            
+
             ### jagonzal (CAS-4276): New cluster specification file ###
-             
-            # Retrieve available resources to cap number of engines deployed 
+
+            # Retrieve available resources to cap number of engines deployed
             hostname = str(xyzd[0])
             (ncores_available,memory_available,cpu_available) = self.check_host_resources(hostname)
 
@@ -246,16 +246,16 @@ class simple_cluster:
             if (max_engines_user<=0):
                 max_engines = int(round(self.__default_cpu_fraction*(cpu_available/100.0)*ncores_available))
                 if (max_engines < 2):
-                    casalog.post("CPU free capacity available %s of %s cores would not support cluster mode at node %s, starting only 1 engine" 
+                    casalog.post("CPU free capacity available %s of %s cores would not support cluster mode at node %s, starting only 1 engine"
                                  %(str(cpu_available),str(ncores_available),hostname),"WARN","config_cluster")
-                    max_engines = 1                
+                    max_engines = 1
             elif (max_engines_user<=1):
                 max_engines = int(round(max_engines_user*ncores_available))
             else:
                 max_engines = int(max_engines_user)
-            
+
             casalog.post("Will deploy up to %s engines at node %s" % (str(max_engines),hostname), "INFO","config_cluster")
-            
+
             # Determine maximum memory that can be used at target node
             if len(xyzd)>=4:
                 max_mem_user = float(xyzd[3])
@@ -267,17 +267,17 @@ class simple_cluster:
                     max_mem = int(max_mem_user)
             else:
                 max_mem = int(round(self.__default_mem_fraction*memory_available))
-                    
-                    
+
+
             casalog.post("Will use up to %sMB of memory at node %s" % (str(max_mem),hostname), "INFO","config_cluster")
-            
-            # User can provide an estimation of the amount of RAM memory necessary per engine        
+
+            # User can provide an estimation of the amount of RAM memory necessary per engine
             mem_per_engine = self.__default_mem_per_engine
             if len(xyzd)>=5:
                 mem_per_engine_user = float(xyzd[4])
                 if (mem_per_engine_user>self.__default_mem_per_engine):
                     mem_per_engine = mem_per_engine_user
-            
+
             # Apply heuristics: If memory limits number of engines then we can increase the number of openMP threads
             nengines=int(round(float(max_mem)/float(mem_per_engine)))
             if (nengines < 2):
@@ -285,24 +285,24 @@ class simple_cluster:
                              % (str(max_mem),hostname), "WARN","config_cluster")
                 nengines=1
             else:
-                casalog.post("Required memory per engine %sMB allows to deploy up to %s engines at node %s " 
+                casalog.post("Required memory per engine %sMB allows to deploy up to %s engines at node %s "
                              % (str(mem_per_engine),str(nengines),hostname), "INFO","config_cluster")
-        
+
             nengines = int(nengines)
-            if (nengines>max_engines): 
-                casalog.post("Cap number of engines deployed at node %s from %s to %s in order to meet maximum number of engines constraint" 
+            if (nengines>max_engines):
+                casalog.post("Cap number of engines deployed at node %s from %s to %s in order to meet maximum number of engines constraint"
                              % (hostname,str(nengines),str(max_engines)), "INFO","config_cluster")
-                nengines = max_engines       
-            
+                nengines = max_engines
+
             omp_num_nthreads = 1
             while (nengines*omp_num_nthreads*2 <= max_engines):
                 omp_num_nthreads *= 2
-                
+
             if (omp_num_nthreads>1):
                 casalog.post("Enabling openMP to %s threads per engine at node %s" % (str(omp_num_nthreads),hostname), "INFO","config_cluster")
-                
+
             self._hosts.append([a, nengines, c, omp_num_nthreads])
-    
+
         self._configdone=self.validate_hosts()
 
         if not self._configdone:
@@ -313,9 +313,9 @@ class simple_cluster:
         jagonzal (CAS-4276 - New cluster specification file): Retrieve resources available
         at target node in order to dynamically deploy the engines to fit the idle capacity
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         ncores = 0
         memory = 0.
         cmd_os = self.shell(hostname) + " 'uname -s'"
@@ -337,7 +337,7 @@ class simple_cluster:
                 except:
                     casalog.post("Problem converting number of cores into numerical format at node %s: %s" % (hostname,str_ncores),"WARN","check_host_resources")
                     pass
-            
+
             memory=0.0
             for memtype in ['MemFree',
                             'Buffers',
@@ -348,13 +348,13 @@ class simple_cluster:
                 str_memory = string.replace(str_memory,memtype+':','')
                 str_memory = string.replace(str_memory,"kB","")
                 str_memory = string.replace(str_memory," ","")
-            
+
                 try:
                     memory += float(str_memory)/1024.
                 except:
                     casalog.post("Problem converting memory into numerical format at node %s: %s" % (hostname,str_memory),"WARN","check_host_resources")
                     break
-            
+
             cmd_cpu = self.shell(hostname) + " 'top -b -n 1 | grep Cpu' "
             str_cpu = subprocess.getoutput(cmd_cpu)
             list_cpu = string.split(str_cpu,',')
@@ -363,23 +363,23 @@ class simple_cluster:
                 if item.count("%id")>0:
                     str_cpu = string.replace(item,"%id","")
                     str_cpu = string.replace(str_cpu," ","")
-            
+
             try:
                 cpu = float(str_cpu)
             except:
                 casalog.post("Problem converting available cpu into numerical format at node %s: %s" % (hostname,str_cpu),"WARN","check_host_resources")
-            
+
         else: # Mac OSX
             cmd_ncores = self.shell(hostname) + " '/usr/sbin/sysctl -n hw.ncpu'"
             res_ncores = subprocess.getoutput(cmd_ncores)
             str_ncores = res_ncores
-            
+
             try:
                 ncores = int(str_ncores)
             except:
                 casalog.post("Problem converting number of cores into numerical format at node %s: %s" % (hostname,str_ncores),"WARN","check_host_resources")
-                pass            
-            
+                pass
+
             # cmd_memory = self.shell(hostname) + " 'top -l 1 | grep PhysMem: | cut -d , -f5 ' "
             # str_memory = commands.getoutput(cmd_memory)
             # str_memory = string.replace(str_memory,"M free.","")
@@ -398,7 +398,7 @@ class simple_cluster:
             except:
                 casalog.post("Problem converting memory into numerical format at node %s: %s" % (hostname,str_memory),"WARN","check_host_resources")
                 pass
-            
+
             cmd_cpu = self.shell(hostname) + " 'top -l1 | grep usage' "
             str_cpu = subprocess.getoutput(cmd_cpu)
             list_cpu = string.split(str_cpu,',')
@@ -407,30 +407,30 @@ class simple_cluster:
                 if item.count("% idle")>0:
                     str_cpu = string.replace(item,"% idle","")
                     str_cpu = string.replace(str_cpu," ","")
-            
+
             try:
                 cpu = float(str_cpu)
             except:
-                casalog.post("Problem converting available cpu into numerical format at node %s: %s" % (hostname,str_cpu),"WARN","check_host_resources")            
-        
+                casalog.post("Problem converting available cpu into numerical format at node %s: %s" % (hostname,str_cpu),"WARN","check_host_resources")
+
         ncores = int(ncores)
         memory = int(round(memory))
         casalog.post("Host %s, Number of cores %s, Memory available %sMB, CPU capacity available %s%%" % (hostname,str(ncores),str(memory),str(cpu)), "INFO","check_host_resources")
-        
+
         return (ncores,memory,cpu)
-            
-    
+
+
     def validate_hosts(self):
         """Validate the cluster specification.
 
         This function is normally called internally by configure_cluster
-        function. 
+        function.
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
-        # jagonzal (CAS-4287): Add a cluster-less mode to by-pass parallel processing for MMSs as requested 
+
+        # jagonzal (CAS-4287): Add a cluster-less mode to by-pass parallel processing for MMSs as requested
         if (len(self._hosts)==1):
             if (self._hosts[0][1] == 1):
                 if (self.uniqueIP(self._hosts[0][0]) == self.uniqueIP("localhost")):
@@ -438,7 +438,7 @@ class simple_cluster:
                     from parallel.parallel_task_helper import ParallelTaskHelper
                     ParallelTaskHelper.bypassParallelProcessing(1)
                     return False
-        
+
         uhost=set()
         for i in range(len(self._hosts)):
             uhost.add(self._hosts[i][0])
@@ -466,22 +466,22 @@ class simple_cluster:
                 casalog.post("Failed write permission to directory %s" % self._hosts[i][2],"WARN","validate_hosts")
                 return False
         return True
-    
-    
+
+
     ###########################################################################
     ###   project management
     ###########################################################################
     def create_project(self, proj=""):
-        """Create a project. 
+        """Create a project.
 
         Keyword arguments:
-        proj -- the name of project (default: 'proj'+timestamp).  
+        proj -- the name of project (default: 'proj'+timestamp).
 
-        A project maintains a subdirectory under each node's work_dir. All 
+        A project maintains a subdirectory under each node's work_dir. All
         output files of an engine hosted on that node will by default store
         under the subdirectory.
 
-        This function is normally called internally by init_cluster function. 
+        This function is normally called internally by init_cluster function.
 
         Example:
         CASA <33>: sl.list_projects
@@ -507,32 +507,32 @@ class simple_cluster:
         bProj  bsplit  csplit  dflag
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if not self._configdone:
             return
         if type(proj)!=str:
             casalog.post("Project name must be string","WARN","create_project")
             return
-    
+
         self._project=proj.strip()
         if self._project=="":
             tm=time.strftime("%Y%b%d-%Hh%Mm%Ss", time.localtime())
             self._project='proj'+tm
-    
+
         for i in range(len(self._hosts)):
             if not os.path.exists(self._hosts[i][2]+'/'+proj.strip()):
                 cmd='mkdir '+self._hosts[i][2]+'/'+self._project
                 os.system(cmd)
-    
+
     def do_project(self, proj):
-        """Use a project previously created. 
+        """Use a project previously created.
 
         Keyword arguments:
         proj -- the name of project.
 
-        A project maintains a subdirectory under each node's work_dir. All 
+        A project maintains a subdirectory under each node's work_dir. All
         output files of an engine hosted on that node will by default store
         under the subdirectory.
 
@@ -550,15 +550,15 @@ class simple_cluster:
         Out[40]: 'csplit'
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if not self._configdone:
             return
         if type(proj)!=str or proj.strip()=="":
             casalog.post("Project name must be a nonempty string","WARN","do_project")
             return
-    
+
         projexist=True
         for i in range(len(self._hosts)):
             if not os.path.exists(self._hosts[i][2]+'/'+proj.strip()):
@@ -569,14 +569,14 @@ class simple_cluster:
         casalog.post("Output directory:","INFO","do_project")
         for i in range(len(self._hosts)):
             casalog.post("Output directory: %s/%s" % (self._hosts[i][2],self._project),"INFO","do_project")
-    
+
     def erase_project(self, proj):
-        """Erase files and dirs of a project. 
+        """Erase files and dirs of a project.
 
         Keyword arguments:
         proj -- the name of project.
 
-        A project maintains a subdirectory under each node's work_dir. All 
+        A project maintains a subdirectory under each node's work_dir. All
         output files of an engine hosted on that node will by default store
         under the subdirectory.
 
@@ -600,9 +600,9 @@ class simple_cluster:
         bProj  bsplit  csplit
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if not self._configdone:
             return
         if type(proj)!=str or proj.strip()=="":
@@ -615,14 +615,14 @@ class simple_cluster:
             self._project=""
         if self._project=="":
             pass
-    
+
     def clear_project(self, proj):
         """Remove all previous results of the proj
 
         Keyword arguments:
         proj -- the name of project.
 
-        A project maintains a subdirectory under each node's work_dir. All 
+        A project maintains a subdirectory under each node's work_dir. All
         output files of an engine hosted on that node will by default store
         under the subdirectory.
 
@@ -643,9 +643,9 @@ class simple_cluster:
         host: casa-dev-10 ------------------------>>>>
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         # This can be a slow operation, it is better to do it parallel
         if not self._configdone:
             return
@@ -655,14 +655,14 @@ class simple_cluster:
         for i in range(len(self._hosts)):
             cmd='rm -rf '+self._hosts[i][2]+'/'+proj.strip()+'/*'
             os.system(cmd)
-    
+
     def list_project(self, proj):
         """List previous results of the proj
 
         Keyword arguments:
         proj -- the name of project.
 
-        A project maintains a subdirectory under each node's work_dir. All 
+        A project maintains a subdirectory under each node's work_dir. All
         output files of an engine hosted on that node will by default store
         under the subdirectory.
 
@@ -676,9 +676,9 @@ class simple_cluster:
         test_regression_TDEM0003-f0-s0.ms   test_regression_TDEM0003-f4-s11.ms
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if not self._configdone:
             return
         if type(proj)!=str or proj.strip()=="":
@@ -688,11 +688,11 @@ class simple_cluster:
             casalog.post("Host: %s ------------------------>>>>" % self._hosts[i][0] ,"INFO","list_project")
             cmd='ls '+self._hosts[i][2]+'/'+proj
             os.system(cmd)
-    
+
     def erase_projects(self):
         """Erase all previous results of all projects
 
-        A project maintains a subdirectory under each node's work_dir. All 
+        A project maintains a subdirectory under each node's work_dir. All
         output files of an engine hosted on that node will by default store
         under the subdirectory.
 
@@ -703,11 +703,11 @@ class simple_cluster:
             cmd='rm -rf '+self._hosts[i][2]+'/*'
             os.system(cmd)
         self._project=""
-    
+
     def list_projects(self):
         """List all previous projects
 
-        A project maintains a subdirectory under each node's work_dir. All 
+        A project maintains a subdirectory under each node's work_dir. All
         output files of an engine hosted on that node will by default store
         under the subdirectory.
 
@@ -721,20 +721,20 @@ class simple_cluster:
         bProj  bsplit  csplit
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if not self._configdone:
             return
         for i in range(len(self._hosts)):
             casalog.post("Host: %s ------------------------>>>>" % self._hosts[i][0] ,"INFO","list_projects")
-            cmd='ls '+self._hosts[i][2]+'/' 
+            cmd='ls '+self._hosts[i][2]+'/'
             os.system(cmd)
-    
+
     def reset_project(self):
         """Erase previous result and reset the status current project.
 
-        A project maintains a subdirectory under each node's work_dir. All 
+        A project maintains a subdirectory under each node's work_dir. All
         output files of an engine hosted on that node will by default store
         under the subdirectory.
 
@@ -761,7 +761,7 @@ class simple_cluster:
         self._jobs={}
         self._job_title=1
         self._monitor_on=True
-    
+
     def get_hosts(self):
         """List current cluster.
 
@@ -772,17 +772,17 @@ class simple_cluster:
          ['casa-dev-10', 4, '/home/casa-dev-10/hye/ptest']]
 
         """
-        return self._hosts 
-    
+        return self._hosts
+
     ###########################################################################
     ###   cluster management
     ###########################################################################
-    
-    # jagonzal (CAS-4292): This method is deprecated, because I'd like to 
+
+    # jagonzal (CAS-4292): This method is deprecated, because I'd like to
     # avoid brute-force methods like killall which just hide state errors
     def cold_start(self):
         """kill all engines on all hosts. Shutdown current cluster.
-        
+
         This is used if a complete restart of the cluster is needed. One can
         rerun init_cluster after this. This also kills possible leftover
         engines from previous sessions.
@@ -796,7 +796,7 @@ class simple_cluster:
             hostname = self._hosts[i][0]
             cmd=self.shell(hostname) + ' "killall -9 ipengine"'
             os.system(cmd)
-            
+
     #   jagonzal (CAS-4292): Method for gracefull finalization (e.g.: when closing casa)
     def stop_cluster(self):
         """ Destructor method to shut down the cluster gracefully """
@@ -804,12 +804,12 @@ class simple_cluster:
         self.stop_monitor()
         # Now we can stop the cluster w/o problems
         # jagonzal (CAS-4292): Stop the cluster w/o using brute-force killall as in cold_start
-        self._cluster.stop_cluster()            
+        self._cluster.stop_cluster()
         self.__running = False
-    
+
     def stop_nodes(self):
         """Stop all engines on all hosts of current cluster.
-        
+
         After running this, the cluster contains no engines.
 
         """
@@ -817,21 +817,21 @@ class simple_cluster:
             return
         for i in self._cluster.get_nodes():
             self._cluster.stop_node(i)
-    
+
     def start_cluster(self):
         """Start a cluster with current configuration.
-        
-        Normally, one does not need to run this function directly. The 
+
+        Normally, one does not need to run this function directly. The
         init_cluster will call this internally.
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if not self._configdone:
             return
         for i in range(len(self._hosts)):
-            self._cluster.start_engine(self._hosts[i][0], self._hosts[i][1], 
+            self._cluster.start_engine(self._hosts[i][0], self._hosts[i][1],
                                    self._hosts[i][2]+'/'+self._project,self._hosts[i][3])
             if (self._hosts[i][3]>1):
                 omp_num_threads = self._cluster.execute("print os.environ['OMP_NUM_THREADS']",i)[0]['stdout']
@@ -839,14 +839,14 @@ class simple_cluster:
                     casalog.post("Open MP enabled at host %s,  OMP_NUM_THREADS=%s" % (self._hosts[i][0],str(self._hosts[i][3])), "INFO","start_cluster")
                 else:
                     casalog.post("Problem enabling Open MP at host %s: %s" % (self._hosts[i][0],omp_num_threads),"WARN","start_cluster")
-                    
+
         self.start_logger()
         self.start_monitor()
         # jagonzal (CAS-4324): Is better to update the resources in the
         # check_status method, after updating the status of the jobs
         # self.start_resource()
         self._rsrc = self.show_resource(True)
-    
+
     def get_host(self, id):
         """Find out the name of the node that hosts this engine.
 
@@ -858,9 +858,9 @@ class simple_cluster:
         Out[50]: 'casa-dev-10'
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if not self._configdone:
             return
         ids=self._cluster.get_ids()
@@ -873,8 +873,8 @@ class simple_cluster:
         e=self._cluster.get_engines()
         for i in range(len(e)):
             if e[i][0]==id:
-                return e[i][1] 
-    
+                return e[i][1]
+
     def get_engine_store(self, id):
         """Get the root path where an engine writes out result
 
@@ -894,17 +894,17 @@ class simple_cluster:
                 pth=self._hosts[i][2]
                 sl=''
                 if not pth.endswith('/'):
-                    sl='/' 
+                    sl='/'
                 return pth+sl+self._project+'/'
-    
+
     ###########################################################################
     ###   log management
     ###########################################################################
     def start_logger(self):
-        """Link all engine logs to the current directory. 
+        """Link all engine logs to the current directory.
 
         After running this, the current directory contains links to each of
-        the engine logs with file name 'engine-[id].log such that one can 
+        the engine logs with file name 'engine-[id].log such that one can
         conveniently browse engine logs with casa logviewer.
 
         """
@@ -915,14 +915,14 @@ class simple_cluster:
         for i in lg:
             eng='engine'+i[str.rfind(i,'-'):]
             os.symlink(i, eng)
-    
+
     ###########################################################################
     ###   resource management
-    ###########################################################################   
-    def start_resource(self): 
+    ###########################################################################
+    def start_resource(self):
         """Start monitoring resource usage.
 
-        Four critical resource usage indicators (for parallel execution), 
+        Four critical resource usage indicators (for parallel execution),
         namely, %cpu, %iowait, %mem and %memswap on all hosts are continuously
         checked. This infomation can be used to tune the parallel performance.
 
@@ -930,17 +930,17 @@ class simple_cluster:
         will call this function.
 
         """
-        
+
         if not self._configdone:
             return
-        self._resource_on=True 
+        self._resource_on=True
         self._rsrc={}
         return _thread.start_new_thread(self.update_resource, ())
-    
+
     def update_resource(self):
         """Set up repeated resource checking.
 
-        Four critical resource usage indicators (for parallel execution), 
+        Four critical resource usage indicators (for parallel execution),
         namely, %cpu, %iowait, %mem and %memswap on all hosts are continuously
         checked. This infomation can be used to tune the parallel performance.
 
@@ -948,7 +948,7 @@ class simple_cluster:
         will call this function.
 
         """
-                    
+
         self._resource_running=True
         if not self._configdone:
             return
@@ -957,11 +957,11 @@ class simple_cluster:
                 self.check_resource()
             time.sleep(5)
         self._resource_running=False
-    
-    def stop_resource(self): 
+
+    def stop_resource(self):
         """Stop monitoring resource usage.
 
-        Four critical resource usage indicators (for parallel execution), 
+        Four critical resource usage indicators (for parallel execution),
         namely, %cpu, %iowait, %mem and %memswap on all hosts are continuously
         checked. This infomation can be used to tune the parallel performance.
 
@@ -971,11 +971,11 @@ class simple_cluster:
         """
         if not self._configdone:
             return
-        self._resource_on=False 
+        self._resource_on=False
         while (self._resource_running):
             time.sleep(1)
         self._rsrc={}
-    
+
     def show_resource(self, long=False):
         """
         jagonzal (CAS-4372): Old resource monitoring functions were causing crashes in NRAO cluster
@@ -986,34 +986,34 @@ class simple_cluster:
             return self.check_resource(False)
         else:
             self.check_resource(True)
-    
+
     def check_resource(self, verbose_local=False):
         """
         jagonzal 29/05/12 (CAS-4137) - HPC project (CAS-4106)
         ========================================================================
         Advanced monitoring function that provides CPU,Memory,I/O and job queue
-        stats per node and total per host. 
+        stats per node and total per host.
 
         There are 2 usage modes:
-        - Called from the monitoring thread in regular time intervals 
-          (i.e. within the check_status method), to only dump the stats 
+        - Called from the monitoring thread in regular time intervals
+          (i.e. within the check_status method), to only dump the stats
           into a file or the terminal.
-        - Called from the command line, to return a dictionary in addition 
+        - Called from the command line, to return a dictionary in addition
           of dumping the stats into a file or into the terminal.
 
         In both cases logging can be controlled in the following way:
-        - User can provide a file-name when creating the simple_cluster 
-          object, trough the string parameter "monitoringFile", to specify 
-          the location of the monitoring file, otherwise it defaults to 
-          'monitoring.log' in the working directory. 
-        - User can also switch verbose mode when creating the simple_cluster 
-          object, trough the boolean parameter "verbose", to have the monitoring 
-          info dumped into the terminal, otherwise it defaults to False and it 
-          only dumps into the monitoring file. 
-        - User can even use the stand alone method show_state specifying 
-          verbosity only for that particular call via the "verbose_local" 
-          parameter, and the method returns a dictionary with all the stats 
-          per node and total per host. 
+        - User can provide a file-name when creating the simple_cluster
+          object, trough the string parameter "monitoringFile", to specify
+          the location of the monitoring file, otherwise it defaults to
+          'monitoring.log' in the working directory.
+        - User can also switch verbose mode when creating the simple_cluster
+          object, trough the boolean parameter "verbose", to have the monitoring
+          info dumped into the terminal, otherwise it defaults to False and it
+          only dumps into the monitoring file.
+        - User can even use the stand alone method show_state specifying
+          verbosity only for that particular call via the "verbose_local"
+          parameter, and the method returns a dictionary with all the stats
+          per node and total per host.
 
         Examples:
         - Stand-Alone usage from terminal to return a dictionary
@@ -1040,7 +1040,7 @@ class simple_cluster:
 
         # Open monitoring file
         fid = open(self._monitoringFile + ".tmp", 'w')
-		
+
         # Print header
         print("%20s%10s%10s%10s%10s%10s%10s%10s%15s%15s%20s%30s" % ( "Host","Engine","Status","CPU[%]","Memory[%]","Time[s]",
                                                                              "Read[MB]","Write[MB]","Read[MB/s]","Write[MB/s]","Job","Sub-MS"), file=fid)
@@ -1051,7 +1051,7 @@ class simple_cluster:
         result = {}
         engines_list = self._cluster.get_engines()
         for engine in engines_list:
-            hostname = str(engine[1])            
+            hostname = str(engine[1])
             # First of all get operating system
             cms_os = self.shell(hostname) + " 'uname -s'"
             os = subprocess.getoutput(cms_os)
@@ -1135,13 +1135,13 @@ class simple_cluster:
             # Retrieve job status information from job structure
             for job in list(self._jobs.keys()):
                 jobEngine = self._jobs[job]['engine']
-                if (jobEngine == engine[0]):           
+                if (jobEngine == engine[0]):
                     result[engine[1]][engine[0]]["Sub-MS"] = self._jobs[job]['subms']
                     result[engine[1]][engine[0]]["Status"] = self._jobs[job]['status']
                     result[engine[1]][engine[0]]["Time"] = round(self._jobs[job]['time'])
                     result[engine[1]][engine[0]]["Job"] = self._jobs[job]['short'].split('=').pop().replace(' ','')
                     result[engine[1]][engine[0]]["Read"] = float(read_bytes - self._jobs[job]['read_offset'])/(1024*1024)
-                    result[engine[1]][engine[0]]["Write"] = float(write_bytes - self._jobs[job]['write_offset'])/(1024*1024)                      
+                    result[engine[1]][engine[0]]["Write"] = float(write_bytes - self._jobs[job]['write_offset'])/(1024*1024)
                     # Compute data rates
                     if (result[engine[1]][engine[0]]["Time"] > 0):
                         result[engine[1]][engine[0]]["ReadRate"] = result[engine[1]][engine[0]]["Read"] / result[engine[1]][engine[0]]["Time"]
@@ -1264,20 +1264,20 @@ class simple_cluster:
 
         # Update resource member
         self._rsrc = result
-        
+
         return result
 
     def get_return_list(self):
-		"""
-		jagonzal (CAS-4376): Gather return variables from the different engines back to the main CASA controller instance
-		"""
+                """
+                jagonzal (CAS-4376): Gather return variables from the different engines back to the main CASA controller instance
+                """
 
-		return_list = {}
-		jobQueue = self._JobQueueManager.getOutputJobs()
-		for job in jobQueue:
-			return_list[job.getCommandArguments()['vis']]=job.getReturnValues()
+                return_list = {}
+                jobQueue = self._JobQueueManager.getOutputJobs()
+                for job in jobQueue:
+                        return_list[job.getCommandArguments()['vis']]=job.getReturnValues()
 
-		return return_list
+                return return_list
 
     def get_output_return_list(self):
         """
@@ -1298,7 +1298,7 @@ class simple_cluster:
         """Check the execution status of current noblock jobs  on all engines.
 
         This function can be used to block the terminal until all submitted
-        jobs finish. 
+        jobs finish.
 
         Example:
         CASA <2>: from simple_cluster import simple_cluster
@@ -1322,7 +1322,7 @@ class simple_cluster:
                 except:
                     traceback.print_tb(sys.exc_info()[2])
                     raise
-    
+
     def check_status(self, notify=False):
         """Check the execution status of submitted no-block jobs
 
@@ -1333,7 +1333,7 @@ class simple_cluster:
         will call this function internally.
 
         """
-        
+
         casalog.origin("simple_cluster")
 
         self._monitor_running = True
@@ -1381,7 +1381,7 @@ class simple_cluster:
                                         if notify:
                                             casalog.post("Engine %d job %s started" %(eng,sht),"INFO","check_status")
                                         self._jobs[job]['start']=time.time()
-                                    self._jobs[job]['time']=time.time()-self._jobs[job]['start'] 
+                                    self._jobs[job]['time']=time.time()-self._jobs[job]['start']
                                 else:
                                     pass
                         else:
@@ -1402,10 +1402,10 @@ class simple_cluster:
                         if notify and self._jobs[job]['status']=="running":
                             casalog.post("Engine %d job %s broken" %(eng,sht),"SEVERE","check_status")
                         self._jobs[job]['status']="broken"
-                
+
             # jagonzal (CAS-4324): This method consumes lots of resources, and the user terminal
             # is not very responsive while it's running, so we execute it only when there are jobs
-            # beign processed.        
+            # beign processed.
             if (len(list(self._jobs.keys()))>0):
                 try:
                     self.check_resource()
@@ -1415,7 +1415,7 @@ class simple_cluster:
             gr=set()
             for val in list(self._jobs.values()):
                 gr.add(val['jobgroup'])
-    	    for i in list(gr):
+            for i in list(gr):
                 eml=''
                 jobname='None'
                 if i.count(':')>0:
@@ -1426,10 +1426,10 @@ class simple_cluster:
                     eml=i.strip()
                 else:
                     jobname=i.strip()
-                
+
                 finish=True
                 for val in list(self._jobs.values()):
-                    if val['jobgroup']==i and not (val['status']=='done' or 
+                    if val['jobgroup']==i and not (val['status']=='done' or
                                                 val['status']=='broken'):
                         finish=False
                 if finish:
@@ -1441,20 +1441,20 @@ class simple_cluster:
                     rmv=[]
                     for job in list(self._jobs.keys()):
                         if self._jobs[job]['jobgroup']==i:
-                            msg+="%6d%10s%9d%2s%s\n" % (self._jobs[job]['engine'], 
+                            msg+="%6d%10s%9d%2s%s\n" % (self._jobs[job]['engine'],
                                   self._jobs[job]['status'],
-                                  int(self._jobs[job]['time']), 
+                                  int(self._jobs[job]['time']),
                                   '  ',
                                   self._jobs[job]['command'])
                             rmv.append(self._jobs[job]['jobname'])
                     if i.strip()!='':
-    
+
                         # Append to project result file
                         f=open(self._project+'.result', 'a')
                         f.write(msg)
                         f.write('\n')
                         f.close()
-    
+
                         if eml!='' and eml.count(' ')==0:
                             #send email
                             #import smtplib
@@ -1463,12 +1463,12 @@ class simple_cluster:
                             #mal['Subject']='your parallel job finished'
                             #me=os.environ['USER']
                             #mal['From']=me
-                            #mal['To']=i 
+                            #mal['To']=i
                             #s=smtplib.SMTP()
                             #s.connect()
                             #s.sendmail(me, [i], mal.as_string())
                             #s.close()
-        
+
                             msgf='/tmp/emailmsg.txt'
                             f=open(msgf, 'w')
                             f.write(msg)
@@ -1477,14 +1477,14 @@ class simple_cluster:
                             cmd='/bin/mail -s "parallel job \''+jobname+\
                                 '\' finished" '+eml+' < '+msgf
                             os.system(cmd)
-                             
+
                         for j in rmv:
                             self.remove_record(j)
 
         self._monitor_running = False
-                            
-    
-    def start_monitor(self): 
+
+
+    def start_monitor(self):
         """Start monitoring  execution status of submitted no-block jobs
 
         Normally, one does not call this function directly. The init_cluster
@@ -1493,13 +1493,13 @@ class simple_cluster:
         """
         if not self._configdone:
             return
-        self._monitor_on=True 
+        self._monitor_on=True
         return _thread.start_new_thread(self.check_status, (True,))
-    
-    def stop_monitor(self): 
+
+    def stop_monitor(self):
         """Stop monitoring execution status of submitted no-block jobs
 
-        Normally, one does not call this function directly. 
+        Normally, one does not call this function directly.
 
         """
         if not self._configdone:
@@ -1507,7 +1507,7 @@ class simple_cluster:
         self._monitor_on=False
         while (self._monitor_running):
             time.sleep(1)
-    
+
     def show_queue(self):
         """Display job queue.
 
@@ -1515,7 +1515,7 @@ class simple_cluster:
         CASA <2>: from simple_cluster import simple_cluster
         CASA <3>: sl=simple_cluster()
         CASA <4>: sl.init_cluster("my_cluster", "csplit")
-        CASA <5>: sl.simple_split('/lustre/casa-store/hye/10B-209a_5s.ms/', 
+        CASA <5>: sl.simple_split('/lustre/casa-store/hye/10B-209a_5s.ms/',
                                   'you@nrao.edu:3rd split')
         CASA <6>: sl.show_queue()
 
@@ -1523,7 +1523,7 @@ class simple_cluster:
         if not self._configdone:
             return
         return self._cluster.queue_status()
-    
+
     def get_status(self, long=False):
         """Display job execution status.
 
@@ -1534,7 +1534,7 @@ class simple_cluster:
         CASA <2>: from simple_cluster import simple_cluster
         CASA <3>: sl=simple_cluster()
         CASA <4>: sl.init_cluster("my_cluster", "csplit")
-        CASA <5>: sl.simple_split('/lustre/casa-store/hye/10B-209a_5s.ms/', 
+        CASA <5>: sl.simple_split('/lustre/casa-store/hye/10B-209a_5s.ms/',
                                   'you@nrao.edu:3rd split')
         CASA <6>: sl.get_status()
         engine    status  time(s)     start  command   title
@@ -1556,12 +1556,12 @@ class simple_cluster:
             else:
                 print('engine    status  time(s)     start  command   title')
                 for job in list(self._jobs.keys()):
-                    print("%6d%10s%9d%10s%9s%8d" % (self._jobs[job]['engine'], 
+                    print("%6d%10s%9d%10s%9s%8d" % (self._jobs[job]['engine'],
                            self._jobs[job]['status'],
-                           int(self._jobs[job]['time']), 
-                           '' if type(self._jobs[job]['start'])==str 
+                           int(self._jobs[job]['time']),
+                           '' if type(self._jobs[job]['start'])==str
                               else
-                                 time.strftime("%H:%M:%S", 
+                                 time.strftime("%H:%M:%S",
                                         time.localtime(self._jobs[job]['start'])),
                            self._jobs[job]['short'].strip()[:9],
                            self._jobs[job]['jobname']))
@@ -1576,7 +1576,7 @@ class simple_cluster:
         CASA <2>: from simple_cluster import simple_cluster
         CASA <3>: sl=simple_cluster()
         CASA <4>: sl.init_cluster("my_cluster", "csplit")
-        CASA <5>: sl.simple_split('/lustre/casa-store/hye/10B-209a_5s.ms/', 
+        CASA <5>: sl.simple_split('/lustre/casa-store/hye/10B-209a_5s.ms/',
                                   'you@nrao.edu:3rd split')
         CASA <6>: sl.get_jobId('done')
 
@@ -1585,9 +1585,9 @@ class simple_cluster:
         if not self._configdone:
             return []
         if len(list(self._jobs.keys()))==0:
-            return [] 
+            return []
         else:
-            jobId=[] 
+            jobId=[]
             for job in list(self._jobs.keys()):
                 if self._jobs[job]['status']==status:
                     jobId.append(self._jobs[job]['jobname'])
@@ -1604,7 +1604,7 @@ class simple_cluster:
 
         if not self._configdone:
             return
-        
+
         for job in list(self._jobs.keys()):
             if jobname is None:
                 del self._jobs[job]
@@ -1612,7 +1612,7 @@ class simple_cluster:
                del self._jobs[job]
             elif type(jobname)==str and self._jobs[job]['status']==jobname:
                del self._jobs[job]
-    
+
     ###########################################################################
     ###   job distribution functions
     ###########################################################################
@@ -1631,12 +1631,12 @@ class simple_cluster:
           Out[15]: 'flagdata(vis="NGC5921.ms", spw=4)'
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if type(func)!=str or type(param)!=dict:
             casalog.post("Func must be a str and param must be a dictionary","WARN","make_call")
-            return None 
+            return None
         cmd=func+'('
         for (k, v) in param.items():
             cmd+=k+'='
@@ -1650,13 +1650,13 @@ class simple_cluster:
         cmd=cmd[0:-2]
         cmd+=')'
         return cmd
-    
+
     def do_and_record(self, cmd, id, group='', subMS=''):
         """Submit a function call to an engine and record its execution status.
 
         Keyword arguments:
         cmd -- the function call string
-        id -- the id of the engine to be assigned 
+        id -- the id of the engine to be assigned
         group -- the group this cmd belongs to and the receipt of notification
                  group can be an email address or a label of the job or both
                  separated by a ':'. Once all the jobs that has the same label
@@ -1694,11 +1694,11 @@ class simple_cluster:
         self._jobs[job]['jobgroup']=group
         self._job_title+=1
         return self._job_title-1
-    
+
     ###########################################################################
     ###   result processing functions
     ###########################################################################
-    
+
     def list_result(self):
         """read the project.result file and write out all labels
 
@@ -1722,7 +1722,7 @@ class simple_cluster:
                 continue
         f.close()
         return vec
-    
+
     def get_result(self, tm):
         """read the project.result file and write out result for a label
 
@@ -1779,7 +1779,7 @@ class simple_cluster:
         if not self._configdone:
             return
         if type(tm)!=str or len(tm)==tm.count('#'):
-            return 
+            return
         f=open(self._project+'.result', 'r')
         s=f.readlines()
         f.close()
@@ -1798,12 +1798,12 @@ class simple_cluster:
             f.writelines(s[b:])
             f.close()
         return
-    
+
     def get_output(self, result, item, **kwargs):
         """pick from result list the item that meets condistion in kwargs
 
         Keyword arguments:
-        result -- the result label or the result from running get_result 
+        result -- the result label or the result from running get_result
         item -- the result item to get
         kwargs -- the conditions to limit the result
 
@@ -1825,9 +1825,9 @@ class simple_cluster:
          '/home/casa-dev-08/hye/ptest/csplit/10B-209a_5s-f0-s0.ms']
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if not self._configdone:
             return
         if type(result)==str:
@@ -1839,7 +1839,7 @@ class simple_cluster:
         if type(item)!=str:
             casalog.post("The item name must be a string","WARN","get_output")
             return []
-    
+
         vals=[]
         for key in kwargs:
             v=kwargs[key]
@@ -1849,7 +1849,7 @@ class simple_cluster:
                 vals.append(str(key)+'='+repr(v))
             else:
                 vals.append(str(key)+'='+str(v))
-    
+
         vec=[]
         for i in result:
             pick=True
@@ -1879,8 +1879,8 @@ class simple_cluster:
             rtnVal.append(pulled[engine])
 
         return rtnVal
-        
-    
+
+
     ###########################################################################
     ###   engine selection functions
     ###########################################################################
@@ -1905,9 +1905,9 @@ class simple_cluster:
           Out[35]: [8]
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if not self._configdone:
             return
         if len(dir_list)==0:
@@ -1925,7 +1925,7 @@ class simple_cluster:
             if not int_ok:
                 casalog.post("path name in dir_list must be string","WARN","use_paths")
                 return []
-    
+
         a=[]
         hst=self.get_hosts()
         for i in dir_list:
@@ -1937,13 +1937,13 @@ class simple_cluster:
             if not int_ok:
                 casalog.post("Could not find a host for %s" % str(i),"WARN","use_paths")
                 return []
-        
+
         e=dict()
         for k in range(len(hst)):
             h=hst[k][0]
             e[h]=[]
             for i in self._cluster.get_engines():
-                if i[1]==h: 
+                if i[1]==h:
                     e[h].append(i[0])
         val=list(e.values())
         key=list(e.keys())
@@ -1979,7 +1979,7 @@ class simple_cluster:
           Out[46]: [8, 9, 0, 1]
 
         """
-        
+
         casalog.origin("simple_cluster")
 
         if not self._configdone:
@@ -2014,12 +2014,12 @@ class simple_cluster:
                 casalog.post("There is no host with name %s" % str(i),"WARN","use_hosts")
                 return []
 
-       
+
         e=dict()
         for k in host_list:
             e[k]=[]
             for i in self._cluster.get_engines():
-                if i[1]==k: 
+                if i[1]==k:
                     e[k].append(i[0])
         val=list(e.values())
         vec=[]
@@ -2048,9 +2048,9 @@ class simple_cluster:
           Out[55]: [4, 8, 0, 5, 9, 1, 6, 10, 2, 7, 11, 3]
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         if not self._configdone:
             return
         if len(use_id)>0:
@@ -2085,7 +2085,7 @@ class simple_cluster:
                        vec.append(val[i][pos[i]])
                        pos[i]+=1
             return vec
-    
+
     ###########################################################################
     ###   ms knowledge functions
     ###########################################################################
@@ -2107,7 +2107,7 @@ class simple_cluster:
         if msname.endswith('.ms'):
             msname=msname[:str.rfind(msname, '.ms')]
         return msname
-    
+
     def get_antenna_diam(self, vis):
         """get the diameter of antennas
 
@@ -2128,7 +2128,7 @@ class simple_cluster:
             diam=np.max(diams)
         tb.done()
         return diam
-    
+
     def get_mean_reff(self, vis):
         """get the mean reference frequency
 
@@ -2146,7 +2146,7 @@ class simple_cluster:
         reff=tb.getcol('REF_FREQUENCY')
         tb.done()
         return reff.mean()
-    
+
     def get_spw_reff(self, vis, spw=0):
         """get the reference frequency of spw
 
@@ -2160,7 +2160,7 @@ class simple_cluster:
           Out[21]: 5056000000.0
 
         """
-        
+
         casalog.origin("simple_cluster")
 
         tb.open(vis+'/SPECTRAL_WINDOW')
@@ -2170,7 +2170,7 @@ class simple_cluster:
         spw_reff=tb.getcell('REF_FREQUENCY', spw)
         tb.done()
         return spw_reff
-    
+
     def get_spw_chan(self, vis, spw=0):
         """get the number of channels of spw
 
@@ -2184,9 +2184,9 @@ class simple_cluster:
           Out[24]: 64
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         tb.open(vis+'/SPECTRAL_WINDOW')
         if spw<0 or spw>=tb.nrows():
             casalog.post("Spectral window not available: %s" % str(spw),"WARN","get_spw_chan")
@@ -2194,9 +2194,9 @@ class simple_cluster:
         spw_chan=tb.getcell('NUM_CHAN', spw)
         tb.done()
         return spw_chan
-    
+
     def get_pol_corr(self, vis, pol=0):
-        """get the number of coorelation of polarization 
+        """get the number of coorelation of polarization
 
         Keyword arguments:
         vis -- the path+name of visibility data
@@ -2208,9 +2208,9 @@ class simple_cluster:
           Out[31]: 4
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         tb.open(vis+'/POLARIZATION')
         if pol<0 or pol>=tb.nrows():
             casalog.post("Polarization not available: %s" % str(pol),"WARN","get_pol_corr")
@@ -2218,9 +2218,9 @@ class simple_cluster:
         pol_corr=tb.getcell('NUM_CORR', pol)
         tb.done()
         return pol_corr
-    
+
     def get_num_field(self, vis):
-        """get the number of fields 
+        """get the number of fields
 
         Keyword arguments:
         vis -- the path+name of visibility data
@@ -2236,9 +2236,9 @@ class simple_cluster:
         num_field=tb.nrows()
         tb.done()
         return num_field
-    
+
     def get_field_name(self, vis, id):
-        """get the name of a field 
+        """get the name of a field
 
         Keyword arguments:
         vis -- the path+name of visibility data
@@ -2250,19 +2250,19 @@ class simple_cluster:
           Out[35]: 'J0738+1742'
 
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         tb.open(vis+'/FIELD')
         if id<0 or id>=tb.nrows():
-            casalog.post("Field not available: %s" % str(id),"WARN","get_field_name") 
+            casalog.post("Field not available: %s" % str(id),"WARN","get_field_name")
             return
         fn=tb.getcell('NAME', id)
         tb.done()
         return fn
-    
+
     def get_num_spw(self, vis):
-        """get the number of spectral windows 
+        """get the number of spectral windows
 
         Keyword arguments:
         vis -- the path+name of visibility data
@@ -2278,7 +2278,7 @@ class simple_cluster:
         num_spw=tb.nrows()
         tb.done()
         return num_spw
-    
+
     def get_num_desc(self, vis):
         """get number of data descriptions
 
@@ -2296,7 +2296,7 @@ class simple_cluster:
         num_desc=tb.nrows()
         tb.done()
         return num_desc
-    
+
     def get_spw_id(self, vis, desc=0):
         """get spectral window id for desc
 
@@ -2310,17 +2310,17 @@ class simple_cluster:
           Out[38]: 17
 
         """
-        
+
         casalog.origin("simple_cluster")
 
         tb.open(vis+'/DATA_DESCRIPTION')
         if desc<0 or desc>=tb.nrows():
-            casalog.post("DDI not available: %s" % str(desc),"WARN","get_spw_id") 
+            casalog.post("DDI not available: %s" % str(desc),"WARN","get_spw_id")
             return
         spw_id=tb.getcell('SPECTRAL_WINDOW_ID', desc)
         tb.done()
         return spw_id
-    
+
     def get_pol_id(self, vis, desc=0):
         """get polarization id for desc
 
@@ -2334,17 +2334,17 @@ class simple_cluster:
           Out[39]: 0
 
         """
-        
+
         casalog.origin("simple_cluster")
 
         tb.open(vis+'/DATA_DESCRIPTION')
         if desc<0 or desc>=tb.nrows():
-            casalog.post("DDI not available: %s" % str(desc),"WARN","get_pol_id") 
+            casalog.post("DDI not available: %s" % str(desc),"WARN","get_pol_id")
             return
         pol_id=tb.getcell('POLARIZATION_ID', desc)
         tb.done()
         return pol_id
-    
+
     def get_field_desc(self, vis):
         """get source
 
@@ -2377,7 +2377,7 @@ class simple_cluster:
         """
 
         tb.open(vis)
-        nrows=tb.nrows() 
+        nrows=tb.nrows()
         tb.done()
         k=nrows/1000
         t=nrows%1000
@@ -2408,99 +2408,99 @@ class simple_cluster:
             b[i]['nchan']=self.get_spw_chan(vis, b[i]['spw'])
             b[i]['cost']=b[i]['nchan']*b[i]['ncorr']*b[i]['nrows']
             d+=b[i]['cost']
-        d/=len(list(b.keys())) 
+        d/=len(list(b.keys()))
         for i in list(b.keys()):
             b[i]['cost']=[b[i]['cost']/d, len(list(b.keys()))]
         return b
-    
-    
+
+
     ###########################################################################
-    ###   setup -  
+    ###   setup -
     ###########################################################################
     def init_cluster(self, clusterfile='', project=''):
         """Setup the cluster
 
         Keyword arguments:
         clusterfile -- the cluster definition file
-        project -- the name of project (default: 'proj'+timestamp).  
+        project -- the name of project (default: 'proj'+timestamp).
 
         A configuration file is an ASCII text file. Each line defines a node
-        (also called host) with one line per host to be used, and the following 
-        format: 
-        
+        (also called host) with one line per host to be used, and the following
+        format:
+
         - <hostname>, <number of engines>, <work directory>
         - <hostname>, <number of engines>, <work directory>, <fraction of total RAM>
         - <hostname>, <number of engines>, <work directory>, <fraction of total RAM>, <RAM per engine>
-        
-        where the interpretation of the parameters is as follows: 
-        
-        - hostname: Hostname of the target node where the cluster is deployed 
-        
+
+        where the interpretation of the parameters is as follows:
+
+        - hostname: Hostname of the target node where the cluster is deployed
+
           NOTE: The hostname has to be provided w/o quotes
-        
-        - number of engines: Supports in turns 3 different formats 
-        
-            * If provided as an integer >1: It is interpreted as 
+
+        - number of engines: Supports in turns 3 different formats
+
+            * If provided as an integer >1: It is interpreted as
               the actual user-specified maximum number of engines
-              
-            * If provided as an integer =0: It will deploy as maximum 
-              engines as possible, according to the idle CPU capacity 
+
+            * If provided as an integer =0: It will deploy as maximum
+              engines as possible, according to the idle CPU capacity
               available at the target node
-              
-            * If provided as a float between 0 and 1: It is interpreted 
-              as the percentage of idle CPU capacity that the cluster 
+
+            * If provided as a float between 0 and 1: It is interpreted
+              as the percentage of idle CPU capacity that the cluster
               can use in total at the target node
 
-        - work directory: Area in which the cluster will put intermediate 
+        - work directory: Area in which the cluster will put intermediate
           files such as log files, configuration files, and monitoring files
-        
-          NOTE1: This area has to be accessible from the controller (user) machine, 
-                 and mounted in the same path of the filesystem 
-                 
+
+          NOTE1: This area has to be accessible from the controller (user) machine,
+                 and mounted in the same path of the filesystem
+
           NOTE2: The path name has to be provided w/o quotes
-        
+
         - fraction of total RAM: Supports in turns 3 different formats:
-        
-            * If provided as an integer >1: It is interpreted as the actual 
-              user-specified maximum amount of RAM to be used in total at 
+
+            * If provided as an integer >1: It is interpreted as the actual
+              user-specified maximum amount of RAM to be used in total at
               the target node
-              
-            * If provided as an integer =0: It will deploy as maximum engines 
+
+            * If provided as an integer =0: It will deploy as maximum engines
               as possible, according to the free RAM available at target node
-              
-            * If provided as a float between 0 and 1: It is interpreted as 
-              the percentage of free RAM that the cluster can use in total 
+
+            * If provided as a float between 0 and 1: It is interpreted as
+              the percentage of free RAM that the cluster can use in total
               at the target node
-            
-        - RAM per engine: Integer, which is interpreted as the required memory 
-          per engine in MB (default is 512MB) 
-          
-        It is also possible to add comments, by using the # character at the 
+
+        - RAM per engine: Integer, which is interpreted as the required memory
+          per engine in MB (default is 512MB)
+
+        It is also possible to add comments, by using the # character at the
         beginning of the line. Example:
-        
+
         #####################################################
-        
+
         # CASA cluster configuration file for expert user
         orion, 10, /home/jdoe/test/myclusterhome1
         m42, 4, /home/jdoe/test/myclusterhome2, 0.6, 1024
         antares, 0.6, /home/jdoe/test/myclusterhome3, 0, 2048
-        
+
         #####################################################
-        
-        - At host ``orion'': It will deploy up to 10 engines, with working 
-          directory /home/jdoe/test/myclusterhome1, and using as much free 
-          RAM available as possible (up to 90% by default), taking into 
+
+        - At host ``orion'': It will deploy up to 10 engines, with working
+          directory /home/jdoe/test/myclusterhome1, and using as much free
+          RAM available as possible (up to 90% by default), taking into
           account that each engine can use up to 512 MB (the default and minimum)
-          
-        - At host ``m42'': It will deploy up to 4 engines, with working directory 
-          /home/jdoe/test/myclusterhome2, and using at the most 60% of the free RAM 
-          available, taking into account that each engine can use up to 1024 MB.   
-          
-        - At host ``antares'': It will deploy as many engines as possible, with 
-          working directory /home/jdoe/test/myclusterhome3, using up to 60% of the 
-          idle CPU capacity / cores, and as much free RAM available as possible 
-          (up to 90% by default), taking into account that each engine can use up 
-          to 2048 MB.  
+
+        - At host ``m42'': It will deploy up to 4 engines, with working directory
+          /home/jdoe/test/myclusterhome2, and using at the most 60% of the free RAM
+          available, taking into account that each engine can use up to 1024 MB.
+
+        - At host ``antares'': It will deploy as many engines as possible, with
+          working directory /home/jdoe/test/myclusterhome3, using up to 60% of the
+          idle CPU capacity / cores, and as much free RAM available as possible
+          (up to 90% by default), taking into account that each engine can use up
+          to 2048 MB.
 
         Example:
         CASA <15>: from simple_cluster import *
@@ -2508,7 +2508,7 @@ class simple_cluster:
         CASA <17>: sl.init_cluster('cluster-config.txt', 'ProjectName')
 
         """
-        
+
         casalog.origin("simple_cluster")
 
         if project==None or type(project)!=str or project.strip()=="":
@@ -2516,7 +2516,7 @@ class simple_cluster:
             project='cluster_project'
             casalog.post("No project specified using default project: " +\
                          "cluster_project", "WARN","init_cluster")
-    
+
         if clusterfile==None or type(clusterfile)!=str or clusterfile.strip()=="":
             # Cluster file name must be a non-empty string, otherwise generate a default clusterfile
             # The default cluster should have:
@@ -2524,32 +2524,32 @@ class simple_cluster:
             #    * The working directory should be the cwd
             (sysname, nodename, release, version, machine)=os.uname()
             msg=nodename+', '+str(0)+', '+os.getcwd()
-            # jagonzal (CAS-4293): Write default cluster config file in the 
+            # jagonzal (CAS-4293): Write default cluster config file in the
             # current directory to avoid problems with writing permissions
             clusterfile='default_cluster'
             f=open(clusterfile, 'w')
             f.write(msg)
             f.close()
             self.__localCluster = True
-    
+
         self.config_cluster(clusterfile, True)
         if not self._configdone:
             self.__running = False
             return False
-        
+
         self.create_project(project)
-        
+
         self.start_cluster()
 
         # Put the cluster object into the global namespace
         sys._getframe(len(inspect.stack())-1).f_globals['procCluster'] = self
-        
+
         # Set running status
         self.__running = True
-        
+
         return True
-        
-    
+
+
     ###########################################################################
     ###   example to distribute clean task over engines
     ###########################################################################
@@ -2567,25 +2567,25 @@ class simple_cluster:
         CASA <16>: sl=simple_cluster()
         CASA <17>: sl.init_cluster('my_cluster', 'aProj')
         CASA <18>: simple_clean(
-            vis='/home/casa-dev-09/hye/ptest/sim.alma.csv.mid.ms', 
+            vis='/home/casa-dev-09/hye/ptest/sim.alma.csv.mid.ms',
             nx=256, ny=256, mode='channel')
 
         """
-        
+
         vis=os.path.abspath(vs)
         tb.clearlocks(vis)
-    
+
         # Determine the cell size
         diam=self.get_antenna_diam(vis)
         freqmean=self.get_mean_reff(vis)
         casalog.post("vis: %s Diameter: %s FreqMean: %s" % (vis,str(diam),str(freqmean)),"INFO","simple_clean")
         fv=(3.0e8/freqmean/diam)*180*60*60/math.pi
         cell=[str(fv/nx)+'arcsec', str(fv/ny)+'arcsec']
-    
+
         fdspw=self.get_field_desc(vis)
         ids=self._cluster.get_ids()
         msname=self.get_msname(vis)
-    
+
         if len(fdspw)>len(ids):
             # More job chunks than engines, simply distribute by field and spw
             i=0
@@ -2606,7 +2606,7 @@ class simple_cluster:
                 s['imsize']=[nx, ny]
                 s['cell']=cell
                 s['calready']=False
-                cmd=self.make_call('clean', s) 
+                cmd=self.make_call('clean', s)
                 self.do_and_record(cmd, id_i, email)
                 i+=1
                 if i==len(ids):
@@ -2616,7 +2616,7 @@ class simple_cluster:
             i=0
             for k in list(fdspw.values()):
                 spwchan=self.get_spw_chan(vis, k['spw'])
-        
+
                 nengs=len(ids)
                 nchan=1
                 try:
@@ -2625,7 +2625,7 @@ class simple_cluster:
                     # jagonzal (CAS-4106): Properly report all the exceptions and errors in the cluster framework
                     # traceback.print_tb(sys.exc_info()[2])
                     pass
-        
+
                 for j in range(len(ids)):
                     id_i=ids[i]
                     start=j*nchan
@@ -2647,14 +2647,14 @@ class simple_cluster:
                     s['imsize']=[nx, ny]
                     s['cell']=cell
                     s['calready']=False
-                    cmd=self.make_call('clean', s) 
+                    cmd=self.make_call('clean', s)
                     self.do_and_record(cmd, id_i, email)
                     i+=1
                     if i==len(ids):
                        i=0
-        
+
         self.get_status()
-    
+
     def simple_split(self, vs, email):
         """split by source (field, spw) with parallel engines
 
@@ -2666,18 +2666,18 @@ class simple_cluster:
         CASA <15>: from simple_cluster import *
         CASA <16>: sl=simple_cluster()
         CASA <17>: sl.init_cluster('my_cluster', 'aProj')
-        CASA <18): vis='/home/casa-dev-09/hye/ptest/sim.alma.csv.mid.ms', 
+        CASA <18): vis='/home/casa-dev-09/hye/ptest/sim.alma.csv.mid.ms',
         CASA <18>: simple_split(vis)
 
         """
         vis=os.path.abspath(vs)
         tb.clearlocks(vis)
-       
+
         casalog.post("vis: %s" % vis,"INFO","simple_split")
         fdspw=self.get_field_desc(vis)
         ids=self.use_engines()
         msname=self.get_msname(vis)
-    
+
         i=0
         for k in list(fdspw.values()):
             id_i=ids[i]
@@ -2689,35 +2689,35 @@ class simple_cluster:
                                fd+'-s'+spw+'.ms'
             if os.path.exists(s['outputvis']):
                 os.system('rm -rf '+s['outputvis'])
-            s['field']=self.get_field_name(vis, k['field']) 
+            s['field']=self.get_field_name(vis, k['field'])
             s['spw']=spw
             s['datacolumn']='DATA'
-            cmd=self.make_call('split', s) 
+            cmd=self.make_call('split', s)
             self.do_and_record(cmd, id_i, email)
             i+=1
             if i==len(ids):
                i=0
         self.get_status()
-    
+
 #if __name__ == "__main__":
     #from simple_cluster import *
     #sl=simple_cluster()
     #sl.init_cluster('my_cluster', 'aProj')
-    #vis='/home/casa-dev-09/hye/ptest/sim.alma.csv.mid.ms', 
+    #vis='/home/casa-dev-09/hye/ptest/sim.alma.csv.mid.ms',
     #simple_split(vis)
 
     #get_status()
 
     #init_cluster('my_cluster', 'my_project')
-    #simple_clean(vis='/home/casa-dev-09/hye/ptest/sim.alma.csv.mid.ms', 
+    #simple_clean(vis='/home/casa-dev-09/hye/ptest/sim.alma.csv.mid.ms',
     #             nx=256, ny=256, mode='channel')
-  
-    #simple_clean(vis='/home/casa-dev-09/hye/para/sim.alma.csv.mid.ms', 
+
+    #simple_clean(vis='/home/casa-dev-09/hye/para/sim.alma.csv.mid.ms',
     #             nx=256, ny=256, mode='channel')
-      
+
     #simple_clean(vis='/home/casa-dev-09/hye/pclean/sim100g_4chan15kRows.ms',
     #             nx=256, ny=256, mode='channel')
-        
+
 
 
 ###########################################################################
@@ -2752,7 +2752,7 @@ class JobQueueManager:
         """
         self.__inputQueue = []
         self.__outputQueue = {}
-        
+
     def getOutputJobs(self, status = None):
         """
         This returns all jobs in the output queue which
@@ -2767,7 +2767,7 @@ class JobQueueManager:
             if job.status == status:
                 returnList.append(job)
         return returnList
-        
+
     def getAllJobs(self):
         return list(self.__outputQueue.values())
 
@@ -2776,12 +2776,12 @@ class JobQueueManager:
         This method causes all jobs to be executed on the available engines
         It will block until the jobs are complete.
         """
-        
+
         casalog.origin("simple_cluster")
-        
+
         # Clear the queue of any existing results
         self.__cluster.remove_record()
-        
+
         engineList = self.__cluster.use_engines()
 
         # jagonzal (CAS-): When there are 0 engines available an error must have happened
@@ -2799,7 +2799,7 @@ class JobQueueManager:
                 self.__inputQueue.remove(job)
                 # This stores each job in the output queue indexed by it's JobID (name)
                 self.__outputQueue[self.__cluster.do_and_record\
-                                   (job.getCommandLine(), 
+                                   (job.getCommandLine(),
                                     engineList.pop(),
                                     subMS=job.getCommandArguments()['vis'].split('/').pop())
                                    ]=job
@@ -2828,7 +2828,7 @@ class JobQueueManager:
         for job in list(self.__cluster.get_status(True).values()):
             # Update the status of the Job
             self.__outputQueue[job['jobname']].status = job['status']
-            
+
             if job['status'] == 'done' or job['status'] == 'broken':
                 if job['status'] == 'done':
                     # Get the return values is we're successful
@@ -2836,7 +2836,7 @@ class JobQueueManager:
                        (self.__cluster.getVariables\
                         (self.__outputQueue[job['jobname']].\
                          getReturnVariableList(),job['engine']))
-                    
+
                 engineList.append(job['engine'])
                 self.__cluster.remove_record(job['jobname'])
         return True

@@ -12,7 +12,7 @@ def simanalyze(
     project=None,
     image=None,
     # if image==False:
-    imagename=None, 
+    imagename=None,
     skymodel=None,
     # else:
     vis=None, modelimage=None, imsize=None, imdirection=None, cell=None,
@@ -49,10 +49,10 @@ def simanalyze(
         if (string.find(a[k][1], 'ipython console') > 0):
             stacklevel = k
     myf = sys._getframe(stacklevel).f_globals
-    
-    # create the utility object:    
+
+    # create the utility object:
     myutil = simutil()
-    if logfile: 
+    if logfile:
         myutil.reportfile=logfile
         myutil.openreport()
     if verbose: myutil.verbose = True
@@ -83,10 +83,10 @@ def simanalyze(
         grscreen = True
     if graphics == "file":
         grfile = True
-    
+
     try:
 
-        # Predefined parameters 
+        # Predefined parameters
         pbcoeff = 1.13 ##  PB defined as pbcoeff*lambda/d
 
 
@@ -95,13 +95,13 @@ def simanalyze(
         featherimage = featherimage.replace('$project',project)
 
         #=========================
-        # things we need: model_cell, model_direction if user doesn't specify - 
+        # things we need: model_cell, model_direction if user doesn't specify -
         # so find those first, and get information using util.modifymodel
         # with skymodel=newmodel
 
 
-        # we need to parse either the mslist or imagename (if image=False) 
-        # first, so that we can pick the appropriate skymodel, 
+        # we need to parse either the mslist or imagename (if image=False)
+        # first, so that we can pick the appropriate skymodel,
         # if there are several.
         skymodel_searchstring="NOT SPECIFIED"
 
@@ -118,9 +118,9 @@ def simanalyze(
                 imagename=images[0]
             # trim .image suffix:
             imagename= imagename.replace(".image","")
-            
-            # if the user hasn't specified a sky model image, we can try to 
-            # see if their imagename contains something like the project and 
+
+            # if the user hasn't specified a sky model image, we can try to
+            # see if their imagename contains something like the project and
             # configuration, as it would if simobserve created it.
             user_skymodel=skymodel
             if not os.path.exists(user_skymodel):
@@ -131,7 +131,7 @@ def simanalyze(
             # try to strip a searchable identifier
             tmpstring=user_skymodel.split("/")[-1]
             skymodel_searchstring=tmpstring.replace(".image","")
-            
+
 
 
         if image:
@@ -151,7 +151,7 @@ def simanalyze(
             # verified found ms list
             mslist = []
             mstype = []
-            
+
             mstoimage=[]
             tpmstoimage=None
 
@@ -204,9 +204,9 @@ def simanalyze(
                         mstype.append('INT')
                         mstoimage.append(ms1)
                         msg("Found a synthesis measurement set, %s." % ms1,origin='simanalyze')
-                else:          
+                else:
                     msg("measurement set "+ms1+" not found -- removing from imaging list")
-            
+
             # check default mslist for unrequested ms:
             for i in range(n_default):
                 if not default_requested[i]:
@@ -216,7 +216,7 @@ def simanalyze(
             if not mstoimage  and len(tpmstoimage) == 0:
                 raise Exception("No MS found to image")
 
-            # now try to parse the mslist for an identifier string that 
+            # now try to parse the mslist for an identifier string that
             # we can use to find the right skymodel if there are several
             if len(mstoimage) == 0 and len(tpmstoimage) > 0:
                 tmpstring = tpmstoimage.split("/")[-1]
@@ -243,8 +243,8 @@ def simanalyze(
 
 
         #========================================================
-        # now we can search for skymodel, and if there are several, 
-        # pick the one that is closest to either the imagename, 
+        # now we can search for skymodel, and if there are several,
+        # pick the one that is closest to either the imagename,
         # or the first MS if there are several MS to image.
 
         components_only=False
@@ -266,7 +266,7 @@ def simanalyze(
             skymodel=skymodels[skymodel_index]
         else:
             skymodel=""
-        
+
         if os.path.exists(skymodel):
             msg("Sky model image "+skymodel+" found.",origin='simanalyze')
         else:
@@ -294,14 +294,14 @@ def simanalyze(
         if os.path.exists(skymodel):
             if not (os.path.exists(modelflat) or dryrun):
                 myutil.flatimage(skymodel,verbose=verbose)
-            
+
             # modifymodel just collects info if skymodel==newmodel
             (model_refdir,model_cell,model_size,
              model_nchan,model_center,model_width,
              model_stokes) = myutil.modifymodel(skymodel,skymodel,
                                               "","","","","",-1,
                                               flatimage=False)
-            
+
             cell_asec=qa.convert(model_cell[0],'arcsec')['value']
 
 
@@ -326,10 +326,10 @@ def simanalyze(
                     cell = [cell[0],cell[0]]
             else:
                 cell = [cell,cell]
-            
+
             # cells are positive by convention
             cell = [qa.abs(cell[0]),qa.abs(cell[1])]
-            
+
             # and imsize
             if is_array_type(imsize):
                 if len(imsize) > 0:
@@ -403,9 +403,9 @@ def simanalyze(
                            tpimage != fileroot+"/"+featherimage:
                         msg("featherimage parameter set to "+featherimage+" but also creating a new total power image "+tpimage,priority="warn",origin='simanalyze')
                         msg("assuming you know what you want, and using featherimage="+featherimage+" in feather",priority="warn",origin='simanalyze')
-                
+
                 # Get PB size of TP Antenna
-                # !! aveant will only be set if modifymodel or setpointings and in 
+                # !! aveant will only be set if modifymodel or setpointings and in
                 # any case it will the the aveant of the INTERFM array - we want the SD
                 if os.path.exists(tpmstoimage):
                     # antenna diameter
@@ -431,7 +431,7 @@ def simanalyze(
                 sdim_param = dict(infiles=[tpmstoimage], overwrite=overwrite,
                                   phasecenter=model_refdir, mode='channel',
                                   nchan=model_nchan, start=0, width=1)
-                
+
                 if True: #SF gridding
                     msg("Generating TP image using 'SF' kernel.",origin='simanalyze')
                     beamsamp = 9
@@ -486,7 +486,7 @@ def simanalyze(
                                outfile=temp_out)
                         if not os.path.exists(temp_out):
                             raise RuntimeError("TP image scaling failed.")
-                        
+
                     # Regrid TP image to final resolution
                     msg("Regridding TP image to final resolution",origin='simanalyze')
                     msg("- cell size (arecsec): [%s, %s]" % (cell[0], cell[1]),origin='simanalyze')
@@ -524,13 +524,13 @@ def simanalyze(
                     sdim_param['outfile'] = tpimage
                     sdim_param['imsize'] = sdimsize
                     sdim_param['cell'] = sdcell
-                    
+
                     msg(get_taskstr('sdimaging', sdim_param), priority="info")
                     if not dryrun:
                         sdimaging(**sdim_param)
                     del sdimsize, sdcell
                     # TODO: Define PSF of image here
-                    # for now use default 
+                    # for now use default
 
                 # get image beam size form TP image
                 if os.path.exists(tpimage):
@@ -548,7 +548,7 @@ def simanalyze(
                 # update TP ms name the for following steps
                 sdmsfile = tpmstoimage
                 sd_any = True
-                
+
                 imagename = re.split('.image$',tpimage)[0]
                 # End of single dish imaging part
 
@@ -599,7 +599,7 @@ def simanalyze(
             # in simdata we use imdirection instead of model_refdir
             if not myutil.isdirection(imdirection,halt=False):
                 imdirection=model_refdir
-        
+
             myutil.imclean(mstoimage,imagename,
                          cleanmode,cell,imsize,imdirection,
                          interactive,niter,threshold,weighting,
@@ -620,16 +620,16 @@ def simanalyze(
             else:
                 featherimage=""
                 if tpimage:
-                    # if you set modelimage, then it won't force tpimage into 
-                    # featherimage.  this could be hard to explain 
+                    # if you set modelimage, then it won't force tpimage into
+                    # featherimage.  this could be hard to explain
                     # to the user.
                     if os.path.exists(tpimage) and not os.path.exists(modelimage):
                         featherimage=tpimage
-                    
+
 
             if os.path.exists(featherimage):
                 msg("feathering the interfermetric image "+imagename+".image with "+featherimage,origin='simanalyze',priority="info")
-                from feather import feather 
+                from feather import feather
                 # TODO call with params?
                 msg("feather('"+imagename+".feather.image','"+imagename+".image','"+featherimage+"')",priority="info")
                 if not dryrun:
@@ -734,7 +734,7 @@ def simanalyze(
                     msg("Can't find a simulated image - expecting "+imagename,priority="error")
                     return False
 
-            # we should have skymodel.flat created above 
+            # we should have skymodel.flat created above
 
             if not image:
                 if not os.path.exists(imagename+".image"):
@@ -774,7 +774,7 @@ def simanalyze(
                 myutil.convimage(modelflat,imagename+".image.flat")
                 convsky_current = True
 
-            # now should have all the flat, convolved etc even if didn't run "image" 
+            # now should have all the flat, convolved etc even if didn't run "image"
 
             # make difference image.
             # immath does Jy/bm if image but only if ia.setbrightnessunit("Jy/beam") in convimage()
@@ -843,7 +843,7 @@ def simanalyze(
                     msg("No image is generated in this run. Default MS, '%s', does not exist -- uv and psf will not be plotted" % msfile,priority='warn')
                 showpsf = False
                 showuv = False
-            
+
 
             # if the order in the task input changes, change it here too
             figs = [showuv,showpsf,showmodel,showconvolved,showclean,showresidual,showdifference,showfidelity]
@@ -1056,7 +1056,7 @@ def get_concatweights(mslist):
         diam0 = mytb.getcell('DISH_DIAMETER', 0)
     finally:
         mytb.close()
-    
+
     weights = []
     for thems in mslist:
         if not os.path.exists(thems):
@@ -1103,4 +1103,4 @@ def get_concatweights(mslist):
         raise RuntimeError("Could not calculate weight of some MSes.")
 
     return weights
-    
+

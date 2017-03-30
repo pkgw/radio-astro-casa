@@ -43,12 +43,12 @@ class uvfits_test(unittest.TestCase):
     origms = 'start.ms'               # Just a copy of inpms
     fitsfile = 'hanningsmoothed.UVF'
     msfromfits = 'end.ms'
-    
+
     records = {}
     need_to_initialize = True    # Do once, at start.
     do_teardown        = False   # Do once, after initializing and filling records.
                                  # Its value here should not really matter.
-    
+
     def setUp(self):
         pass
         #if self.need_to_initialize:
@@ -90,7 +90,7 @@ class uvfits_test(unittest.TestCase):
     #def test_sts(self):
     #    """Subtables, time avg. without correlation selection"""
     #    self.check_subtables('', [(4, 1)])
-        
+
     #def test_data(self):
     #    """DATA[2],   time avg. without correlation selection"""
     #    check_eq(self.records['']['data'],
@@ -99,14 +99,14 @@ class uvfits_test(unittest.TestCase):
     #                          [-0.00381106-0.00066403j],
     #                          [ 0.14404297-0.04763794j]]),
     #             0.0001)
-        
+
     #def test_wt(self):
     #    """WEIGHT[5], time avg. without correlation selection"""
     #    check_eq(self.records['']['weight'],
     #             numpy.array([143596.34375, 410221.34375,
     #                          122627.1640625, 349320.625]),
     #             1.0)
-    
+
     def test_stokes(self):
         """Verify fix to CAS_4283, uvfits files containing actual Stokes parameters will not be imported"""
         myms = mstool()
@@ -173,7 +173,7 @@ class uvfits_test(unittest.TestCase):
         myms.done()
         self.assertFalse(exportuvfits(msname, fitsname, overwrite=False))
         self.assertTrue(exportuvfits(msname, fitsname, overwrite=True))
-            
+
     def test_varying_receptor_angles(self):
         """CAS-8744 Test that selected spws with varying receptor angles will not be written"""
         vis = datapath + "receptor_angle_test.ms"
@@ -187,6 +187,6 @@ class uvfits_test(unittest.TestCase):
         myms.done()
 
 def suite():
-    return [uvfits_test]        
-        
-    
+    return [uvfits_test]
+
+

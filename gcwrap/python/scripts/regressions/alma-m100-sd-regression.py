@@ -26,7 +26,7 @@ import shutil
 casapath = os.environ['CASAPATH']
 datapath = casapath.split()[0]+'/data/regression/alma-sd/M100/uid___A002_X6218fb_X264'
 print(datapath)
-shutil.copytree(datapath, 'uid___A002_X6218fb_X264') 
+shutil.copytree(datapath, 'uid___A002_X6218fb_X264')
 
 
 
@@ -77,8 +77,8 @@ for name in basename:
 
 
 
-# Initial inspection of the data with plotms task. 
-# First plot amplitude versus channel, 
+# Initial inspection of the data with plotms task.
+# First plot amplitude versus channel,
 # averaging over time in order to speed up the plotting process.
 
 default(plotms)
@@ -326,8 +326,8 @@ os.system('mkdir uid___A002_X6218fb_X264.ms_saved.CM05.cal.plots')
 
 
 
-# Plot the calibrated spectra, using the sdplot task. 
-# The commands below will plot one spectrum per scan, spw and polarization. 
+# Plot the calibrated spectra, using the sdplot task.
+# The commands below will plot one spectrum per scan, spw and polarization.
 
 for i in [9, 11, 13, 15]:
 
@@ -515,7 +515,7 @@ immoments(imagename = 'M100_SD_cube_CM_03_05.image',moments = [0],axis = 'spectr
 
 
 
-## Export data as fits  
+## Export data as fits
 
 os.system('rm -rf M100_SD_*.fits')
 exportfits(imagename='M100_SD_cube_PM_03_04.image', fitsimage='M100_SD_cube_PM_03_04.image.fits')
@@ -624,7 +624,7 @@ logfile=open(outfile,'w')
 print >>logfile,' *  diff_immax',diff_immax
 print >>logfile,' *  diff_immin',diff_immin
 print >>logfile,' *  diff_imrms',diff_imrms
-print >>logfile,' *  diff_imflux',diff_imflux 
+print >>logfile,' *  diff_imflux',diff_imflux
 print >>logfile,' *  diff_immean',diff_immean
 print >>logfile,' *  diff_immedian',diff_immedian
 print >>logfile,' *  diff_imnpts',diff_imnpts
@@ -647,15 +647,15 @@ if all(thistest_imminpos == imminpos):
     print('* Passed image minpos test')
     print('*  Image minpos', thistest_imminpos, file=logfile)
 
-if (diff_immax < 0.01): 
+if (diff_immax < 0.01):
     print('* Passed image max test ')
     print('*  Image max ',thistest_immax, file=logfile)
 
-if (diff_immin < 0.01): 
+if (diff_immin < 0.01):
     print('* Passed image min test ')
     print('*  Image mmin ',thistest_immin, file=logfile)
 
-if (diff_imrms < 0.01): 
+if (diff_imrms < 0.01):
     print('* Passed image rms test ')
     print('*  Image rms ',thistest_imrms, file=logfile)
 
@@ -673,7 +673,7 @@ if (diff_immedian<0.01):
 
 if (diff_imnpts< 0.01):
     print('* Passed image npts test ')
-    print('*  Image npts ',thistest_imnpts, file=logfile) 
+    print('*  Image npts ',thistest_imnpts, file=logfile)
 
 if (diff_imsum< 0.01):
     print('* Passed image sum test ')
@@ -696,7 +696,7 @@ if (diff_imsumsq< 0.01):
     print('*  Image sumsq ',thistest_imsumsq, file=logfile)
 
 
-if ((diff_immax<0.01) & (diff_imrms<0.01) & (diff_immin<0.01) &(diff_imflux<0.01) & (diff_immean<0.01) & (diff_immedian<0.01) & (diff_imnpts<0.01) & (diff_imsum<0.01) & (diff_imsigma<0.01) & (diff_immedabsdevmed<0.01) & (diff_imquartile<0.01) & (diff_imsumsq<0.01) & all(thistest_imminpos == imminpos) & all(thistest_immaxpos == immaxpos)): 
+if ((diff_immax<0.01) & (diff_imrms<0.01) & (diff_immin<0.01) &(diff_imflux<0.01) & (diff_immean<0.01) & (diff_immedian<0.01) & (diff_imnpts<0.01) & (diff_imsum<0.01) & (diff_imsigma<0.01) & (diff_immedabsdevmed<0.01) & (diff_imquartile<0.01) & (diff_imsumsq<0.01) & all(thistest_imminpos == imminpos) & all(thistest_immaxpos == immaxpos)):
     regstate=True
     print('---', file=logfile)
     print('Passed Regression test for M100_SD_PM_03_04', file=logfile)
@@ -704,7 +704,7 @@ if ((diff_immax<0.01) & (diff_imrms<0.01) & (diff_immin<0.01) &(diff_imflux<0.01
     print('')
     print('Regression PASSED')
     print('')
-else: 
+else:
     regstate=False
     print('')
     print('Regression FAILED')

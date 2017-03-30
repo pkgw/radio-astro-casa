@@ -26,13 +26,13 @@ def tsdfit(infile=None, datacolumn=None, antenna=None, field=None, spw=None,
             raise ValueError("fitmode='%s' is not supported yet" % fitmode)
         if (spw == ''): spw = '*'
 
-        selection = ms.msseltoindex(vis=infile, spw=spw, field=field, 
-                                    baseline=antenna, time=timerange, 
+        selection = ms.msseltoindex(vis=infile, spw=spw, field=field,
+                                    baseline=antenna, time=timerange,
                                     scan=scan)
 
         sdms.open(infile)
-        sdms.set_selection(spw=sdutil.get_spwids(selection), field=field, 
-                           antenna=antenna, timerange=timerange, 
+        sdms.set_selection(spw=sdutil.get_spwids(selection), field=field,
+                           antenna=antenna, timerange=timerange,
                            scan=scan, polarization=pol, intent=intent)
 
         tempfile = 'temp_tsdfit_'+str(datetime.datetime.fromtimestamp(time.time())).replace('-','').replace(' ','').replace(':','')
@@ -45,7 +45,7 @@ def tsdfit(infile=None, datacolumn=None, antenna=None, field=None, spw=None,
             tempoutfile += str(datetime.datetime.fromtimestamp(time.time())).replace('-','').replace(' ','').replace(':','')
             if os.path.exists(tempoutfile):
                 raise Exception('temporary ms file ' + tempoutfile + ' exists...')
-        
+
         if fitmode=='auto': nfit = [-1]
         num_fit_str = str(',').join(map(str, nfit))
 
@@ -82,10 +82,10 @@ def get_results(tempfile, fitfunc, nfit, outfile):
             fout = open(outfile, 'a')
             s = '#SCAN\tTIME\t\tANT\tBEAM\tSPW\tPOL\tFunction\tP0\t\tP1\t\tP2\n'
             fout.write(s)
-        
+
         for line in f:
             component = line.strip().split(':')   # split into each component
-            if (ncomp > 0): 
+            if (ncomp > 0):
                 assert(len(component) == ncomp)
             res['cent'].append([])
             res['peak'].append([])
@@ -113,7 +113,7 @@ def get_results(tempfile, fitfunc, nfit, outfile):
                     s += '\n'
                     fout.write(s)
             iline += 1
-        
+
         if outfile_exists: fout.close()
-    
+
     return res

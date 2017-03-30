@@ -11,8 +11,8 @@ startProc = time.clock()
 
 print('--Running simdata of test cube--')
 # configs are in the repository
-l=locals() 
-if "repodir" not in l: 
+l=locals()
+if "repodir" not in l:
     repodir=os.getenv("CASAPATH").split(' ')[0]
 
 print('I think the data repository is at '+repodir)
@@ -31,9 +31,9 @@ project="tc2"
 skymodel="testcube2"
 inbright=".1"
 indirection="J2000 19h00m00s -40d00m00s"
-incell="0.2arcsec" 
-incenter="350GHz"   
-inwidth="0.5MHz" 
+incell="0.2arcsec"
+incenter="350GHz"
+inwidth="0.5MHz"
 
 setpointings=False
 ptgfile=datadir+"testcube.ptg.txt"
@@ -73,7 +73,7 @@ refstats = { 'max': 2.05e-01 +  7.52e-03j,
              'sum': 1.72e+04 + -1.53e+03j,
              'std': 5.53e-02 }
 
-### tight 
+### tight
 reftol   = {'max':  5e-3,
             'min':  5e-3,
             'sum':  5e-3,
@@ -123,8 +123,8 @@ for ke in rskes:
     else:
         status=status+"%9.2e          , expected %9.2e." % (cube_stats[ke], refstats[ke])
     print(status, file=logfile)
-    
-    
+
+
 
 
 print('---', file=logfile)
@@ -142,7 +142,7 @@ else:
 print('regression test for simdata of test cube.', file=logfile)
 print('---', file=logfile)
 print('*********************************', file=logfile)
-    
+
 print('', file=logfile)
 print('********** Benchmarking **************', file=logfile)
 print('', file=logfile)
@@ -151,7 +151,7 @@ print('Total CPU        time was: %8.3f s.' % (endProc - startProc), file=logfil
 print('Wall processing  rate was: %8.3f MB/s.' % (17896.0 /
                                                          (endTime - startTime)), file=logfile)
 print('*************************************', file=logfile)
-    
+
 logfile.close()
-						    
+
 print('--Finished simdata of test cube regression--')

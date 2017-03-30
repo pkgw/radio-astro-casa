@@ -3,7 +3,7 @@
 # IRC+10216 SiO Reduction Script
 # using new sd tasks
 # Nod data
-# 
+#
 # tasks used
 # sdlist
 # sdreduce (new)
@@ -48,7 +48,7 @@ startProc = time.clock()
 #  1        4096 LSRK  45899.1486  12.2067945  49999.0303  45924.1481  RR  LL H213CO
 #  2        4096 LSRK  43857.1942  12.2067945  49999.0303  43882.1937  RR  LL 13CS
 #  3        4096 LSRK  48970.0031  12.2067945  49999.0303  48995.0026  RR  LL CS
-#  7        4096 LSRK  46226.6452  12.2067949  49999.0319  46251.6447  RR  LL 
+#  7        4096 LSRK  46226.6452  12.2067949  49999.0319  46251.6447  RR  LL
 #  17       4096 LSRK  45469.0638  12.2067955  49999.0343  45494.0633  RR  LL HC3N
 #  18       4096 LSRK  45280.5214  12.2067955  49999.0343  45305.5209  RR  LL HCC13CN
 #  19       4096 LSRK  44054.8331  12.2067955  49999.0343  44079.8326  RR  LL CH3OH
@@ -65,9 +65,9 @@ startProc = time.clock()
 
 asap_init()                             #load ASAP module
 
-					#scan numbers (zero-based) as compared to GBTIDL
-					#changes made to get to IRC+10216_rawACSmod
-					#  -- merge spectral windows with tolerance
+                                        #scan numbers (zero-based) as compared to GBTIDL
+                                        #changes made to get to IRC+10216_rawACSmod
+                                        #  -- merge spectral windows with tolerance
 
 # summary
 #default(sdlist)
@@ -91,7 +91,7 @@ scan = '241~244,245~248'
 spw = '30'
 average = True
 timeaverage = True # average in time
-tweight = 'tintsys' # weighted by integ. time and Tsys for time averaging 
+tweight = 'tintsys' # weighted by integ. time and Tsys for time averaging
 scanaverage = False
 polaverage = True  # average polarization
 pweight = 'tsys'   # weighted by Tsys for polarization averaging
@@ -188,7 +188,7 @@ print('*  Spectrum rms '+str(curr_rms), file=logfile)
 if (diff_sum < 0.05): print('* Passed spectrum (line) sum test', file=logfile)
 print('*  Line integral '+str(curr_sum), file=logfile)
 if ((diff_max<0.05) & (diff_rms<0.05) & (diff_sum<0.05)):
-	regstate = True
+        regstate = True
         print('---', file=logfile)
         print('Passed Regression test for IRC-SiO', file=logfile)
         print('---', file=logfile)
@@ -196,7 +196,7 @@ if ((diff_max<0.05) & (diff_rms<0.05) & (diff_sum<0.05)):
         print('Regression PASSED')
         print('')
 else:
-	regstate = False
+        regstate = False
         print('----FAILED Regression test for IRC-SiO', file=logfile)
         print('')
         print('Regression FAILED')

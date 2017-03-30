@@ -39,7 +39,7 @@ def pinit(message="Hello CASA Cluster"):
     print("Connected to IDs ",ids);
 #        tt='print '+"'"+message+"'";
     mec.activate();
-#	mec.execute(tt);
+#       mec.execute(tt);
     return mec;
 #
 #===============================================================
@@ -98,7 +98,7 @@ def mkContResImgWorkaround(rmec,nodes,iatool,
     cs.setreferencevalue(value=refval0,type='spectral');
     iatool.setcoordsys(cs.torecord());
     iatool.close()
-    
+
 #    print "Averaging...";
     for i in range(n):
         tt="tempimage."+str(nodes[i])+".cont";
@@ -472,7 +472,7 @@ def pcontinuumdebugger(mec,iatool,deconvtool,nodes,
     tmpModelImageName="tmp.avgcomp.im";
     minorIterRemaining=minoriter;
     minorIterPerMajor = 100;
-    
+
     major=0;
     if (dowhat == 1):
         print("Making residual images for major cycle no. ", major, "(the scatter operation)");

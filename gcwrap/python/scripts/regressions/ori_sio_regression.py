@@ -48,85 +48,85 @@ startProc = time.clock()
 # Scans: 25-28  Setup 2 SiO et al
 
 
-import asap as sd			#import ASAP package into CASA			#GBTIDL
-					#Orion-S (SiO line reduction only)
-					#Notes:
-					#scan numbers (zero-based) as compared to GBTIDL
+import asap as sd                       #import ASAP package into CASA                  #GBTIDL
+                                        #Orion-S (SiO line reduction only)
+                                        #Notes:
+                                        #scan numbers (zero-based) as compared to GBTIDL
 
-					#changes made to get to OrionS_rawACSmod
-					#modifications to label sig/ref positions
+                                        #changes made to get to OrionS_rawACSmod
+                                        #modifications to label sig/ref positions
 
 os.environ['CASAPATH'] = casapath
 
 
-s = sd.scantable('OrionS_rawACSmod', False)#load the data without averaging		# filein,'Orion-S.raw.fits'
+s = sd.scantable('OrionS_rawACSmod', False)#load the data without averaging             # filein,'Orion-S.raw.fits'
 
-#s.summary()				#summary info					# summary
-											# fileout,'Orion-S-reduced.fits'
-s.set_fluxunit('K')         		# make 'K' default unit
+#s.summary()                            #summary info                                   # summary
+                                                                                        # fileout,'Orion-S-reduced.fits'
+s.set_fluxunit('K')                     # make 'K' default unit
 
-#scal = sd.calps(s, [24,25,26,27])		# Calibrate SiO scans				# for i=25,28,2 do begin getps,i,ifnum=3,plnum=0,units='Ta*',
-scal = sd.calps(s, [25,26,27,28])		# Calibrate SiO scans				# for i=25,28,2 do begin getps,i,ifnum=3,plnum=0,units='Ta*',
+#scal = sd.calps(s, [24,25,26,27])              # Calibrate SiO scans                           # for i=25,28,2 do begin getps,i,ifnum=3,plnum=0,units='Ta*',
+scal = sd.calps(s, [25,26,27,28])               # Calibrate SiO scans                           # for i=25,28,2 do begin getps,i,ifnum=3,plnum=0,units='Ta*',
 del s                                   # remove s from memory
 # recalculate az/el (NOT needed for GBT data)
 antennaname = scal.get_antennaname()
-if ( antennaname != 'GBT'): scal.recalc_azel()      # recalculate az/el to 		# tau=0.09 & accum & getps, i, ifnum=3,plnum=1,units='Ta*',
-scal.opacity(0.09)			# do opacity correction				# tau=0.09 & accum & end & ave
-sel = sd.selector()			# Prepare a selection
-sel.set_ifs(15)				# select SiO IF
-scal.set_selection(sel)			# get this IF
-stave = sd.average_time(scal, weight='tintsys')	# average in time
-spave = stave.average_pol(weight='tsys')	# average polarizations;Tsys-weighted (1/Tsys**2) average
-sd.plotter.plot(spave)			# plot
+if ( antennaname != 'GBT'): scal.recalc_azel()      # recalculate az/el to              # tau=0.09 & accum & getps, i, ifnum=3,plnum=1,units='Ta*',
+scal.opacity(0.09)                      # do opacity correction                         # tau=0.09 & accum & end & ave
+sel = sd.selector()                     # Prepare a selection
+sel.set_ifs(15)                         # select SiO IF
+scal.set_selection(sel)                 # get this IF
+stave = sd.average_time(scal, weight='tintsys') # average in time
+spave = stave.average_pol(weight='tsys')        # average polarizations;Tsys-weighted (1/Tsys**2) average
+sd.plotter.plot(spave)                  # plot
 
 # what is going on with autoscaling?
 
-					# do some smoothing
-spave.smooth('boxcar', 10)		# boxcar 10					# boxcar,10
-#spave.auto_poly_baseline(order=5)	# baseline fit order=5				# nfit,5
-					# you can also set the baseline region              or
+                                        # do some smoothing
+spave.smooth('boxcar', 10)              # boxcar 10                                     # boxcar,10
+#spave.auto_poly_baseline(order=5)      # baseline fit order=5                          # nfit,5
+                                        # you can also set the baseline region              or
 basemask = spave.create_mask([500,3500],[5000,7500])                                      # nregion,[500,3500,5000,7500]
-spave.poly_baseline(basemask, order=5)							# nfit,5
-sd.plotter.plot(spave)			# plot						# baseline
+spave.poly_baseline(basemask, order=5)                                                  # nfit,5
+sd.plotter.plot(spave)                  # plot                                          # baseline
 
-spave.set_unit('GHz')									# freq
+spave.set_unit('GHz')                                                                   # freq
 sd.plotter.plot(spave)
 sd.plotter.set_histogram(hist=True)     # draw spectrum using histogram                 # histogram
 sd.plotter.axhline(color='r', linewidth=2)  # zline                                      # zline
-sd.plotter.save('orions_sio_reduced.eps')  # save postscript spectrum			# write_ps,'orions_sio.ps'
+sd.plotter.save('orions_sio_reduced.eps')  # save postscript spectrum                   # write_ps,'orions_sio.ps'
 
-spave.set_unit('channel')								# chan
+spave.set_unit('channel')                                                               # chan
 rmsmask = spave.create_mask([1000,3000])  # get rms of line free regions                  # stats,1000,3000
-curr_rms = spave.stats(stat='rms', mask=rmsmask)                                                                
-					#---------------------------------------------- # Chans   bchan   echan      Xmin      Xmax      Ymin      Ymax
-											#  2001    1000    3000    1000.0    3000.0  -0.09437   0.15836
-					#  rms
-					#---------------------------------------------- #                 Mean      Median      RMS  Variance      Area
-					#Scan[0] (OrionS_ps) Time[2006/01/19/02:07:54]: #            0.0030781   0.0019092 0.037550 0.0014100    6.1593
-					# IF[15] = 0.037
-					#----------------------------------------------
-					# LINE
+curr_rms = spave.stats(stat='rms', mask=rmsmask)
+                                        #---------------------------------------------- # Chans   bchan   echan      Xmin      Xmax      Ymin      Ymax
+                                                                                        #  2001    1000    3000    1000.0    3000.0  -0.09437   0.15836
+                                        #  rms
+                                        #---------------------------------------------- #                 Mean      Median      RMS  Variance      Area
+                                        #Scan[0] (OrionS_ps) Time[2006/01/19/02:07:54]: #            0.0030781   0.0019092 0.037550 0.0014100    6.1593
+                                        # IF[15] = 0.037
+                                        #----------------------------------------------
+                                        # LINE
 
 linemask = spave.create_mask([3900,4300])
-curr_max = spave.stats('max', linemask)	#  IF[15] = 0.366
-curr_sum = spave.stats('sum', linemask)	#  IF[15] = 49.949
+curr_max = spave.stats('max', linemask) #  IF[15] = 0.366
+curr_sum = spave.stats('sum', linemask) #  IF[15] = 49.949
 curr_median = spave.stats('median', linemask) #  IF[15] = 0.094
-curr_mean = spave.stats('mean', linemask)	#  IF[15] = 0.125
-											# Chans  bchan    echan      Xmin      Xmax        Ymin     Ymax
-											#   301   3900     4300    3900.0    4300.0    -0.069310 0.37076
-                       									#                  Mean    Median       RMS    Variance     Area
-											#               0.12613   0.095303   0.095872    0.0091914   50.579
-					# Fitting
-spave.set_unit('channel')		# set units to channel				# chan
-sd.plotter.plot(spave)			# plot spectrum				
+curr_mean = spave.stats('mean', linemask)       #  IF[15] = 0.125
+                                                                                        # Chans  bchan    echan      Xmin      Xmax        Ymin     Ymax
+                                                                                        #   301   3900     4300    3900.0    4300.0    -0.069310 0.37076
+                                                                                        #                  Mean    Median       RMS    Variance     Area
+                                                                                        #               0.12613   0.095303   0.095872    0.0091914   50.579
+                                        # Fitting
+spave.set_unit('channel')               # set units to channel                          # chan
+sd.plotter.plot(spave)                  # plot spectrum
 f = sd.fitter()
-msk = spave.create_mask([3900,4300])	# create region around line			# gregion,[4000,4200]
-f.set_function(gauss=1)			# set a single gaussian component		# ngauss,1
-f.set_scan(spave, msk)			# set the data and region for the fitter	
-f.set_gauss_parameters(0.5, 4100., 100.)  # set initial guess				# gparamvalues,0,[1.,4100.,100.]
-f.fit()					# auto fit					# gauss
-f.plot(residual=True)			# plot residual
-f.get_parameters()			# retrieve fit parameters			#
+msk = spave.create_mask([3900,4300])    # create region around line                     # gregion,[4000,4200]
+f.set_function(gauss=1)                 # set a single gaussian component               # ngauss,1
+f.set_scan(spave, msk)                  # set the data and region for the fitter
+f.set_gauss_parameters(0.5, 4100., 100.)  # set initial guess                           # gparamvalues,0,[1.,4100.,100.]
+f.fit()                                 # auto fit                                      # gauss
+f.plot(residual=True)                   # plot residual
+f.get_parameters()                      # retrieve fit parameters                       #
 #   0: peak = 0.273 K , centre = 4096.952 channel, FWHM = 155.109 channel
 #      area = 45.074 K channel
 #
@@ -134,19 +134,19 @@ f.get_parameters()			# retrieve fit parameters			#
 # on 64bit REL5.2 (2008/12/01)
 #   0: peak = 0.275 K , centre = 4097.001 channel, FWHM = 156.038 channel
 #      area = 45.751 K channel
-											#***** Initial Guesses
-											#          G#      Height  Center (chan)    FWHM (chan) 
-											#Init:      1      1.0000         4100.0000         100.0
-											#
-											#***** Fitted Gaussians
-											#        Height            Center (chan)       FWHM (chan)
-											# 1      0.3167 ( 0.005652)4096.4663 (1.018)  116.4 ( 2.586)
+                                                                                        #***** Initial Guesses
+                                                                                        #          G#      Height  Center (chan)    FWHM (chan)
+                                                                                        #Init:      1      1.0000         4100.0000         100.0
+                                                                                        #
+                                                                                        #***** Fitted Gaussians
+                                                                                        #        Height            Center (chan)       FWHM (chan)
+                                                                                        # 1      0.3167 ( 0.005652)4096.4663 (1.018)  116.4 ( 2.586)
 
-f.store_fit('orions_sio_fit.txt') 	# store fit					# *copy and paste from log*
+f.store_fit('orions_sio_fit.txt')       # store fit                                     # *copy and paste from log*
 
 # Save the spectrum
-spave.save('orions_sio_reduced', 'ASCII', True)	# save the spectrum			# write_ascii,'orions_sio.spc'
-#spave.save('orions_sio_reduced.ms','MS2',True) # save as an MS				# NA
+spave.save('orions_sio_reduced', 'ASCII', True) # save the spectrum                     # write_ascii,'orions_sio.spc'
+#spave.save('orions_sio_reduced.ms','MS2',True) # save as an MS                         # NA
 #
 endProc = time.clock()
 endTime = time.time()
@@ -179,7 +179,7 @@ print('*  Spectrum rms '+str(curr_rms), file=logfile)
 if (diff_sum < 0.05): print('* Passed spectrum (line) sum test', file=logfile)
 print('*  Line integral '+str(curr_sum), file=logfile)
 if ((diff_max<0.05) & (diff_rms<0.05) & (diff_sum<0.05)):
-	regstate = True
+        regstate = True
         print('---', file=logfile)
         print('Passed Regression test for OrionS-SiO', file=logfile)
         print('---', file=logfile)
@@ -187,7 +187,7 @@ if ((diff_max<0.05) & (diff_rms<0.05) & (diff_sum<0.05)):
         print('Regression PASSED')
         print('')
 else:
-	regstate = False
+        regstate = False
         print('----FAILED Regression test for OrionS-SiO', file=logfile)
         print('')
         print('Regression FAILED')

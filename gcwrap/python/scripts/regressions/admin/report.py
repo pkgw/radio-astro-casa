@@ -86,7 +86,7 @@ def cmp_version(a, b):
             a_int = int(a[n:len(a)-len(")")])
             b_int = int(b[n:len(b)-len(")")])
             return cmp_std(a_int, b_int)
-        
+
 
 def shorten(s, maxlength=20):
     if len(s) > maxlength:
@@ -110,7 +110,7 @@ def distribution(s):
         rev,name = re.compile(' ([^\s]+) \(([^\)]+)\)').search(s).groups()
     except:
         rev,name = "???", "???"
-        
+
     if s.find('Linux') >= 0:
         base = 'Linux'
         if s.find('Fedora Core') >= 0:
@@ -125,7 +125,7 @@ def distribution(s):
             distro = 'Ubuntu'
         else:
             distro = '???'
-        return base, distro, rev, name    
+        return base, distro, rev, name
         # e.g.  Linux, RHEL, 5.2, Tikanga
     elif s.find('Darwin') >= 0:
         base = 'Darwin'
@@ -144,7 +144,7 @@ def is_stable_branch(host):
             host.find('sneffels') >= 0)
 
 def selected_revisions(data):
-  
+
     all = sets.Set()
     for log in data:
         all.add(log['CASA'])
@@ -211,7 +211,7 @@ def selected_revisions(data):
         print("No tests on test branch")
 
     return selected
-    
+
 
 class report:
     def __init__(self, reg_dir, report_dir, \
@@ -225,7 +225,7 @@ class report:
         pl.ioff()  #turn of plots
 
         result_dir = reg_dir + '/Result/'
-        
+
         data = self.read_log(result_dir, revision)
 
         if len(data) == 0:
@@ -299,7 +299,7 @@ class report:
         self.tests.sort()
 
         print("tests =", self.tests)
-        
+
         self.casas = []
         for c in casas_set:
             self.casas.append(c)
@@ -318,9 +318,9 @@ class report:
             if 'description' in log and \
                (test not in self.test_description or \
                 test_date[test] < log['date']):
-                
+
                 self.test_description[test] = log['description']
-                test_date[test] = log['date']    
+                test_date[test] = log['date']
 
         # Get OS string + latest CASA revision per host
         self.platform = {}
@@ -344,7 +344,7 @@ class report:
 
         if True:
             # this part is now obsolete but not harmful...
-            
+
             # Don't use the very latest revision (it's usually under construction)
             # (or set to latest if only 1 revision exists)
             self.global_latest = max(self.casa_revision.values())
@@ -357,22 +357,22 @@ class report:
                        (host not in latest2 or \
                         cmp_version(v, latest2[host])) > 0:
                     latest2[host] = v
-                    
+
             for host in list(self.casa_revision.keys()):
                 if host not in latest2:
                     latest2[host] = self.casa_revision[host]
-            
+
 
             #print "Latest", self.casa_revision
             #print "2Latest", latest2
-            
-            self.casa_revision = latest2 
+
+            self.casa_revision = latest2
 
         # we need to loop through the hosts in the
         # same order for each HTML table row, so
         # build a list of unique hosts
-        self.hosts_rel=[]  
-        self.hosts_devel=[]  
+        self.hosts_rel=[]
+        self.hosts_devel=[]
         for host in hosts_set:
             if is_stable_branch(host):
                 self.hosts_rel.append(host)
@@ -398,8 +398,8 @@ class report:
             shutil.copyfile(skull,
                             report_dir + '/skullnbones.jpg')
 
-        
-        
+
+
         fd = open(pagename, "w")
         fd.write('<html></head>')
 
@@ -450,13 +450,13 @@ class report:
             # Filter out all other versions
 
             self.casas = [latest_on_stable]
-            
+
             data2 = []
             for d in data:
                 if d['CASA'] == latest_on_stable:
                     data2.append(d)
             data = data2
-                
+
 
         # Simple tables
         fd.write('<br><a name="revision_platform"></a>')
@@ -476,7 +476,7 @@ class report:
                                    False, extended, data, fd)
 
         fd.write('<hr>')
-        
+
         # Detailed tables
         fd.write('<br><a name="revision_platform_full"></a>')
         extended = True
@@ -495,7 +495,7 @@ class report:
         fd.write('</html>\n')
         fd.close()
         print("Wrote", pagename)
-        
+
         os.system('touch '+report_dir+'/success')
         # because casapy always returns success, even if
         # executing this program failed
@@ -566,10 +566,10 @@ class report:
                     for subtest in tests[casa][test]:
                         if subtest in status[host][casa][test]:
                             s = status[host][casa][test][subtest]
-                            
+
                             summary[host][casa][s] += 1 # increments number
                                                         # of s=pass/fail/undet. by 1
-                            
+
                             #print host, casa, test, subtest
                         else:
                             summary[host][casa]['undetermined'] += 1
@@ -584,14 +584,14 @@ class report:
         else:
             fd.write('<TABLE border=1 cellpadding=0 cellspacing=0 summary="Quick view over tests.">\n')
 
-            
+
         fd.write('<TR><TD></TD>')
         if len(self.hosts_devel) > 0:
             fd.write('<td align=center colspan='+str(len(self.hosts_devel))+'>active</td>')
         if len(self.hosts_rel) > 0:
             fd.write('<td align=center colspan='+str(len(self.hosts_rel))+'>test</td>')
         fd.write('</tr>')
-        
+
         fd.write('<TR><TD></TD>')
         for host in self.hosts:
             if host in self.platform:
@@ -602,7 +602,7 @@ class report:
             fd.write('</td>')
 
         fd.write('<TD align=center><b>Revision<br>summary</b></TD>')
-        fd.write('</TR>\n')    
+        fd.write('</TR>\n')
 
         for casa in self.casas:
             print("Generate summary for", casa)
@@ -621,7 +621,7 @@ class report:
                 undetermined = summary[host][casa]['undetermined']
                 total = passes+failures+undetermined
                 self.dump_td_start(fd, passes, failures, undetermined, " align=center")
-                
+
                 if extended:
                     fd.write('%s / %s / %s (total %s)' %
                              (passes, failures, undetermined, total))
@@ -654,7 +654,7 @@ class report:
                     fd.write('is reported. Note: The revision number might vary within the same column/row')
                 else:
                     fd.write('For each host the results of the <i>latest available CASA revision</i>, ')
-                    fd.write('excluding '+self.global_latest+' which is under construction, is reported. ')                
+                    fd.write('excluding '+self.global_latest+' which is under construction, is reported. ')
                     fd.write('<br>')
                     fd.write('If a test was run more than once with a given revision, the results of the <i>latest run</i> is reported. ')
             fd.write('<br>')
@@ -662,7 +662,7 @@ class report:
             fd.write('<dd>Logfiles contain the Python session\'s output to stdout/stderr, messages sent to casalogger, and the contents of any *.log files created.')
             fd.write('<dd>On execution error the last error message from the log file is shown.')
             fd.write('<dd>Follow the history links to get an overview over how a test outcome correlates with platform and CASA version.')
-            
+
             fd.write('<dd><small>session log: Messages from the full casapy session, including messages from the framework, and excluding logfiles produced by the test itself. ')
             fd.write('Used to track problems with the casapy installation, X connection etc.</small>')
             fd.write('</dt></dl>')
@@ -679,7 +679,7 @@ class report:
         if len(self.hosts_rel) > 0:
             fd.write('<td align=center colspan='+str(len(self.hosts_rel))+'>test</td>')
         fd.write('</tr>')
-        
+
         for host in self.hosts:
             summary_host[host] = {}
             summary_host[host]['pass'] = 0
@@ -709,9 +709,9 @@ class report:
                         fd.write('<br><i>???</i>')
 
             fd.write('</td>')
-            
+
         fd.write('<TD><b>Test branch summary</b></TD>')
-        fd.write('</TR>\n')    
+        fd.write('</TR>\n')
 
         subtests_list = {}
 
@@ -722,7 +722,7 @@ class report:
             # is always processed first
             subtests_list[test] = [s for s in self.subtests[test]]
             subtests_list[test].sort(cmp=cmp_exec)
-            
+
             print("Subtests for", test, "=", subtests_list[test])
 
             summary_filename = report_dir+"/summary_"+test+".html"
@@ -733,7 +733,7 @@ class report:
                 fd.write('<a href="summary_'+test+'.html">'+shorten(test)+'</a>')
 
                 f = open(summary_filename, "w")
-                
+
                 f.write('<html><head></head><body><center>\n')
 
                 print("Creating %s..." % (summary_filename))
@@ -743,7 +743,7 @@ class report:
                 tests_to_consider = {}
                 for casa in self.casas:
                     tests_to_consider[casa] = {test: self.subtests[test]}
-                
+
                 self.generate_host_vs_revision(test+' all subtests',
                                                reg_dir, report_dir,
                                                tests_to_consider,
@@ -751,10 +751,10 @@ class report:
                                                data, f)
                 self.dump_legend(f)
                 f.write('</center></body></html>')
-                f.close()               
+                f.close()
             else:
                 fd.write('<a href="#'+test+'">'+shorten(test, 10)+'</a>')
-                
+
             fd.write('</big></b>')
             if extended and test in self.test_description:
                 fd.write('<br><br>' + self.test_description[test].replace("<", "&lt;").replace(">", "&gt"))
@@ -815,7 +815,7 @@ class report:
                             twin_plots.close()
                     fd.write('</dl>')
                 fd.write('</td>')
-                
+
                 for host in self.hosts:
                     self.dump_entry(test, subtest, host,
                                     summary_subtest,
@@ -872,7 +872,7 @@ class report:
 
 
 
-        
+
         fd.write('</TABLE>\n')
 
     def dump_legend(self, fd):
@@ -881,7 +881,7 @@ class report:
         fd.write('All tests passed')
         self.dump_td_end(fd)
         fd.write('</tr><tr>')
-        
+
         self.dump_td_start(fd, 1, 0, 1, " align=center")
         fd.write('Some test(s) not run<br>No failures')
         self.dump_td_end(fd)
@@ -892,9 +892,9 @@ class report:
         fd.write('</tr><tr>')
         self.dump_td_start(fd, 0, 1, 0, " align=center")
         fd.write('All tests failed')
-        self.dump_td_end(fd)        
+        self.dump_td_end(fd)
         fd.write('</tr></table>')
-        
+
     def dump_entry(self, test, subtest, host, \
                    summary_subtest, summary_host, \
                    data, fd, reg_dir, report_dir, \
@@ -917,7 +917,7 @@ class report:
                    (cmp_version(l['CASA'], latest_run_version) > 0 or \
                     cmp_version(l['CASA'], latest_run_version) == 0 and \
                     l['date'] > latest_run_date):
-                    
+
                     latest_run_version = l['CASA']
                     latest_run_date    = l['date']
                     log = l
@@ -928,7 +928,7 @@ class report:
             branch = "test"
 
         coords = ' title="' + branch + ': ' + test + ' \\ '+host+'"'
-        
+
         if log != None:
             #print log
             summary_host[host][log['status']] += 1
@@ -941,7 +941,7 @@ class report:
                                1,
                                log['status'] == 'fail',
                                0, coords)
-                 
+
             if extended:
                 #link to resultlog and runlog files
                 if log['type'] == 'exec':
@@ -953,7 +953,7 @@ class report:
                     f = open(report_dir+'/'+basename+'.html', 'w')
                     f.write('<html><head><title>'+basename+'</title></head><body>')
                     f.write('<a href="'+log['logfile']+'">log</a>')
-                    
+
                 # and copy the log file and runlog to the target dir
                 from_dir = os.path.dirname('%s/%s' % (result_dir, log['logfile']))
                 to_dir   = os.path.dirname('%s/%s' % (report_dir, log['logfile']))
@@ -987,9 +987,9 @@ class report:
 
                 fd.write('<BR>')
                 if log['type'] == 'exec':
-                    
+
                     summary_host[host]['time'] += float(log['time'])
-                    
+
                     if log['status'] == 'pass':
                         fd.write('Time of run: %.2f s'% float(log['time']))
                         if 'resource' in log:
@@ -1010,8 +1010,8 @@ class report:
                                 max_virtual  = "N/A"
                                 max_resident = "N/A"
                                 max_filedesc = "N/A"
-                                
-                                                                
+
+
                             fd.write('<br><a href='+profile_html+'>')
                             fd.write('Memory(max): ' + max_virtual + ' virt. / ' + max_resident + ' res.')
                             fd.write('</a>')
@@ -1021,7 +1021,7 @@ class report:
                             fd.write('</a>')
 
                             fd.write('<br><a href='+profile_html+'>')
-                            
+
                             if (len(cpu_us) > 0):
                                 avg_cpu_us = "%.0f" % (sum(cpu_us)*1.0/len(cpu_us))
                                 avg_cpu_sy = "%.0f" % (sum(cpu_sy)*1.0/len(cpu_us))
@@ -1061,7 +1061,7 @@ class report:
                     if log['type'] == 'simple':
                         if 'image_min' in log:
                             # if image was not produced, these statistics were not calculated
-                            
+
                             f.write('<pre>')
                             f.write('Image    min: %g\nmax: %g\nrms: %g \n' %
                                     (float(log['image_min']),
@@ -1110,7 +1110,7 @@ class report:
                                 f.write('</pre>')
                                 f.write('<br>')
                             if 'image_'+pol+'_min' in log:
-                                f.write('<pre>')                        
+                                f.write('<pre>')
                                 f.write('Image '+pol+'\n    min: %g\n    max: %g\n    rms: %g\n' %
                                          (float(log['image_'+pol+'_min']),
                                           float(log['image_'+pol+'_max']),
@@ -1134,7 +1134,7 @@ class report:
                         f.write('</pre>')
                     else:
                         raise Exception('Unknown test type '+log['type'])
-                    
+
                     self.link_to_images(log, from_dir, to_dir, f)
                     f.write('</body></html>')
                     f.close()
@@ -1151,7 +1151,7 @@ class report:
             # - we're reporting all revision, or
             # - the revision number can be grep'ed from the session log
             #
-            
+
             framework_log = reg_dir + '/Log/run-' + test + '-' + host + '.log'
             if subtest[1] == 'exec' and \
                    os.path.isfile(framework_log) and \
@@ -1167,7 +1167,7 @@ class report:
                             fd.write('CRASHED')
                             if os.system('tail -20 ' + framework_log + ' | grep TIMEOUT >/dev/null') == 0:
                                 fd.write('<br>TIMEOUT')
-                                
+
                             elif os.system('tail -10 ' + framework_log + ' | grep "casapy returned" >/dev/null') == 0:
                                 error_message = subprocess.getoutput('tail -10 ' + framework_log + ' | grep -B1 "casapy returned" | head -1')
                                 fd.write('<br><img src="skullnbones.jpg"><br>' + shorten(error_message, 40))
@@ -1251,16 +1251,16 @@ class report:
                     f.write('and <a href="http://code.google.com/p/jrfonseca/wiki/Gprof2Dot">Gprof2Dot</a>.')
                     f.write('</body></html>')
                     f.close()
-            
-        if extended and subtest[1] == 'exec':          
+
+        if extended and subtest[1] == 'exec':
             framework_log = 'run-'     + test + '-' + host + '.log'
 
             if os.path.isfile(reg_dir + '/Log/' + framework_log):
                 shutil.copyfile(reg_dir + '/Log/' + framework_log, \
                                 report_dir + '/' + framework_log)
                 fd.write('<br><small><a href="'+framework_log+'">session log</a></small>')
-                
-        self.dump_td_end(fd)            
+
+        self.dump_td_end(fd)
 
     def link_to_images(self, log, from_dir, to_dir, fd):
         # Add link to images for image tests
@@ -1315,7 +1315,7 @@ class report:
         cpu_sy = []
         cpu_id = []
         cpu_wa = []
-        
+
         for s in samples:
             if (s != ''):
                 ss = s.split(',')
@@ -1331,7 +1331,7 @@ class report:
                     cpu_sy.append(float(ss[5]))
                     cpu_id.append(float(ss[6]))
                     cpu_wa.append(float(ss[7]))
-                    
+
         return t, mvirtual, mresident, nfiledesc, \
                cpu_us, cpu_sy, cpu_id, cpu_wa
 
@@ -1343,7 +1343,7 @@ class report:
         # Read from a single (monolithic) file of concatenated logfiles?
         monofile = result_dir + "/../all-result.txt"
         mono = os.path.exists(monofile)
-        
+
         if mono:
             fd = open(monofile)
             line = fd.readline().rstrip()
@@ -1409,7 +1409,7 @@ class report:
                     line = fd.readline().rstrip()
                     lineno += 1
                     continue
-                           
+
 
                 try:
                     k, v, c = re.compile(r"""
@@ -1430,7 +1430,7 @@ class report:
                 #print k, "=", v, "=", c
                 #data_file[k] = (v, c)  # include comments
                 data_file[k] = v
-                
+
                 # next line
                 line = fd.readline().rstrip() ; lineno += 1
 
@@ -1469,7 +1469,7 @@ class report:
                 for k in list(data_file.keys()):
                     if len(k) > 4 and k[:4] == 'ref_':
                         found_ref = True
-                        
+
                 if not found_ref:
                     is_valid = False
 
@@ -1488,9 +1488,9 @@ class report:
                        is_stable_branch(data_file['host']):
 
                     data.append(data_file)
-                    
+
         # end for each logfile
-        
+
         return data
 
     def dump_host(self, fd, host, extended):
@@ -1515,7 +1515,7 @@ class report:
             else:
                 fd.write("???");
 
-        
+
     def history_plot(self, png_filename_prefix, test, data):
         plotdata = {}      # the type is
                            # dictionary of (exec, time, mvirtual, mresident, filedesc,
@@ -1576,7 +1576,7 @@ class report:
                     else:
                         raise Exception("%s: Could not parse revision number '%s'" \
                               % (log['logfile'],log['CASA']))
-                    
+
                 # regression status (execution and image tests)
                 plotdata[t][log['host']].append(
                     (log['date'],revision, [0,1][log['status']=='pass']) )
@@ -1651,7 +1651,7 @@ class report:
                         x = pl.date2num(x)
                         ax.plot_date(x, y, plot_symbols[hostno % len(plot_symbols)]+'-.',
                                      xdate=True, ydate=False)
-                        
+
                     total_runs += len(x)
                     legend.append(host)
                     hostno += 1
@@ -1691,7 +1691,7 @@ class report:
                     pl.xlabel('SVN revision')
                 else:
                     pl.xlabel('Date')
-                
+
                 fn = png_filename_prefix+'-'+key+'-'+str(time_data)+'.png'
                 print("Saving %s..." % fn, end=' ')
                 sys.stdout.flush()
@@ -1717,7 +1717,7 @@ class report:
             pl.axis([1.1*min(t)-0.1*max(t), 1.1*max(t)-0.1*min(t), -5, 105])
         else:
             pl.axis([0, 1, -5, 105])
-            
+
         pl.xlabel('time (sec)')
         pl.ylabel('CPU usage (percent)')
         font=FontProperties(size='small')
@@ -1764,5 +1764,5 @@ class report:
         body1=['<pre>Memory profile of run of %s at %s </pre>'%(testname,time.strftime('%Y/%m/%d/%H:%M:%S'))]
         body2=['']
         ht.doBlk(body1, body2, png_filename, ' ')
-        
+
         ht.doFooter()

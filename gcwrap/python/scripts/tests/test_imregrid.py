@@ -53,7 +53,7 @@ def test_start(msg):
     print()
     print(stars + " Test " + msg + " start " + stars)
     current_test = msg
-    
+
 def test_end(condition, error_msg):
     global total, fail
     status = "OK"
@@ -62,7 +62,7 @@ def test_end(condition, error_msg):
         fail += 1
         status = "FAIL"
     print(stars + " Test " + current_test + " " + status + " " + stars)
-        
+
 out1 = 'regridded'
 out2 = 'bigger_image'
 out3 = 'shifted_image'
@@ -74,21 +74,21 @@ class imregrid_test(unittest.TestCase):
 
     def setUp(self):
         self._myia = iatool()
-    
+
     def tearDown(self):
         self._myia.done()
-        
+
         for i in (IMAGE, out1, out2, out3, out4, out5, out6):
             if (os.path.exists(i)):
                 os.system('rm -rf ' + i)
-        
+
         self.assertTrue(len(tb.showcache()) == 0)
-        
-    def test1(self):    
-        myia = self._myia  
+
+    def test1(self):
+        myia = self._myia
         myia.maketestimage(outfile = IMAGE)
         default('imregrid')
-        
+
         outim=imregrid(
             imagename = IMAGE,
             template = IMAGE,
@@ -96,10 +96,10 @@ class imregrid_test(unittest.TestCase):
         )
         im1 = myia.newimage(IMAGE)
         im2 = myia.newimage(out1)
-        
+
         im1.statistics()
         im2.statistics()
-        
+
         rec1 = im1.torecord()
         print('*************')
         print(rec1['shape'])
@@ -116,11 +116,11 @@ class imregrid_test(unittest.TestCase):
                 if p1['value']['value'] != p2['value']['value']: raise Exception(p1['value']['value'] + ' != ' + p2['value']['value'])
                 if p1['value']['unit'] != p2['value']['unit']: raise Exception(p1['value']['unit'] + ' != ' + p2['value']['unit'])
                 checked += 3
-        
+
         im2.done()
-        
+
         print(str(checked) + ' values checked')
-        
+
         # rescale by factors 3 x 2
         rec1 = im1.torecord()
         print('*************')
@@ -136,9 +136,9 @@ class imregrid_test(unittest.TestCase):
             rec1['coordsys']['coordsys']['direction0']['crpix'][0]*3.0,
             rec1['coordsys']['coordsys']['direction0']['crpix'][1]*2.0]
         print(rec1)
-        
+
         myia.fromrecord(rec1, out2)
-        
+
         # First we need to remove the output file.
         if (  os.path.exists(out1) ):
               shutil.rmtree( out1 )
@@ -154,21 +154,21 @@ class imregrid_test(unittest.TestCase):
         print(" ")
         print(" ")
         print("S2: ", s2)
-        
+
         if s1['maxpos'][0]*3 != s2['maxpos'][0]:
             raise Exception(str(s1['maxpos'][0]*3) + ' != ' + str(s2['maxpos'][0]))
         if s1['maxpos'][1]*2 != s2['maxpos'][1]:
             raise Exception(str(s1['maxpos'][1]*2) + ' != ' + str(s2['maxpos'][1]))
-        
-        
-        
+
+
+
         # shift by -13, 1 pixels
 
         rec1 = im1.torecord()
         rec1['coordsys']['coordsys']['direction0']['crpix'] = [
             rec1['coordsys']['coordsys']['direction0']['crpix'][0]-13,
             rec1['coordsys']['coordsys']['direction0']['crpix'][1]+1]
-        
+
         myia.fromrecord(rec1, out3)
         myia.close()
         # First we need to remove the output file.
@@ -183,8 +183,8 @@ class imregrid_test(unittest.TestCase):
             raise Exception(str(s1['maxpos'][0]-13) + ' != ' + str(s2['maxpos'][0]))
         if s1['maxpos'][1]+1 != s2['maxpos'][1]:
             raise Exception(str(s1['maxpos'][1]+1) + ' != ' + str(s2['maxpos'][1]))
-        
-        
+
+
         # Shift back to original
         rec1['coordsys']['coordsys']['direction0']['crpix'] = [
             rec1['coordsys']['coordsys']['direction0']['crpix'][0]+13,
@@ -216,8 +216,8 @@ class imregrid_test(unittest.TestCase):
                         # Note:  == comparison of floating point values,
                         # it works right now on this computer but might need to get fixed...
                         raise Exception
-        
-        
+
+
         # Exercise various reference codes (no check on output)
         codes = cs.newcoordsys(direction=True).referencecode('dir', True)
         rec1 = im1.torecord()
@@ -233,7 +233,7 @@ class imregrid_test(unittest.TestCase):
                            'MECLIPTIC', 'TECLIPTIC',
                            'ITRF', 'TOPO']:
                 rec1['coordsys']['coordsys']['direction0']['conversionSystem'] = ref
-                
+
                 myia.fromrecord(rec1, out5)
                 myia.close()
                 if (  os.path.exists(out1 ) ):
@@ -271,11 +271,11 @@ class imregrid_test(unittest.TestCase):
         res = (ff.getchunk(getmask=True) == myia.getchunk(getmask=True)).all()
         ff.done()
         myia.done()
-        self.assertTrue(res)  
+        self.assertTrue(res)
         shutil.rmtree(outfile)
         shutil.rmtree(image)
-        shutil.rmtree(expected)      
-        self.assertTrue(len(tb.showcache()) == 0)        
+        shutil.rmtree(expected)
+        self.assertTrue(len(tb.showcache()) == 0)
 
     def test_stretch(self):
         """ ia.regrid(): Test stretch parameter"""
@@ -304,10 +304,10 @@ class imregrid_test(unittest.TestCase):
             )
             self.assertTrue(type(zz) == type(yy))
             zz.done()
-            
+
         yy.done()
         self.assertTrue(len(tb.showcache()) == 0)
-        
+
     def test_axes(self):
         imagename = "test_axes.im"
         templatename = "test_axes.tmp"
@@ -326,11 +326,11 @@ class imregrid_test(unittest.TestCase):
         self.assertTrue((got == exp).all())
         myia.done()
         self.assertTrue(len(tb.showcache()) == 0)
-        
+
     def test_general(self):
         """ imregrid general tests """
         # moved from iamgetest_regression
-        
+
         # Make RA/DEC/Spectral image
         imname = 'ia.fromshape.image1'
         imshape = [32,32,32]
@@ -340,7 +340,7 @@ class imregrid_test(unittest.TestCase):
         self.assertTrue(myim.set(1.0))
         # Forced failures
         self.assertRaises(Exception, myim.regrid, axes=[20])
-        self.assertRaises(Exception, myim.regrid, shape=[10,20,30,40])       
+        self.assertRaises(Exception, myim.regrid, shape=[10,20,30,40])
         self.assertRaises(Exception, myim.regrid, csys='fish')
         self.assertRaises(Exception, myim.regrid, method='doggies')
         # Regrid it to itself (all axes        #
@@ -353,7 +353,7 @@ class imregrid_test(unittest.TestCase):
             self.assertTrue(alleqnum(p,1,tolerance=1e-3))
             self.assertTrue(myim2.done())
             iDone = iDone + 1
-            
+
         #      for method in ["cubic","linear","near"]:
         for method in ["cubic"]:
             myim2 = myim.regrid(method=method, axes=[0,1])
@@ -373,7 +373,7 @@ class imregrid_test(unittest.TestCase):
             iDone = iDone + 1
         #
         self.assertTrue(myim.done())
-        self.assertTrue(len(tb.showcache()) == 0)        
+        self.assertTrue(len(tb.showcache()) == 0)
 
     def test_multibeam(self):
         """imregrid, test multibeam image"""
@@ -383,13 +383,13 @@ class imregrid_test(unittest.TestCase):
         refpix = csys.increment()["numeric"][2]
         refpix = refpix * 0.9
         csys.setincrement(refpix, "spectral")
-        
+
         myia.setrestoringbeam(major="4arcsec", minor="2arcsec", pa="0deg", channel=0, polarization=-1)
         regridded = myia.regrid(axes=[0, 1], csys=csys.torecord(), decimate=3)
         regridded.done()
         self.assertRaises(Exception, myia.regrid, axes=[0,1,2], csys=csys.torecord())
         self.assertTrue(len(tb.showcache()) == 0)
-        
+
     def test_CAS_4315(self):
         """ test ia.regrid does not leave image open after tool is closed"""
         myia = self._myia
@@ -401,7 +401,7 @@ class imregrid_test(unittest.TestCase):
         myia.done()
         myib.done()
         self.assertTrue(len(tb.showcache()) == 0)
-        
+
     def test_CAS_4262(self):
         """ Test degenerate axes are not relabeled to template"""
         # test degenerate spectral axis is not regridded nor relabeled in output
@@ -419,7 +419,7 @@ class imregrid_test(unittest.TestCase):
              == myia.coordsys().referencevalue()["numeric"]
             ).all()
         )
-        
+
     def test_ref_code(self):
         """Test regridding to a new reference frame"""
         imregrid(imagename=datapath + "myim.im", template="GALACTIC", output=out6)
@@ -429,7 +429,7 @@ class imregrid_test(unittest.TestCase):
         myia.open(datapath + "mygal.im")
         expec = myia.getchunk()
         self.assertTrue((got == expec).all())
-        
+
         imregrid(
             imagename=datapath + "nrefcode.im", template="GALACTIC",
             output=out6, overwrite=True
@@ -439,7 +439,7 @@ class imregrid_test(unittest.TestCase):
         myia.open(datapath + "mmm.im")
         expec = myia.getchunk()
         self.assertTrue((numpy.max(numpy.abs(got- expec))) < 1e-14)
-        
+
         imregrid(
             imagename=datapath + "nrefcode_t.im", template="GALACTIC",
             output=out6, overwrite=True
@@ -449,7 +449,7 @@ class imregrid_test(unittest.TestCase):
         myia.open(datapath + "mmm_t.im")
         expec = myia.getchunk()
         self.assertTrue(numpy.max(numpy.abs(got - expec)) < 1e-12)
-        
+
     def test_ref_code_preserves_position(self):
         """Test that regridding to new refcode preserves source positions"""
         gal = "mygalactic.im"
@@ -480,17 +480,17 @@ class imregrid_test(unittest.TestCase):
         rcl.add(rfit['results']['component0'])
         rrefdir = rcl.getrefdir(0)
         self.assertTrue(qa.getvalue(qa.convert(myme.separation(orefdir, rrefdir), "arcsec")) < 2e-4)
-        
+
     def test_get(self):
         """Test using template='get' works"""
         tempfile = "xyz.im"
-        myia = self._myia 
+        myia = self._myia
         myia.fromshape(tempfile,[20,20,20])
         dicttemp = imregrid(tempfile, template="get")
         dicttemp['csys']['direction0']['crpix'] = [2.5, 2.5]
         output = "out.im"
         imregrid (tempfile, template=dicttemp, output=output)
-        
+
     def test_interpolate(self):
         """Test interpolation parameter is recognized"""
         imagename = "zzx.im"
@@ -517,7 +517,7 @@ class imregrid_test(unittest.TestCase):
                 output="blah3", interpolation="cubic"
             )
         )
-        
+
     def test_default_shape(self):
         """ Verify default shape is what users have requested, CAS-4959"""
         myia = self._myia
@@ -550,7 +550,7 @@ class imregrid_test(unittest.TestCase):
         )
         myia.open(output)
         self.assertTrue((myia.shape() == [20, 20, 10]).all())
-        
+
     def test_axis_recognition(self):
         """Test that imregrid recognizes axis by type, not position"""
         myia = self._myia
@@ -606,7 +606,7 @@ class imregrid_test(unittest.TestCase):
             Exception,myia.regrid, outfile="seventh",csys=ccopy.torecord(),
             axes=2, region=rg.box([0,0,0,0],[19,19,998,3])
         )
-        
+
     def test_no_output_stokes(self):
         """Test rule that if input image has no stokes and template image has stokes, output image has no stokes"""
         myia = self._myia
@@ -628,7 +628,7 @@ class imregrid_test(unittest.TestCase):
         myia.open(output)
         self.assertFalse(myia.coordsys().findcoordinate("stokes")['return'])
         myia.done()
-        
+
     def test_no_template_stokes(self):
         """Test rule that if input image has stokes and template image does not have stokes, output image has stokes"""
         myia = self._myia
@@ -680,7 +680,7 @@ class imregrid_test(unittest.TestCase):
                 shape=[20, 20, 2, 20]
             )
         )
-        
+
     def test_degenerate_template_stokes_axis_and_input_stokes_length_gt_0(self):
         """Verify correct behavior for the template image having a degenerate stokes axis"""
         myia = self._myia
@@ -725,7 +725,7 @@ class imregrid_test(unittest.TestCase):
                 overwrite=True
             )
         )
-        
+
     def test_template_stokes_length_gt_1_and_input_stokes_length_gt_0(self):
         """Verify correct behavior for the template image having a stokes axis of length > 1"""
         myia = self._myia
@@ -779,7 +779,7 @@ class imregrid_test(unittest.TestCase):
         expec = ["I"]
         self.assertTrue(myia.coordsys().stokes() == expec)
         myia.done()
-        
+
         csys.setstokes("XX I U RR")
         myia.open(template)
         myia.setcoordsys(csys.torecord())
@@ -797,7 +797,7 @@ class imregrid_test(unittest.TestCase):
         self.assertTrue(myia.coordsys().stokes() == expec)
         self.assertTrue((myia.shape() == [20, 20, 2, 20]).all())
         myia.done()
-    
+
     def test_no_input_spectral(self):
         """Verify if input image has no spectral axis, output will not have spectral axis"""
         myia = self._myia
@@ -819,7 +819,7 @@ class imregrid_test(unittest.TestCase):
         myia.open(output)
         self.assertTrue((myia.shape() == [20, 20, 4]).all())
         myia.done()
-        
+
     def test_no_template_spectral_axis(self):
         """Verify behavior for when template has no spectral axis, but input does"""
         myia = self._myia
@@ -849,7 +849,7 @@ class imregrid_test(unittest.TestCase):
                 axes=[0, 1, 3]
             )
         )
-        
+
     def test_degenerate_template_spectral_axis(self):
         """Verify correct behavior for when template has a degenerate spectral axis"""
         myia = self._myia
@@ -880,7 +880,7 @@ class imregrid_test(unittest.TestCase):
             )
         )
         # so close the image and then try to overwrite it
-        myia.done() 
+        myia.done()
         # the spectral axis is removed from the list of axes, a warning is emitted
         # that it cannot be regridded, and the input spectral axis is copied to
         # the ouptut image
@@ -894,7 +894,7 @@ class imregrid_test(unittest.TestCase):
         myia.open(output)
         self.assertTrue((myia.shape() == [20, 20, 4, 20]).all())
         myia.done()
-    
+
     def test_degenerate_input_spectral_axis(self):
         """Verify correct behavior for when input has a degenerate spectral axis"""
         myia = self._myia
@@ -945,7 +945,7 @@ class imregrid_test(unittest.TestCase):
         expec = csys.increment()['numeric']
         self.assertTrue((got == expec).all())
         myia.done()
-    
+
     def test_bad_shape(self):
         """ Verify that bad shape specification results in exception"""
         myia = self._myia
@@ -965,7 +965,7 @@ class imregrid_test(unittest.TestCase):
                 overwrite=True, shape=[20, 20, 20, 1]
             )
         )
-    
+
     def test_nested_image(self):
         """ Verify that one image which lies completely inside the other will not cause failure"""
         myia = self._myia
@@ -996,14 +996,14 @@ class imregrid_test(unittest.TestCase):
                 overwrite=True
             )
         )
-    
+
     def test_regrid_galactic(self):
         """Verify fix for CAS-5534"""
         myia = self._myia
         myia.open(datapath + "ngc5921.clean.image")
         csys = myia.coordsys()
         csys.setreferencecode('GALACTIC', type='direction', adjust=True)
-        zz = myia.regrid(outfile='gal_regrid.image', shape=[300, 300, 1, 46], csys=csys.torecord(), overwrite=True)  
+        zz = myia.regrid(outfile='gal_regrid.image', shape=[300, 300, 1, 46], csys=csys.torecord(), overwrite=True)
         myia.open(datapath + "gal_regrid.image")
         self.assertTrue(numpy.max(numpy.abs(zz.getchunk() - myia.getchunk())) < 1e-8)
         self.assertTrue((zz.getchunk(getmask=True) == myia.getchunk(getmask=True)).all())
@@ -1022,7 +1022,7 @@ class imregrid_test(unittest.TestCase):
         myia.done()
         self.assertTrue((xx.shape() == shape).all())
         xx.done()
-        
+
     def test_template_stokes_length_and_input_stokes_length_gt_1(self):
         myia = self._myia
         my_image = numpy.zeros([128,128,32,4])
@@ -1054,7 +1054,7 @@ class imregrid_test(unittest.TestCase):
         myia.open(output)
         self.assertTrue(myia.shape()[3] == 4)
         myia.done()
-        
+
     def test_decimate(self):
         """imregrid, test too high a value for decimate throws exception - CAS-5313"""
         myia = self._myia
@@ -1073,7 +1073,7 @@ class imregrid_test(unittest.TestCase):
         )
         self.assertTrue(regridded)
         regridded.done()
-        
+
     def test_complex(self):
         """Test regridding a complex image, CAS-1390"""
         myia = self._myia
@@ -1097,8 +1097,8 @@ class imregrid_test(unittest.TestCase):
         crgpart = crg.getchunk()
         crg.done()
         myia.done()
-        self.assertTrue((crgpart == rrgpart + irgpart*1j).all())        
-        
+        self.assertTrue((crgpart == rrgpart + irgpart*1j).all())
+
     def test_multibeam(self):
         """test multibeams cannot be regridded"""
         myia = self._myia
@@ -1119,7 +1119,7 @@ class imregrid_test(unittest.TestCase):
         )
         bb.done()
         myia.done()
-        
+
     def test_CAS_8345(self):
         """verify fix to CAS-8345, channels not replicating properly"""
         myia = self._myia
@@ -1144,10 +1144,10 @@ class imregrid_test(unittest.TestCase):
                 self.assertTrue((gotm[i,j,:] == expm[i,j]).all(), "incorrect mask" )
 
         myia.done()
-                
-                          
-        
+
+
+
 def suite():
     return [imregrid_test]
-    
-    
+
+

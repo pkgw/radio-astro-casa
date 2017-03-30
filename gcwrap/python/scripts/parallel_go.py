@@ -41,7 +41,7 @@ class cluster(object):
    "control cluster engines for parallel tasks"
 
    _instance = None
-   
+
    __client=None
    __controller=None
    __timestamp=None
@@ -49,8 +49,8 @@ class cluster(object):
    __ipythondir=os.environ['PWD']+'/ipython'
    if('IPYTHONDIR' in os.environ):
       __ipythondir=os.environ['IPYTHONDIR']
-   __homepath=os.environ['HOME'] 
-   __start_controller_file='start_controller.sh'   
+   __homepath=os.environ['HOME']
+   __start_controller_file='start_controller.sh'
    __start_engine_file='start_engine.sh'
    __stop_node_file='stop_node.sh'
    __stop_engine_file='stop_engine.sh'
@@ -68,7 +68,7 @@ class cluster(object):
        return cls._instance
 
    def __call__(self):
-       
+
        # If there is already a controller, use it
        return self
 
@@ -88,7 +88,7 @@ class cluster(object):
          self.__ipythondir=os.environ['IPYTHONDIR']
       else:
          os.environ['IPYTHONDIR']=self.__ipythondir
-      self.__homepath=os.environ['HOME'] 
+      self.__homepath=os.environ['HOME']
       if (self.__ipythondir==None or self.__ipythondir==''):
          os.environ["IPYTHONDIR"]=os.environ['HOME']+'.casa/ipython'
       self.__ipythondir=os.environ['IPYTHONDIR']
@@ -99,12 +99,12 @@ class cluster(object):
    def _ip(self, host):
       """Returns a unique IP address of the given hostname,
       i.e. not 127.0.0.1 for localhost but localhost's global IP"""
-      
+
       ip = socket.gethostbyname(host)
-      
+
       if ip == "127.0.0.1":
          ip = socket.gethostbyname(socket.getfqdn())
-         
+
       return ip
 
    def _cp(self, source, host, destination):
@@ -131,20 +131,20 @@ class cluster(object):
    def start_engine(self, node_name, num_engine, work_dir=None, omp_num_nthreads=1):
       """Start engines on the given node.
       @param node_name The name of the computer to host the engines.
-      @param num_engine The number of the engines to initialize for this run. 
-      @param work_dir The working directory where outputs and logs from the engines will be stored. If work_dir is not supplied or does not exist, the user's home directory will be used. 
+      @param num_engine The number of the engines to initialize for this run.
+      @param work_dir The working directory where outputs and logs from the engines will be stored. If work_dir is not supplied or does not exist, the user's home directory will be used.
       Running this command multiple times on the same node is ok. The total number of the engines on the node increases for each run.
       Every engine has a unique integer id. The id is the key to send the instructions to the engine. The available engine ids can be obtained by calling get_ids() or get_engines().
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       # Start controller
       if not self.__start_controller():
          casalog.post("The controller is not started","WARN","start_engine")
          return False
 
-      # Start the engine 
+      # Start the engine
       out=open('/dev/null', 'w')
       err=open('/dev/null', 'w')
       cmd = self._cp(self.__ipythondir+'/'+self.__cluster_rc_file,
@@ -154,7 +154,7 @@ class cluster(object):
       sts = os.waitpid(p.pid, 0)
       if sts[1] != 0:
           casalog.post("Command failed: %s" % (" ".join(cmd)),"WARN","start_engine")
-      
+
       cmd = self._cp(self.__ipythondir+'/'+self.__start_engine_file,
                 node_name,
                 self.__prefix+self.__start_engine_file)
@@ -172,12 +172,12 @@ class cluster(object):
             casalog.post("Command failed: %s" % (" ".join(cmd)),"WARN","start_engine")
          casalog.post("start engine %s on %s" % (i, node_name),"INFO","start_engine")
       self.__engines=self.__update_cluster_info(num_engine, work_dir,omp_num_nthreads)
-      
+
       out.close()
       err.close()
 
    # jagonzal (CAS-4292): This method crashes when initializing the nodes via __init_nodes,
-   # so it is deprecated. Instead it is necessary to use directly the start_engine method 
+   # so it is deprecated. Instead it is necessary to use directly the start_engine method
    # which does not only start the engine, but also initializes it using scripts
    def start_cluster(self, cl_file):
       """Start engines that listed in a file
@@ -192,17 +192,17 @@ class cluster(object):
       #olddog  2 /home/olddog/hye
       #-----------------------------------------
 
-      start_cluster and start_engine can be used multiple times. 
+      start_cluster and start_engine can be used multiple times.
 
       """
-      
+
       casalog.origin("parallel_go")
 
       # Start controller
       if not self.__start_controller():
          casalog.post("The controller is not started","WARN","start_cluster")
          return False
- 
+
       # Process the file
       try:
          clf=open(cl_file, 'r')
@@ -220,7 +220,7 @@ class cluster(object):
                # jagonzal (CAS-4106): Properly report all the exceptions and errors in the cluster framework
                # traceback.print_tb(sys.exc_info()[2])
                continue
-               
+
             # Start all nodes
             self.__init_now=False
             casalog.post("start_engine(%s,%s,%s)" % (str(words[0]),str(words[1]),str(words[2])),"INFO","start_cluster")
@@ -235,28 +235,28 @@ class cluster(object):
          self.__engines=self.__client.pull(['id', 'host', 'pid', 'inited'])
       self.__new_engs=[]
       self.__init_now=True
-  
+
    def __start_controller(self):
       """(Internal) Start the controller.
-      
-      A user does not need to call this function directly. When a user runs either start_cluster or start_engine, it will check the existence of a valid controller. If the controller does not exist, this function will be called auto matically. All engines will connect to the valid controller. 
+
+      A user does not need to call this function directly. When a user runs either start_cluster or start_engine, it will check the existence of a valid controller. If the controller does not exist, this function will be called auto matically. All engines will connect to the valid controller.
 
       """
-      
+
       casalog.origin("parallel_go")
-       
+
       # If there is already a controller, use it
       if (self.__controller!=None):
          return True
-     
+
       # First of all write bashrc file which is needed by other cluster files
-      self.__write_bashrc()     
+      self.__write_bashrc()
 
       # Generate time stamp and write start controller file
       from time import strftime
       timestamp=strftime("%Y%m%d%H%M%S")
-      self.__write_start_controller(timestamp) 
-      
+      self.__write_start_controller(timestamp)
+
       # Start controller in a detached terminal
       cmd = 'bash ' + self.__ipythondir + '/' + self.__start_controller_file
       self.__controller=Popen(cmd,shell=True).pid
@@ -264,12 +264,12 @@ class cluster(object):
          return False
       self.__timestamp=timestamp
       casalog.post("Controller %s started" % self.__controller  ,"INFO","start_controller")
-      
+
       # Now write the rest of the cluster files
       self.__write_start_engine()
       self.__write_stop_controller()
-      self.__write_stop_node()          
-      
+      self.__write_stop_node()
+
       # Wait for controller files to exist
       info=self.__ipythondir+'/log/casacontroller-'+str(self.__timestamp)+'-'+str(self.__controller)+'.log'
       meng=self.__ipythondir+'/security/casacontroller-mec-'+self.__timestamp+'.furl'
@@ -305,7 +305,7 @@ class cluster(object):
       ef.write('export stamp=%s\n' % self.__timestamp)
       ef.write(cmd+' --furl-file='+self.__ipythondir+'/security/casacontroller-engine-'+self.__timestamp+'.furl --logfile='+self.__ipythondir+'/log/casaengine-'+self.__timestamp+'-'+str(self.__controller)+'- 2>&1 | grep -v NullSelection &\n')
       ef.close()
-      
+
    def __write_start_controller(self,timestamp):
       """
 
@@ -363,10 +363,10 @@ class cluster(object):
       bashrc=open(self.__ipythondir+'/'+self.__cluster_rc_file, 'w')
       bash=subprocess.getoutput("which bash")
       bashrc.write("#!%s\n" % bash)
-      envList=['PATH', 'LD_LIBRARY_PATH', 'IPYTHONDIR', 
+      envList=['PATH', 'LD_LIBRARY_PATH', 'IPYTHONDIR',
                'CASAPATH', 'CASAARCH',
                'PYTHONHOME', '__CASAPY_PYTHONDIR',
-               'PGPLOT_DEV', 'PGPLOT_DIR', 'PGPLOT_FONT'] 
+               'PGPLOT_DEV', 'PGPLOT_DIR', 'PGPLOT_FONT']
       for param in envList:
          try:
             bashrc.write('export %s="%s"\n' % (param,os.environ[param]))
@@ -383,14 +383,14 @@ class cluster(object):
 
       @param engine_id The id of the engine to be stopped.
       If an engine with the given id is in the current cluster, running this function will stop the engine and remove it from the engine list.
-      
+
       """
-      
+
       casalog.origin("parallel_go")
-       
+
       if type(engine_id).__name__ != 'int':
           casalog.post("engine id must be an integer","WARN","stop_engine")
-          return None 
+          return None
 
       node_name=''
       procid=None
@@ -430,11 +430,11 @@ class cluster(object):
 
       @param node_node The node to be stopped.
       If a computer with the given name is in the current cluster, running this function will stop all the engines currently running on that node and remove the node and engines from the engine list. This function will not shutdown the computer.
-     
+
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       if type(node_name).__name__ != 'str':
          casalog.post("node_name must be a string","WARN","stop_node")
          return None
@@ -466,12 +466,12 @@ class cluster(object):
    def __stop_controller(self):
       """(Internal) Stop the controller.
 
-      This is the last thing for quiting the cluster gracely. 
+      This is the last thing for quiting the cluster gracely.
 
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       # If it is already down
       if (self.__controller==None):
          return True
@@ -520,7 +520,7 @@ class cluster(object):
 
       # jagonzal (CAS-4292): We have to check the controller instance directly because the method
       # start_cluster does not work properly (crashes when initializing the nodes via __init_nodes).
-      # Actually start_cluster is deprecated, and it is necessary to use directly the start_engine 
+      # Actually start_cluster is deprecated, and it is necessary to use directly the start_engine
       # method which does not only start the engine, but also initializes it using scripts
       if ((self.__controller==None) or (self.__client==None)):
          return
@@ -534,28 +534,28 @@ class cluster(object):
              traceback.print_exception((sys.exc_info()[0]), (sys.exc_info()[1]), (sys.exc_info()[2]))
          # Reset state before doing anything else, otherwise we may try to use one method from the client object
          self.__client=None
-         self.__controller=None             
+         self.__controller=None
          # Update cluster info
          self.__engines=[]
          # Remove initialization/shut-down scripts
          try:
-             os.remove(self.__ipythondir+'/'+self.__start_controller_file)             
+             os.remove(self.__ipythondir+'/'+self.__start_controller_file)
              os.remove(self.__ipythondir+'/'+self.__cluster_rc_file)
              os.remove(self.__ipythondir+'/'+self.__start_engine_file)
              os.remove(self.__ipythondir+'/'+self.__stop_node_file)
              os.remove(self.__ipythondir+'/'+self.__stop_controller_file)
-             
+
              os.remove(self.__prefix+self.__cluster_rc_file)
-             os.remove(self.__prefix+self.__start_engine_file)            
+             os.remove(self.__prefix+self.__start_engine_file)
          except:
-             traceback.print_exception((sys.exc_info()[0]), (sys.exc_info()[1]), (sys.exc_info()[2]))             
+             traceback.print_exception((sys.exc_info()[0]), (sys.exc_info()[1]), (sys.exc_info()[2]))
          # jagonzal (CAS-4370): Remove all the ipcontroller/ipengine files because
          # otherwise it might confuse future cluster/MultiEngineClient instances
          self.wash_logs()
          return
 
       ### jagonzal (CAS-4292): Code below is deprecated ###
-      
+
       # shutdown all engines
       elist=[]
       for i in self.__engines:
@@ -609,10 +609,10 @@ class cluster(object):
      An engine is a Python interpreter. To make an engine capable of running CASA tasks and tools, we must setup the environment and import necessary modules. This function effectively make every engine a running CASA instance (except that it is a non-interactive CASA running in Python, in contrast the casapy that is an interactive CASA running in IPython).
 
      """
-     
+
      casalog.origin("parallel_go")
      casalog.post("Initialize engines %s" %str(i),"INFO","init_nodes")
-     
+
      self.__client.push({'casa': casa })
      self.__client.execute('import os', i)
      self.__client.execute('if os.path.isdir(work_dir):os.chdir(work_dir)\nelse:work_dir=os.environ["HOME"]', i)
@@ -623,7 +623,7 @@ class cluster(object):
        # jagonzal (CAS-4106): Properly report all the exceptions and errors in the cluster framework
        # traceback.print_tb(sys.exc_info()[2])
        pass
-     
+
      if phome=='':
         try:
            v=str.split(os.environ["CASAPATH"], ' ')
@@ -663,18 +663,18 @@ class cluster(object):
          exception.print_tracebacks()
      except:
          casalog.post("Error initializing engine %s" % str(i),"SEVERE","init_nodes")
-         traceback.print_tb(sys.exc_info()[2])     
-    
+         traceback.print_tb(sys.exc_info()[2])
+
 
    def reset_cluster(self):
       """Re-initialize the engines.
 
       This function reset the running environment for all the available engines.
-      
+
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       if self.__client is None:
          casalog.post("Multiengineclient is not initialized","WARN","reset_cluster")
          return None
@@ -685,7 +685,7 @@ class cluster(object):
          # jagonzal (CAS-4106): Properly report all the exceptions and errors in the cluster framework
          # traceback.print_tb(sys.exc_info()[2])
          return None
-         
+
 
       if len(tobeinit)>0:
          self.__init_nodes(tobeinit)
@@ -694,17 +694,17 @@ class cluster(object):
    def __update_cluster_info(self, num_engine, work_dir=None,omp_num_nthreads=1):
       """(Internal) Construct the list of engines.
 
-      @param num_engine The number of new engines 
-      @param work_dir The initial working directory 
+      @param num_engine The number of new engines
+      @param work_dir The initial working directory
       This function appends num_engine engines to the engine list and setup initial Python environment on them. Before further initialization, an engine can only run Python programs (it can not run CASA tasks or tools).
 
       """
-      
+
       casalog.origin("parallel_go")
 
       if self.__client is None :
          casalog.post("Controller is not initialized","WARN","update_cluster_info")
-         return [] 
+         return []
 
       engs=len(self.__engines)+num_engine
       if engs<0:
@@ -715,9 +715,9 @@ class cluster(object):
          idlist=self.__client.get_ids()
          time.sleep(1)
          i=i+1
-         
+
       # Here we only take care of the quick-init-abel items
-      # The init of real casa_in_py will be done in parallel 
+      # The init of real casa_in_py will be done in parallel
       tobeinit=[]
       for i in idlist:
          inited=False
@@ -745,7 +745,7 @@ class cluster(object):
             else:
                self.__client.execute('work_dir=os.environ["HOME"]', i)
 
-            # These are environment variabls set for each node at startup. 
+            # These are environment variabls set for each node at startup.
             # It may be better to set as global in this module then pass to each engine when update_cluster_info
 
             self.__client.execute('contrid=os.environ["contrid"]', i)
@@ -786,9 +786,9 @@ class cluster(object):
       The current implementation of this function is only a prototype. A multi-log viewer needs to be developed.
 
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       import os
       import string
       _logs = self.get_casalogs()
@@ -799,10 +799,10 @@ class cluster(object):
          casalog.post("Cannot read casalogs","WARN","read_casalogs")
 
    def pad_task_id(self, b='', task_id=[]):
-      """Generate a dictionary of id-padded variables 
+      """Generate a dictionary of id-padded variables
 
       @param b The base name to be padded
-      @param task_id A list of integers to pad the base name 
+      @param task_id A list of integers to pad the base name
       One way of distributing varaibles to a set of engnines is through python a dictionary. This is a convenience function for quick generating a dictionary of padded names. Example:
       x=c.pad_task_id('basename', [3, 5, 8])
       x
@@ -816,12 +816,12 @@ class cluster(object):
       y=c.pad_task_id(x)
       y
       {0: 'a-0-0', 1: 'b-1-1', 2: 'c-2-2', 3: 'd-3-3'}
-     
+
       """
-      
+
       casalog.origin("parallel_go")
 
-      base={} 
+      base={}
 
       int_id=True
       for j in task_id:
@@ -838,7 +838,7 @@ class cluster(object):
                b[j]=str(b[j])
 
       if len(task_id)==0:
-         task_id=list(range(0, len(self.__engines))) 
+         task_id=list(range(0, len(self.__engines)))
       if type(b)==str:
          for j in task_id:
             base[j]=b+'-'+str(j)
@@ -859,7 +859,7 @@ class cluster(object):
              base[i]=b[i]+'-'+str(i)
 
       return base
-       
+
    def one_to_n(self, arg, task_id=[]):
       """Genrate a dictionary of one variable for n keys
 
@@ -871,11 +871,11 @@ class cluster(object):
       {1: 'basename', 2: 'basename', 7: 'basename'}
 
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       # assign 1 value to n targets
-      base={} 
+      base={}
       int_id=True
       for j in task_id:
          if type(j)!=int or j<0:
@@ -886,11 +886,11 @@ class cluster(object):
          return base
 
       if len(task_id)==0:
-         task_id=list(range(0, len(self.__engines))) 
+         task_id=list(range(0, len(self.__engines)))
       for j in task_id:
          base[j]=arg
       return base
-       
+
    def n_to_n(self, args=[], task_id=[]):
       """Generate a dictionary of n varables
 
@@ -902,11 +902,11 @@ class cluster(object):
       {3: 'a', 6: 'b', 7: 'c'}
 
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       # Assign n value to n targets
-      base={} 
+      base={}
 
       if len(args)==0:
          return base
@@ -921,7 +921,7 @@ class cluster(object):
          return base
 
       if len(task_id)==0:
-         task_id=list(range(0, len(self.__engines))) 
+         task_id=list(range(0, len(self.__engines)))
 
       i=-1
       for j in task_id:
@@ -943,12 +943,12 @@ class cluster(object):
       {2: 9, 3: 49, 4: 89 }
 
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       base={}
       if len(task_id)==0:
-         task_id=list(range(0, len(self.__engines))) 
+         task_id=list(range(0, len(self.__engines)))
 
       if len(task_id)==0:
          casalog.post("There are no engines available","WARN","split_int")
@@ -982,7 +982,7 @@ class cluster(object):
          st=i*nx
          base[j]=st+start
       return base
-       
+
    def split_channel(self, spw, nchan, task_id=[]):
       """Generate a dictionary to distribute the spectral windows
 
@@ -995,12 +995,12 @@ class cluster(object):
       {0: '1:0~42', 1: '1:43~85', 2: '1:86~128'}
 
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       base={}
       if len(task_id)==0:
-         task_id=list(range(0, len(self.__engines))) 
+         task_id=list(range(0, len(self.__engines)))
 
       if len(task_id)==0:
          casalog.post("There are no engines available","WARN","split_channel")
@@ -1027,9 +1027,9 @@ class cluster(object):
          se=st+nx-1
          base[j]=str(spw)+":"+str(st)+"~"+str(se)
       return base
-       
+
    def pgc(self,*args,**kwargs):
-      """Parallel execution of commands and/or dictionary 
+      """Parallel execution of commands and/or dictionary
          of commands
 
       @param *args any number of commands or dictionary of
@@ -1051,13 +1051,13 @@ class cluster(object):
       Out[23]: {0:'xa=-1', 1:'xa=-1', 2:'xa=-1', 3:'xa=-1'}
 
       """
-      
+
       casalog.origin("parallel_go")
 
       tasks={}
       for j in self.__client.get_ids():
          tasks[j]=[]
-      
+
       for i in args:
          if type(i)==dict:
             for j in list(i.keys()):
@@ -1074,7 +1074,7 @@ class cluster(object):
                      tasks[j].append(st)
          elif type(i)==bytes:
             # For all tasks
-            for j in range(0, len(self.__engines)): 
+            for j in range(0, len(self.__engines)):
                tasks[j].append(i)
          else:
             casalog.post("command %s must be a string or a dictionary" % str(i),"WARN","pgc")
@@ -1083,7 +1083,7 @@ class cluster(object):
 
       # How to give name, say 'cmd_name', to a set of commands a name such
       # that cluster.pull('cmd_name') returns the script is excuteded?
-     
+
       keys = list(kwargs.keys())
       job='NoName'
       block=True
@@ -1092,8 +1092,8 @@ class cluster(object):
             job=kwargs[kw]
          if kw.lower()=='block':
             block=kwargs[kw]
- 
-      for i in list(tasks.keys()):      
+
+      for i in list(tasks.keys()):
          cmd=string.join(tasks[i], '\n')
          self.__client.push(dict(job=cmd), i)
 
@@ -1101,17 +1101,17 @@ class cluster(object):
               block=block,targets=list(tasks.keys()))
 
    def parallel_go_commands(self,*args,**kwargs):
-      """Parallel execution of commands and/or dictionary 
+      """Parallel execution of commands and/or dictionary
          of commands
 
 
       """
       self.pgc(*args,**kwargs)
- 
+
    def pgk(self, **kwargs):
       """Parallel execution to set keywords
 
-      @param **kwargs keyword args 
+      @param **kwargs keyword args
 
       Example:
       x=np.zeros((3,3))
@@ -1127,16 +1127,16 @@ class cluster(object):
       c.pull('t')
       {0: 'b', 1: 'b'}
       """
-      
+
       casalog.origin("parallel_go")
 
       tasks={}
       for j in self.__client.get_ids():
          tasks[j]=dict()
-      
+
       keys = list(kwargs.keys())
 
-      for kw in keys: 
+      for kw in keys:
          vals=kwargs[kw]
          if type(vals)==dict:
             for j in list(vals.keys()):
@@ -1149,16 +1149,16 @@ class cluster(object):
             for j in list(tasks.keys()):
                tasks[j][kw]=vals
 
-      for i in list(tasks.keys()):      
+      for i in list(tasks.keys()):
          self.__client.push(tasks[i], i, True)
-         
+
       return tasks
 
    def make_command(self, func, **kwargs):
       """Make command strings to be distributed to engines
 
-      @func function name 
-      @kwargs **kwargs available 
+      @func function name
+      @kwargs **kwargs available
 
       Example:
       x=np.ones((3,3))
@@ -1169,7 +1169,7 @@ class cluster(object):
       {0: 'g(s="y", t="b", d=6)',
        1: 'g(c=array([[1., 1., 1.],\n[1., 1., 1.],\n[1., 1., 1.]]), t="b", d=6)'}
       """
-      
+
       casalog.origin("parallel_go")
 
       tasks=self.pgk(**kwargs)
@@ -1188,7 +1188,7 @@ class cluster(object):
       func=str.strip(func)
 
       cmds=dict()
-      for i in list(tasks.keys()): 
+      for i in list(tasks.keys()):
         cmd=''
         for (k, v) in tasks[i].items():
           cmd+=k+'='
@@ -1208,8 +1208,8 @@ class cluster(object):
         cmds[i]=cmd
 
       return cmds
-  
-               
+
+
    def parallel_go_keywords(self, **kwargs):
       """Parallel execution to set keywords
 
@@ -1222,11 +1222,11 @@ class cluster(object):
 
 
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       casalog.post("Hello CASA Controller","INFO","hello")
-      
+
       if self.get_engines() != []:
          return self.__client.execute('casalog.origin("parallel_go");casalog.post("Hello CASA Controller","INFO","hello")')
       else:
@@ -1237,7 +1237,7 @@ class cluster(object):
 
 
       """
-      # This is not very useful because dirs are generally different cross nodes 
+      # This is not very useful because dirs are generally different cross nodes
       self.__client.execute('import os')
       self.__client.push(dict(clusterdir=clusterdir))
       self.__client.execute('os.chdir(clusterdir)')
@@ -1265,7 +1265,7 @@ class cluster(object):
 
 
       """
-      from sets import Set 
+      from sets import Set
       elist=[]
       for i in self.__engines:
          elist.append(i[1])
@@ -1283,7 +1283,7 @@ class cluster(object):
 
 
       """
-      return subprocess.getstatusoutput(cmd)      
+      return subprocess.getstatusoutput(cmd)
 
    def pdo(self,job):
       """parallel execution of a job
@@ -1298,14 +1298,14 @@ class cluster(object):
 
       """
       return self.__client.execute(job,block=False,targets=nodes)
-  
+
    def execute(self,job,nodes):
       """execute a job on a subset of engines in blocking mode
 
 
       """
-      return self.__client.execute(job,block=True,targets=nodes)  
-  
+      return self.__client.execute(job,block=True,targets=nodes)
+
    def queue_status(self):
       """query to queue status
 
@@ -1324,11 +1324,11 @@ class cluster(object):
       """get the eleapsed time for a timer
 
       """
-      
+
       casalog.origin("parallel_go")
 
       base={}
-      prop=self.__client.get_properties() 
+      prop=self.__client.get_properties()
       for i in self.get_ids():
           try:
              ky=prop[i]['timertype']
@@ -1341,17 +1341,17 @@ class cluster(object):
              pass
              # jagonzal (CAS-4106): Properly report all the exceptions and errors in the cluster framework
              # traceback.print_tb(sys.exc_info()[2])
-         
+
       casalog.post("Timer: %s" % str(base),"INFO","get_timer")
       return
 
    def set_timer(self,timer='timer',type='proc',
                  targets=None,block=None):
-      """set a timer 
+      """set a timer
 
 
       """
-      
+
       if self.__client==None:
           return
 
@@ -1370,7 +1370,7 @@ class cluster(object):
       """delete a timer
 
       """
-      
+
       casalog.origin("parallel_go")
 
       for i in self.get_ids():
@@ -1386,11 +1386,11 @@ class cluster(object):
       """
       return self.__client.get_properties()
 
-   def set_properties(self, properties, 
+   def set_properties(self, properties,
                       targets=None, block=None):
       """set properties for target engines
 
-      @param properties a dictionary its keys are 
+      @param properties a dictionary its keys are
 
 
       """
@@ -1412,7 +1412,7 @@ class cluster(object):
       By default, this function set the keyword values to all engines.
       To set values on a subset of engines, use kekword parameter targets,
       whick takes integer or array of integer of engine ids.
-      You can also use function pgk to set values onto the engines. 
+      You can also use function pgk to set values onto the engines.
       Example:
       c.push(a=[1,3,7.1])
       c.pull('a')
@@ -1424,7 +1424,7 @@ class cluster(object):
       {1: [1.2, 3.7000000000000002]}
 
       """
-      
+
       casalog.origin("parallel_go")
 
       keys = list(kwargs.keys())
@@ -1441,20 +1441,20 @@ class cluster(object):
 
       if targets=='all' or targets==None or \
          type(targets)==list and len(targets)==0:
-          tgt=list(range(0, len(self.__engines))) 
+          tgt=list(range(0, len(self.__engines)))
       elif type(targets)==list:
           for j in targets:
               if type(j)==int and j>=0:
                   tgt.append(j)
       elif type(targets)==int and targets>=0:
           tgt.append(targets)
-           
+
       if len(tgt)==0:
            casalog.post("There are no target engines","WARN","push")
            return False
 
       ok=True
-      for i in tgt: 
+      for i in tgt:
           try:
               self.__client.push(dict(kwargs),i)
           except:
@@ -1478,33 +1478,33 @@ class cluster(object):
       {1: 'b'}
 
       """
-      
+
       casalog.origin("parallel_go")
-      
-      base={} 
+
+      base={}
       tgt=[]
       if targets=='all' or \
          type(targets)==list and len(targets)==0:
-          tgt=list(range(0, len(self.__engines))) 
+          tgt=list(range(0, len(self.__engines)))
       elif type(targets)==list:
           for j in targets:
               if type(j)==int and j>=0:
                   tgt.append(j)
       elif type(targets)==int and targets>=0:
           tgt.append(targets)
-           
+
       if len(tgt)==0:
            casalog.post("There are no target engines","WARN","push")
            return base
 
-      for i in tgt: 
+      for i in tgt:
           rslt=None
           try:
               rslt=self.__client.pull(key,i)
           except:
               # jagonzal (CAS-4106): Properly report all the exceptions and errors in the cluster framework
               # traceback.print_tb(sys.exc_info()[2])
-              pass 
+              pass
           if rslt!=None:
               base[i]=rslt[0]
 
@@ -1515,9 +1515,9 @@ class cluster(object):
 
 
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       # jagonzal (CAS-4375): We have to capture the engine's exceptions at this level
       try:
            res = self.__client.get_result()[i]
@@ -1535,14 +1535,14 @@ class cluster(object):
    def activate(self):
       """set the cluster to parallel execution mode
 
-  
+
       """
       return self.__client.activate()
 
 
    def parallel_go_task(self,taskname=None,outfile='',
                    target=[],ipython_globals=None):
-       """ Make parallel tasks using current input values 
+       """ Make parallel tasks using current input values
 
 
        """
@@ -1550,10 +1550,10 @@ class cluster(object):
 
    def pgt(self, taskname=None,outfile='',
                     target=[],ipython_globals=None):
-       """ Make parallel tasks using current input values 
-   
+       """ Make parallel tasks using current input values
+
        taskname -- Name of task
-           default: None = current active task; 
+           default: None = current active task;
            example: taskname='bandpass'
            <Options: type tasklist() for the complete list>
        outfile -- Output file for the task inputs
@@ -1562,38 +1562,38 @@ class cluster(object):
        target -- List of integer parallel engine ids
            default: [] = all current active engines;
            example: target=[0,2,4]
-   
+
        """
-       
+
        casalog.origin("parallel_go")
-       
-       base={} 
+
+       base={}
        for j in target:
            if type(j)!=int or j<0:
                casalog.post("engine id %s must be a positive integer" % str(j),"WARN","pgt")
                return base
 
        if len(target)==0:
-           target=list(range(0, len(self.__engines))) 
+           target=list(range(0, len(self.__engines)))
        if len(target)==0:
            casalog.post("There are no target engines","WARN","pgt")
            return base
 
        try:
            if ipython_globals == None:
-               t=len(inspect.stack())-1 
+               t=len(inspect.stack())-1
                myf=sys._getframe(t).f_globals
            else:
                myf=ipython_globals
-   
+
            if taskname==None or taskname=='' or \
               type(taskname)!=str:
                taskname=myf['taskname']
-   
+
            if outfile=='' or outfile==None or \
               type(outfile)!=str:
                outfile=taskname+'.parallel'
-   
+
            tname=myf[taskname]
            if taskname not in myf and \
               str(type(tname))!="<type 'instance'>" and \
@@ -1604,12 +1604,12 @@ class cluster(object):
                myf['taskname']=taskname
                myf['update_params'](func=myf['taskname'],
                      printtext=False, ipython_globals=myf)
-           
+
            for j in target:
                script=taskname+'('
                for k in myf[taskname].parameters:
                    par=myf[taskname].parameters[k]
-                   if type(par)==dict:  
+                   if type(par)==dict:
                        val=par
                        for v in list(par.keys()):
                            if type(v)==int and j==v:
@@ -1645,11 +1645,11 @@ class cluster(object):
    def check_job(self, job, verbose=True):
       """check the status of an asynch job
 
-  
+
       """
-      
+
       casalog.origin("parallel_go")
-      
+
       if type(job)==type(None):
           print("job None has no status")
           return True
@@ -1662,7 +1662,7 @@ class cluster(object):
          else:
             if verbose:
                casalog.post("job '%s' done" % job,"INFO","check_job")
-            return True         
+            return True
       except client.CompositeError as exception:
          casalog.post("Error retrieving result of job from engine: %s, backtrace:" % (str(exception)),"SEVERE","check_job")
          exception.print_tracebacks()
@@ -1686,7 +1686,7 @@ c.pgc('vis=mspath+msfile')
 c.pull('vis')
 tb.clearlocks('/home/casa-dev-01/hye/test/5921.ms')
 c.pgc('outputvis=work_dir+"/"+msfile+"-"+str(id)')
-#alternatively 
+#alternatively
 #for i in c.get_ids():
 #    p=c.pull('work_dir')[i]
 #    f=c.pull('msfile')[i]

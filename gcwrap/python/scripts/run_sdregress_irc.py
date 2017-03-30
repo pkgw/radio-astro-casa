@@ -20,7 +20,7 @@ os.system(copystring)
 
 ##########################
 #
-# IRC+10216 SiO 
+# IRC+10216 SiO
 # Nod data
 #
 ##########################
@@ -37,7 +37,7 @@ calmode = 'nod'
 average=True
 scanaverage = False
 timeaverage = True
-tweight='tintsys' 
+tweight='tintsys'
 polaverage = True
 pweight='tsys'
 tau = 0.09
@@ -131,7 +131,7 @@ print('Total CPU        time was: '+str(endProc - startProc))
 #print 'Processing rate MB/s  was: ', 35.1/(endTime - startTime)
 
 #
-# NOW TO REGRESSION LOGFILE 
+# NOW TO REGRESSION LOGFILE
 #
 import datetime
 datestring=datetime.datetime.isoformat(datetime.datetime.today())
@@ -183,7 +183,7 @@ calmode = 'nod'
 average=True
 scanaverage = False
 timeaverage = True
-tweight='tintsys' 
+tweight='tintsys'
 polaverage = True
 pweight='tsys'
 tau = 0.09
@@ -278,7 +278,7 @@ print('Total CPU        time was: '+str(endProc - startProc))
 #print 'Processing rate MB/s  was: ', 35.1/(endTime - startTime)
 
 #
-# NOW TO REGRESSION LOGFILE 
+# NOW TO REGRESSION LOGFILE
 #
 import datetime
 datestring=datetime.datetime.isoformat(datetime.datetime.today())
@@ -330,7 +330,7 @@ calmode = 'nod'
 average=True
 scanaverage = False
 timeaverage = True
-tweight='tintsys' 
+tweight='tintsys'
 polaverage = True
 pweight='tsys'
 tau = 0.09
@@ -425,7 +425,7 @@ print('Total CPU        time was: '+str(endProc - startProc))
 #print 'Processing rate MB/s  was: ', 35.1/(endTime - startTime)
 
 #
-# NOW TO REGRESSION LOGFILE 
+# NOW TO REGRESSION LOGFILE
 #
 import datetime
 datestring=datetime.datetime.isoformat(datetime.datetime.today())
@@ -459,9 +459,9 @@ print('Total CPU        time was: '+str(endProc - startProc), file=logfile)
 logfile.close()
 
 if ( pass_regress ):
-	print("All regressions passed")
+        print("All regressions passed")
 else:
-	print("WARNING: There were some regressions FAILED")
+        print("WARNING: There were some regressions FAILED")
 
 ##########################
 #

@@ -33,9 +33,9 @@ def cvel2(
     veltype,
     hanning,
     ):
-    
+
     """ This task used the MSTransform framework. It needs to use the ParallelDataHelper
-        class, implemented in parallel.parallel_data_helper.py. 
+        class, implemented in parallel.parallel_data_helper.py.
     """
 
     def check_do_preaveraging(vis, spw, field, mode, nchan, start, width, phasecenter,
@@ -49,7 +49,7 @@ def cvel2(
         # there is not 'newphasecenter' here as MSTransformManager seems to handle
         # that issue in a different way.
         dopreaverage=False
-        
+
         ms = casac.ms()
         ms.open(vis)
         thespwsel = ms.msseltoindex(vis=vis, spw=spw)['spw']
@@ -68,7 +68,7 @@ def cvel2(
                                           outframe=outframe, veltype=veltype,
                                           verbose=False)
                 if(len(outgridw1)>1):
-                    widthratio = abs((outgrid[1]-outgrid[0])/(outgridw1[1]-outgridw1[0]))                    
+                    widthratio = abs((outgrid[1]-outgrid[0])/(outgridw1[1]-outgridw1[0]))
                     if(widthratio>=2.0): # do preaverage
                         tmpavwidth.append( int(widthratio+0.001) )
                         dopreaverage=True
@@ -77,7 +77,7 @@ def cvel2(
 
                 if dopreaverage:
                     preavwidth = tmpavwidth
-                
+
         ms.close()
 
         if(dopreaverage and (mode=='channel' or mode=='channel_b')):
@@ -87,11 +87,11 @@ def cvel2(
         return dopreaverage
 
 
-    # Initialize the helper class  
-    pdh = ParallelDataHelper("cvel2", locals()) 
+    # Initialize the helper class
+    pdh = ParallelDataHelper("cvel2", locals())
 
     casalog.origin('cvel2')
-        
+
     # Validate input and output parameters
     try:
         pdh.setupIO()
@@ -101,14 +101,14 @@ def cvel2(
 
     # Input vis is an MMS
     if pdh.isParallelMS(vis) and keepmms:
-        
-        status = True   
-        
-        # Work the heuristics of combinespws=True and the separationaxis of the input             
+
+        status = True
+
+        # Work the heuristics of combinespws=True and the separationaxis of the input
         retval = pdh.validateInputParams()
         if not retval['status']:
             raise Exception('Unable to continue with MMS processing')
-                        
+
         pdh.setupCluster('cvel2')
 
         # Execute the jobs
@@ -117,7 +117,7 @@ def cvel2(
         except Exception as instance:
             casalog.post('%s'%instance,'ERROR')
             return status
-                           
+
         return status
 
 
@@ -127,10 +127,10 @@ def cvel2(
     tblocal = tbtool()
 
     try:
-        # Gather all the parameters in a dictionary.        
+        # Gather all the parameters in a dictionary.
         config = {}
-        
-        config = pdh.setupParameters(inputms=vis, outputms=outputvis, field=field, 
+
+        config = pdh.setupParameters(inputms=vis, outputms=outputvis, field=field,
                     spw=spw, array=array, scan=scan, antenna=antenna, correlation=correlation,
                     uvrange=uvrange,timerange=timerange, intent=intent, observation=observation,
                     feed=feed)
@@ -145,19 +145,19 @@ def cvel2(
 
         config['datacolumn'] = datacolumn
         casalog.post('Will work on datacolumn = %s'%datacolumn.upper())
-        
+
         # In cvel the spws are always combined
         config['combinespws'] = True
-        
+
         # Hanning smoothing
         config['hanning'] = hanning
-        
+
         # Set the regridms parameter in mstransform
         config['regridms'] = True
 
         if passall == True:
             casalog.post('Parameter passall=True is not supported in cvel2','WARN')
-        
+
         # Reset the defaults depending on the mode
         # Only add non-empty string parameters to config dictionary
         start, width = pdh.defaultRegridParams()
@@ -178,17 +178,17 @@ def cvel2(
         config['veltype'] = veltype
         config['nspw'] = 1
         config['taql'] = "NOT (FLAG_ROW OR ALL(FLAG))"
-        
-        # Configure the tool and all the parameters        
+
+        # Configure the tool and all the parameters
         casalog.post('%s'%config, 'DEBUG')
         mtlocal.config(config)
-        
+
         # Open the MS, select the data and configure the output
         mtlocal.open()
-        
+
         # Run the tool
-        mtlocal.run()        
-            
+        mtlocal.run()
+
         mtlocal.done()
 
     except Exception as instance:
@@ -209,6 +209,6 @@ def cvel2(
         return False
 
     mslocal = None
-    
+
     return True
-        
+

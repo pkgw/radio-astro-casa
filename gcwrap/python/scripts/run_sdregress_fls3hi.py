@@ -21,7 +21,7 @@ datapath=casapath.split()[0]+'/data/regression/ATST5/FLS3/FLS3_all_newcal_SP'
 
 ##########################
 #
-# FLS3 HI 
+# FLS3 HI
 # FS-OTF data
 #
 ##########################
@@ -69,7 +69,7 @@ savetime=time.time()
 im.open('sdregress_FLS3a_HI.ms')
 # set up spectral channels for cube
 im.selectvis(nchan=901,start=30,step=1,spw=0,field=0)
-# set map center direction	
+# set map center direction
 dir='J2000 17:18:29 +59.31.23'
 #define image parameters
 im.defineimage(nx=150,cellx='1.5arcmin',phasecenter=dir,mode='channel',start=30,nchan=901,step=1)
@@ -119,7 +119,7 @@ print('Total CPU        time was: '+str(endProc - startProc))
 print('Processing rate MB/s  was: '+str(4100/(endTime - startTime)))
 
 #
-# NOW TO REGRESSION LOGFILE 
+# NOW TO REGRESSION LOGFILE
 #
 import datetime
 datestring=datetime.datetime.isoformat(datetime.datetime.today())

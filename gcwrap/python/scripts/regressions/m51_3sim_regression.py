@@ -2,7 +2,7 @@
 # Regression Script for simdata of a 2d image #
 # (single dish only simulation)               #
 ###############################################
- 
+
 import os, time
 
 #modelname="M51HA.MODEL"
@@ -20,8 +20,8 @@ startProc = time.clock()
 print('--Running simlation of M51 (ALMA-12m INT + ACA-7m INT + 12m TP) --')
 # configs are in the repository
 
-l=locals() 
-if "repodir" not in l: 
+l=locals()
+if "repodir" not in l:
     repodir=os.getenv("CASAPATH").split(' ')[0]
 
 print(casa['build'])
@@ -66,7 +66,7 @@ totaltime = '3600s'
 antennalist="alma;0.5arcsec"
 
 if noise:
-    thermalnoise = 'tsys-atm'  #w/ noise 
+    thermalnoise = 'tsys-atm'  #w/ noise
     user_pwv=3.0
 else:
     thermalnoise=""
@@ -117,7 +117,7 @@ sdant = 0
 #antennalist=""
 
 if noise:
-    thermalnoise = 'tsys-atm'  #w/ noise 
+    thermalnoise = 'tsys-atm'  #w/ noise
     user_pwv=3.0
 else:
     thermalnoise=""
@@ -169,7 +169,7 @@ totaltime = '3' # times through the map
 antennalist="aca.i.cfg"
 
 if noise:
-    thermalnoise = 'tsys-atm'  #w/ noise 
+    thermalnoise = 'tsys-atm'  #w/ noise
     user_pwv=3.0
 else:
     thermalnoise=""
@@ -287,7 +287,7 @@ ia.close()
 #             'rms': 0.019215,
 #             'sigma': 0.016102,
 #             'sum':  1257.2}
-# 20160516: update after image parameter change after Sinc correction in MosaicFT 
+# 20160516: update after image parameter change after Sinc correction in MosaicFT
 #refstats = {'max': 0.14125,
 #             'min': -0.025361,
 #             'rms': 0.019264,
@@ -408,7 +408,7 @@ else:
 print('regression test for simdata of M51 (ALMA-12m INT + ACA-7m INT + 12m TP).', file=logfile)
 print('---', file=logfile)
 print('*********************************', file=logfile)
-    
+
 print('', file=logfile)
 print('********** Benchmarking **************', file=logfile)
 print('', file=logfile)
@@ -422,7 +422,7 @@ msfstat = os.stat(project+"/"+project+'.alma_0.5arcsec.ms')
 print('* Breakdown:                           *', file=logfile)
 print('*  generating visibilities took %8.3fs,' % (msfstat[8] - startTime), file=logfile)
 print('*************************************', file=logfile)
-    
+
 logfile.close()
-						    
+
 print('--Finished simdata of M51 (total power+interferometric) regression--')

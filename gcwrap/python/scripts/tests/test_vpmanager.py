@@ -22,14 +22,14 @@ Unit tests for the vpmanager tool. Tested methods:
         loadfromtable()
 '''
 class vpmanager_test(unittest.TestCase):
-    
+
     # Input and output names
     res = None
     inputdir = 'mydir3'
 
     def setUp(self):
         self.res = None
-    
+
     def tearDown(self):
         os.system('rm -rf ' + self.inputdir)
 
@@ -51,7 +51,7 @@ class vpmanager_test(unittest.TestCase):
                          freq = 'TOPO 30GHz',
                          antennatype = '',
                          obsdirection = 'AZEL 30deg 60deg')
-        
+
         self.assertTrue(myrec['commonpb']=='VLA')
 
     def test3(self):
@@ -65,7 +65,7 @@ class vpmanager_test(unittest.TestCase):
                          freq = 'TOPO 100GHz',
                          antennatype = 'DV',
                          obsdirection = 'AZEL 30deg 60deg')
-        
+
         self.assertTrue(myrec['name']=='IMAGE' and myrec['telescope']=='ALMA')
 
         myrec2 =  vp.getvps(telescope='ALMA',
@@ -76,7 +76,7 @@ class vpmanager_test(unittest.TestCase):
                             antennas = ['DV15','DV16', 'DV32'],
                             obsdirection = 'AZEL 30deg 60deg')
 
-        self.assertTrue(myrec2['uniquebeam_0']['name']=='IMAGE' 
+        self.assertTrue(myrec2['uniquebeam_0']['name']=='IMAGE'
                         and myrec2['uniquebeam_0']['telescope']=='ALMA'
                         and myrec2['uniquebeam_0']['minvalidfreq']==92000000000.0
                         and myrec2['uniquebeam_0']['maxvalidfreq']==105000000000.0)
@@ -88,7 +88,7 @@ class vpmanager_test(unittest.TestCase):
                             maxfreq = 'TOPO 101GHz',
                             antennas = ['DV15','DA45', 'PM02', 'PM03'])
 
-        self.assertTrue(myrec3['uniquebeam_1']['name']=='IMAGE' 
+        self.assertTrue(myrec3['uniquebeam_1']['name']=='IMAGE'
                         and myrec3['uniquebeam_1']['telescope']=='ALMA'
                         and myrec3['uniquebeam_1']['minvalidfreq']==92000000000.0
                         and myrec3['uniquebeam_1']['maxvalidfreq']==105000000000.0)
@@ -99,7 +99,7 @@ class vpmanager_test(unittest.TestCase):
                             minfreq = 'TOPO 100GHz',
                             maxfreq = 'TOPO 101GHz',
                             antennas = ['DV15','DV16', 'XY45'])
-        
+
         self.assertTrue(myrec4=={})
 
 
@@ -110,7 +110,7 @@ class vpmanager_test(unittest.TestCase):
                            obstime = '1999/07/24/10:00:00',
                            freq = 'TOPO 30GHz',
                            obsdirection = 'AZEL 30deg 60deg')
-        
+
         self.assertTrue(myrval==1)
 
     def test5(self):
@@ -123,7 +123,7 @@ class vpmanager_test(unittest.TestCase):
                            obstime = '2009/07/24/10:00:00',
                            freq = 'TOPO 100GHz',
                            obsdirection = 'AZEL 30deg 60deg')
-        
+
         self.assertTrue(myrval==3)
 
     def test6(self):
@@ -136,7 +136,7 @@ class vpmanager_test(unittest.TestCase):
                            obstime = '2009/07/24/10:00:00',
                            freq = 'TOPO 1000GHz', # freq too high
                            obsdirection = 'AZEL 30deg 60deg')
-        
+
         self.assertTrue(myrval==0)
 
     def test7(self):
@@ -147,7 +147,7 @@ class vpmanager_test(unittest.TestCase):
 
 
     def test8(self):
-        '''Test 8: define Airy beam for ALMA, then use it'''        
+        '''Test 8: define Airy beam for ALMA, then use it'''
         vp.reset()
         vp.setpbairy(telescope='ALMA',
                      dishdiam=str(12./1.18)+'m',
@@ -160,7 +160,7 @@ class vpmanager_test(unittest.TestCase):
                          freq = 'TOPO 100GHz',
                          antennatype = '',
                          obsdirection = 'AZEL 30deg 60deg')
-        
+
         woanttypeok = (myrec['name']=='AIRY' and myrec['telescope']=='ALMA')
 
         myrec = vp.getvp(telescope='ALMA',
@@ -168,14 +168,14 @@ class vpmanager_test(unittest.TestCase):
                          freq = 'TOPO 100GHz',
                          antennatype = 'DV', # should not matter since AIRY entry global
                          obsdirection = 'AZEL 30deg 60deg')
-        
+
         withanttypeok = (myrec['name']=='AIRY' and myrec['telescope']=='ALMA')
 
         self.assertTrue(woanttypeok and withanttypeok)
 
     def test9(self):
         '''Test 9: define reference to antresp table for ALMA, then use it'''
-        
+
         vp.reset()
         os.system('rm -rf BeamCalcTmpImage_*')
         vp.setpbantresptable(telescope='ALMA',
@@ -201,7 +201,7 @@ class vpmanager_test(unittest.TestCase):
                          freq = 'TOPO 100GHz',
                          antennatype = 'CM',
                          obsdirection = 'AZEL 30deg 60deg')
-        
+
         self.assertTrue(myrec1['name']=='IMAGE' and myrec1['telescope']=='ALMA')
         self.assertTrue(myrec2['name']=='IMAGE' and myrec2['telescope']=='ALMA')
         self.assertTrue(myrec3['name']=='IMAGE' and myrec3['telescope']=='ALMA')
@@ -210,7 +210,7 @@ class vpmanager_test(unittest.TestCase):
 
     def test10(self):
         '''Test 10: define Airy beams for ALMA antenna types, then use them'''
-        
+
         vp.reset()
         vp.setpbairy(telescope='ALMA',
                      dishdiam='11m',
@@ -219,7 +219,7 @@ class vpmanager_test(unittest.TestCase):
                      reffreq='1.0GHz',
                      dopb=True)
         myid1 = vp.getuserdefault('ALMA')
-        
+
         vp.setpbairy(telescope='ALMA',
                      dishdiam='12m',
                      blockagediam='1.0m',
@@ -243,28 +243,28 @@ class vpmanager_test(unittest.TestCase):
         vp.setuserdefault(myid1, 'ALMA', 'DA')
         vp.setuserdefault(myid2, 'ALMA', 'PM')
         vp.setuserdefault(myid3, 'ALMA', 'CM')
-        
+
         myrec = vp.getvp(telescope='ALMA',
                          obstime = '2009/07/24/10:00:00',
                          freq = 'TOPO 100GHz',
                          antennatype = 'DV',
                          obsdirection = 'AZEL 30deg 60deg')
         tdvok = (myrec['name']=='AIRY' and myrec['dishdiam']['value']==11)
-        
+
         myrec = vp.getvp(telescope='ALMA',
                          obstime = '2009/07/24/10:00:00',
                          freq = 'TOPO 100GHz',
                          antennatype = 'DA',
                          obsdirection = 'AZEL 30deg 60deg')
         tdaok = (myrec['name']=='AIRY' and myrec['dishdiam']['value']==11)
-        
+
         myrec = vp.getvp(telescope='ALMA',
                          obstime = '2009/07/24/10:00:00',
                          freq = 'TOPO 100GHz',
                          antennatype = 'PM',
                          obsdirection = 'AZEL 30deg 60deg')
         tpmok = (myrec['name']=='AIRY' and myrec['dishdiam']['value']==12)
-        
+
         myrec = vp.getvp(telescope='ALMA',
                          obstime = '2009/07/24/10:00:00',
                          freq = 'TOPO 100GHz',
@@ -301,16 +301,16 @@ class vpmanager_test(unittest.TestCase):
         vp.setcannedpb(telescope="ALMA")
 
         myrec = vp.getvp('ALMA')
-        
+
         woanttypeok = (myrec['name']=='COMMONPB' and myrec['telescope']=='ALMA')
 
         myrec = vp.getvp('ALMA', 'DV')
-        
+
         withanttypeok = (myrec['name']=='COMMONPB' and myrec['telescope']=='ALMA')
 
         self.assertTrue(woanttypeok and withanttypeok)
-        
-        
+
+
     def test12(self):
         """Test 12: EXPECTED ERROR createantresp - no images"""
         os.system('mkdir '+self.inputdir)
@@ -328,7 +328,7 @@ class vpmanager_test(unittest.TestCase):
         os.system('touch '+self.inputdir+'/ALMA_0_ME__0._0._360._0._45._90._230._300._350._GHz_ticra2007_EFP.im')
         self.res = vp.createantresp(self.inputdir, "2011-02-02-12:00", ["band1","band2","band3"], ["83GHz","110GHz","230GHz"], ["110GHz","230GHz","350GHz"])
         self.assertFalse(self.res)
-        
+
     def test14(self):
         '''Test 14: createantresp - good input: six images, two antenna types'''
         os.system('mkdir '+self.inputdir)
@@ -353,7 +353,7 @@ class vpmanager_test(unittest.TestCase):
         self.assertFalse(self.res)
 
     def test16(self):
-        '''Test 16: define Airy beam for ALMA, save it, load it, then use it'''        
+        '''Test 16: define Airy beam for ALMA, save it, load it, then use it'''
         vp.reset()
         vp.setpbairy(telescope='ALMA',
                      dishdiam=str(12./1.18)+'m',
@@ -366,13 +366,13 @@ class vpmanager_test(unittest.TestCase):
         vp.saveastable('mydefs.tab')
         vp.reset()
         vp.loadfromtable('mydefs.tab')
-        
+
         myrec = vp.getvp(telescope='ALMA',
                          obstime = '2009/07/24/10:00:00',
                          freq = 'TOPO 100GHz',
                          antennatype = '',
                          obsdirection = 'AZEL 30deg 60deg')
-        
+
         woanttypeok = (myrec['name']=='AIRY' and myrec['telescope']=='ALMA')
 
         myrec = vp.getvp(telescope='ALMA',
@@ -380,11 +380,11 @@ class vpmanager_test(unittest.TestCase):
                          freq = 'TOPO 100GHz',
                          antennatype = 'DV', # should not matter since AIRY entry global
                          obsdirection = 'AZEL 30deg 60deg')
-        
+
         withanttypeok = (myrec['name']=='AIRY' and myrec['telescope']=='ALMA')
 
         self.assertTrue(woanttypeok and withanttypeok)
-    
+
 ##     def test17(self):
 ##         '''Test 17: get image name (fails if no resp. table path set in Observatories table))'''
 ##         vp.reset()

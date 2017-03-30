@@ -26,19 +26,19 @@ def dbus_connection( ):
     return bus
 
 
-def seqselect(test, list):  
-    """ 
-    Select the elements from a sequence that 
-    satisfy the given test function 
-    - compare The test function should have following 
-    signature def test(item): and must return a boolean 
-    - list The List from which element need to be selected 
-    """  
+def seqselect(test, list):
+    """
+    Select the elements from a sequence that
+    satisfy the given test function
+    - compare The test function should have following
+    signature def test(item): and must return a boolean
+    - list The List from which element need to be selected
+    """
     selected = [ ]
-    for item in list:  
-        if test(item) == True:  
+    for item in list:
+        if test(item) == True:
             selected.append(item)
-    return selected  
+    return selected
 
 
 class viewertool(object):
@@ -144,12 +144,12 @@ class viewertool(object):
                  and type(myf['casa']['flags']) == dict and '--rcdir' in myf['casa']['flags']:
             args += [ "--rcdir=" + myf['casa']['flags']['--rcdir'] ]
 
-	if (os.uname()[0]=='Darwin'):
-		vwrpid=os.spawnvp( os.P_NOWAIT, viewer_path, args )
-	elif (os.uname()[0]=='Linux'):
-		vwrpid=os.spawnlp( os.P_NOWAIT, viewer_path, *args )
-	else:
-        	raise Exception('unrecognized operating system')
+        if (os.uname()[0]=='Darwin'):
+                vwrpid=os.spawnvp( os.P_NOWAIT, viewer_path, args )
+        elif (os.uname()[0]=='Linux'):
+                vwrpid=os.spawnlp( os.P_NOWAIT, viewer_path, *args )
+        else:
+                raise Exception('unrecognized operating system')
 
         self.__state['launched'] = True
 
@@ -311,7 +311,7 @@ class viewertool(object):
             self.__connect( )
 
         return self.__invoke( dbus.Boolean, bool, self.__state['proxy'].datarange, [float(x) for x in range], data )
-    
+
     def contourlevels( self, levels=[], baselevel=2147483648.0, unitlevel=2147483648.0, data=0 ):
         if type(levels) != list or type(data) != int or \
            all( [type(x) == int or type(x) == float for x in levels] ) == False:
@@ -350,7 +350,7 @@ class viewertool(object):
             self.__connect( )
 
         return self.__invoke( dbus.Boolean, bool, self.__state['proxy'].colormap, map, data_or_panel )
-    
+
 
     def colorwedge( self, show, data_or_panel=0 ):
         if type(show) != bool or type(data_or_panel) != int :
@@ -360,7 +360,7 @@ class viewertool(object):
             self.__connect( )
 
         return self.__invoke( dbus.Boolean, bool, self.__state['proxy'].colorwedge, show, data_or_panel )
-    
+
 
     def channel( self, num=-1, panel=0 ):
         if type(num) != int or type(panel) != int:
@@ -395,7 +395,7 @@ class viewertool(object):
             ( _blc, _trc, _coord ) = self.__extract_region_box( reg )
 
             return self.__invoke( dbus.Boolean, bool, self.__state['proxy'].zoom, _blc, _trc, _coord, panel )
-            
+
         elif len(blc) == 2 and len(trc) == 2 and \
                all( map( lambda x,y: (type(x) == int or type(x) == float) and (type(y) == int or type(y) == float), blc, trc ) ) == True:
             if coordinates != "pixel" and coordinates != "world":

@@ -56,7 +56,7 @@ casa = { 'build': {
              'xml': __casapath__ + "/xml"
          },
          'flags': { },
-         'files': { 
+         'files': {
              'logfile': os.getcwd( ) + '/casapy-'+time.strftime("%Y%m%d-%H%M%S", time.gmtime())+'.log'
          },
          'state' : {

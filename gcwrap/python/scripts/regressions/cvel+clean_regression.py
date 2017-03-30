@@ -5,13 +5,13 @@
 #                                                                           #
 # Rationale for Inclusion:                                                  #
 #    The task cvel needs to be exercised and compared to clean              #
-#                                                                           # 
+#                                                                           #
 # Features tested:                                                          #
 #    1) does cvel run without raising exceptions for input frame TOPO       #
 #       and all possible output frames?                                     #
 #    2) can clean process the cvel output?                                  #
 #    3) does cvel+clean produce compatible results to clean-only?           #
-#       (channel flux values, channel world coordinates)                    # 
+#       (channel flux values, channel world coordinates)                    #
 #                                                                           #
 # Input data:                                                               #
 #     one dataset, one scan of a VLA observation provided by Crystal Brogan #
@@ -95,7 +95,7 @@ otherchan2 = '25'
 otherchan3 = '30'
 otherchan4 = '45'
 
-testregion = '135,127,135,127' 
+testregion = '135,127,135,127'
 
 # storage for results
 imstats = { 'TOPO': 0,'LSRK': 0, 'LSRD': 0, 'BARY': 0, 'GALACTO': 0, 'LGROUP': 0, 'CMB': 0 }
@@ -129,7 +129,7 @@ hanningsmooth2(vis=dataset_name_orig, outputvis=clean_inputvis_local_copy2)
 
 # loop over all possible output reference frames
 
-# these are all possible frames: 
+# these are all possible frames:
 #frames_to_do = ['TOPO','LSRK', 'LSRD', 'BARY', 'GALACTO', 'LGROUP', 'CMB']
 
 # the most critical one is CMB (largest freq shift)
@@ -140,17 +140,17 @@ frames_to_do = ['LGROUP', 'LSRK', 'BARY', 'CMB']
 #frames_to_do = ['LSRK']
 
 for frame in frames_to_do:
-    
+
     restfrq = 22.235080E9
     restfreqstr = str(restfrq)+'Hz'
-    
+
     ### frequency mode
-    
+
     outvis = 'ANTEN_ALLRE_sort_hann_'+frame+'_cvel_freq.ms'
     os.system('rm -rf '+outvis)
-    
+
     casalog.post(outvis, 'INFO')
-    
+
     cvel(vis=dataset_name, outputvis=outvis,
          mode='frequency',nchan=50,
          start=freqmodestart[frame],
@@ -159,13 +159,13 @@ for frame in frames_to_do:
          phasecenter='J2000 12h01m53.13s -18d53m09.8s',
          outframe=frame,
          hanning = dohanning[frame])
-    
+
     invis = 'ANTEN_ALLRE_sort_hann_'+frame+'_cvel_freq.ms'
     iname = 'ANTEN_ALLRE_sort_hann_'+frame+'_cvel_freq_clean'
     os.system('rm -rf '+iname+'.*')
-    
+
     casalog.post(iname, 'INFO')
-    
+
     clean(vis=invis,
           imagename=iname,
           field='',spw='',
@@ -184,19 +184,19 @@ for frame in frames_to_do:
           weighting='briggs',
           interactive=F,
           minpb=0.3,pbcor=F)
-    
+
     cvel_imstats['frequency'][peakchan][frame] = imstat(iname+'.image', box=testregion, chans=peakchan)
     cvel_imstats['frequency'][otherchan1][frame] = imstat(iname+'.image', box=testregion, chans=otherchan1)
     cvel_imstats['frequency'][otherchan2][frame] = imstat(iname+'.image', box=testregion, chans=otherchan2)
     cvel_imstats['frequency'][otherchan3][frame] = imstat(iname+'.image', box=testregion, chans=otherchan3)
     cvel_imstats['frequency'][otherchan4][frame] = imstat(iname+'.image', box=testregion, chans=otherchan4)
-    
+
     iname = 'ANTEN_ALLRE_sort_hann_'+frame+'_freq_clean'
     os.system('rm -rf '+iname+'.*')
-    
+
     casalog.post(iname, 'INFO')
 
-    cvis = clean_inputvis_local_copy    
+    cvis = clean_inputvis_local_copy
     if(dohanning[frame]):
         casalog.post('Will Hanning smooth before cleaning ...', 'INFO')
         cvis = clean_inputvis_local_copy2
@@ -220,29 +220,29 @@ for frame in frames_to_do:
           weighting='briggs',
           interactive=F,
           minpb=0.3,pbcor=F)
-    
+
     cleanonly_imstats['frequency'][peakchan][frame] = imstat(iname+'.image', box=testregion, chans=peakchan)
     cleanonly_imstats['frequency'][otherchan1][frame] = imstat(iname+'.image', box=testregion, chans=otherchan1)
     cleanonly_imstats['frequency'][otherchan2][frame] = imstat(iname+'.image', box=testregion, chans=otherchan2)
     cleanonly_imstats['frequency'][otherchan3][frame] = imstat(iname+'.image', box=testregion, chans=otherchan3)
     cleanonly_imstats['frequency'][otherchan4][frame] = imstat(iname+'.image', box=testregion, chans=otherchan4)
-    
-    
+
+
     #### velocity mode (radio)
-    
+
     f1 = qa.quantity(freqmodestart[frame])['value']
     f2 = f1+qa.quantity(freqmodewidth[frame])['value']
-    
+
     vrads = (restfrq-f1)/restfrq *  2.99792E8
     vradstart = str(vrads)+'m/s'
     vradw = (restfrq-f2)/restfrq *  2.99792E8 - vrads
     vradwidth = str(vradw)+'m/s'
-    
+
     outvis = 'ANTEN_ALLRE_sort_hann_'+frame+'_cvel_vrad.ms'
     os.system('rm -rf '+outvis)
-    
+
     casalog.post(outvis, 'INFO')
-    
+
     cvel(vis=dataset_name,outputvis=outvis,
          mode='velocity',nchan=49,
          start=vradstart,
@@ -252,13 +252,13 @@ for frame in frames_to_do:
          restfreq=restfreqstr,
          outframe=frame,
          hanning=dohanning[frame])
-    
+
     invis = 'ANTEN_ALLRE_sort_hann_'+frame+'_cvel_vrad.ms'
     iname = 'ANTEN_ALLRE_sort_hann_'+frame+'_cvel_vrad_clean'
     os.system('rm -rf '+iname+'.*')
-    
+
     casalog.post(iname, 'INFO')
-    
+
     clean(vis=invis,
           imagename=iname,
           field='',spw='',
@@ -277,23 +277,23 @@ for frame in frames_to_do:
           weighting='briggs',
           interactive=F,
           minpb=0.3,pbcor=F)
-    
+
     cvel_imstats['radio velocity'][peakchan][frame] = imstat(iname+'.image', box=testregion, chans=peakchan)
     cvel_imstats['radio velocity'][otherchan1][frame] = imstat(iname+'.image', box=testregion, chans=otherchan1)
     cvel_imstats['radio velocity'][otherchan2][frame] = imstat(iname+'.image', box=testregion, chans=otherchan2)
     cvel_imstats['radio velocity'][otherchan3][frame] = imstat(iname+'.image', box=testregion, chans=otherchan3)
     cvel_imstats['radio velocity'][otherchan4][frame] = imstat(iname+'.image', box=testregion, chans=otherchan4)
-    
+
     iname = 'ANTEN_ALLRE_sort_hann_'+frame+'_vrad_clean'
     os.system('rm -rf '+iname+'.*')
-    
+
     casalog.post(iname, 'INFO')
-    
-    cvis = clean_inputvis_local_copy    
+
+    cvis = clean_inputvis_local_copy
     if(dohanning[frame]):
         casalog.post('Will Hanning smooth before cleaning ...', 'INFO')
         cvis = clean_inputvis_local_copy2
-    
+
     clean(vis=cvis,
           imagename=iname,
           field='', spw='',
@@ -313,15 +313,15 @@ for frame in frames_to_do:
           weighting='briggs',
           interactive=F,
           minpb=0.3,pbcor=F)
-    
+
     cleanonly_imstats['radio velocity'][peakchan][frame] = imstat(iname+'.image', box=testregion, chans=peakchan)
     cleanonly_imstats['radio velocity'][otherchan1][frame] = imstat(iname+'.image', box=testregion, chans=otherchan1)
     cleanonly_imstats['radio velocity'][otherchan2][frame] = imstat(iname+'.image', box=testregion, chans=otherchan2)
     cleanonly_imstats['radio velocity'][otherchan3][frame] = imstat(iname+'.image', box=testregion, chans=otherchan3)
     cleanonly_imstats['radio velocity'][otherchan4][frame] = imstat(iname+'.image', box=testregion, chans=otherchan4)
-    
+
     #### velocity mode (optical)
-    
+
     lambda0 = 2.99792E8/restfrq
     lambda1 = 2.99792E8/f1
     lambda2 = 2.99792E8/f2
@@ -329,12 +329,12 @@ for frame in frames_to_do:
     voptw = (lambda2-lambda0)/lambda0 * 2.99792E8 - vopts
     voptstart = str(vopts)+'m/s'
     voptwidth = str(voptw)+'m/s'
-    
+
     outvis = 'ANTEN_ALLRE_sort_hann_'+frame+'_cvel_vopt.ms'
     os.system('rm -rf '+outvis)
-    
+
     casalog.post(outvis, 'INFO')
-    
+
     cvel(vis=dataset_name, outputvis=outvis,
          mode='velocity',nchan=49,
          start=voptstart,
@@ -345,13 +345,13 @@ for frame in frames_to_do:
          outframe=frame,
          veltype='optical',
          hanning=dohanning[frame])
-    
+
     invis = 'ANTEN_ALLRE_sort_hann_'+frame+'_cvel_vopt.ms'
     iname = 'ANTEN_ALLRE_sort_hann_'+frame+'_cvel_vopt_clean'
     os.system('rm -rf '+iname+'.*')
-    
+
     casalog.post(iname, 'INFO')
-    
+
     clean(vis=invis,
           imagename=iname,
           field='',spw='',
@@ -371,24 +371,24 @@ for frame in frames_to_do:
           interactive=F,
           minpb=0.3,pbcor=F,
           veltype='optical')
-    
+
     cvel_imstats['optical velocity'][peakchan][frame] = imstat(iname+'.image', box=testregion, chans=peakchan)
     cvel_imstats['optical velocity'][otherchan1][frame] = imstat(iname+'.image', box=testregion, chans=otherchan1)
     cvel_imstats['optical velocity'][otherchan2][frame] = imstat(iname+'.image', box=testregion, chans=otherchan2)
     cvel_imstats['optical velocity'][otherchan3][frame] = imstat(iname+'.image', box=testregion, chans=otherchan3)
     cvel_imstats['optical velocity'][otherchan4][frame] = imstat(iname+'.image', box=testregion, chans=otherchan4)
-    
-    
+
+
     iname = 'ANTEN_ALLRE_sort_hann_'+frame+'_vopt_clean'
     os.system('rm -rf '+iname+'.*')
-    
+
     casalog.post(iname, 'INFO')
 
-    cvis = clean_inputvis_local_copy    
+    cvis = clean_inputvis_local_copy
     if(dohanning[frame]):
         casalog.post('Will Hanning smooth before cleaning ...', 'INFO')
         cvis = clean_inputvis_local_copy2
-    
+
     clean(vis=cvis,
           imagename=iname,
           field='', spw='',
@@ -409,13 +409,13 @@ for frame in frames_to_do:
           interactive=F,
           minpb=0.3,pbcor=F,
           veltype='optical')
-    
+
     cleanonly_imstats['optical velocity'][peakchan][frame] = imstat(iname+'.image', box=testregion, chans=peakchan)
     cleanonly_imstats['optical velocity'][otherchan1][frame] = imstat(iname+'.image', box=testregion, chans=otherchan1)
     cleanonly_imstats['optical velocity'][otherchan2][frame] = imstat(iname+'.image', box=testregion, chans=otherchan2)
     cleanonly_imstats['optical velocity'][otherchan3][frame] = imstat(iname+'.image', box=testregion, chans=otherchan3)
     cleanonly_imstats['optical velocity'][otherchan4][frame] = imstat(iname+'.image', box=testregion, chans=otherchan4)
-    
+
 # end loop over frames
 
 # Analysis
@@ -452,7 +452,7 @@ for frame in frames_to_do:
                 passed = False
                 problems +=1
                 print("Error: this subtest failed")
-                
+
             if isok:
                 if(abs(c1-c2) > maxdev):
                     maxdev = abs(c1-c2)
@@ -469,7 +469,7 @@ for frame in frames_to_do:
 
                 avdev += abs(c1-c2)
                 numpoints += 1.
-            
+
                 if(not s1 == s2):
                     print(" ** Problem in ", mode, " mode for output frame ", frame, ":")
                     print("     cvel+clean finds world coordinates for channel ", chan, " to be ", s2)
@@ -481,7 +481,7 @@ for frame in frames_to_do:
                     print("  World coordinates identical == ", s2)
 
                 if isok:
-                    print("... OK")      
+                    print("... OK")
 
 if(numpoints > 0.):
     avdev = avdev/numpoints
@@ -490,8 +490,8 @@ if(numpoints > 0.):
         passed = False
         print(" ** Problem: average deviation too large. Expected is value < ", avtolerance)
         problems += 1
-    print("   maximum deviation = ", maxdev, " in ", maxdevat) 
-                    
+    print("   maximum deviation = ", maxdev, " in ", maxdevat)
+
 if passed:
     print('')
     print('Regression PASSED')

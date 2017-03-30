@@ -19,7 +19,7 @@ import pickle
 
 pathname=os.environ.get('CASAPATH').split()[0]
 
-# 
+#
 #=====================================================================
 # SET UP THE SCRIPT CONTROL PARAMETERS HERE
 #=====================================================================
@@ -95,15 +95,15 @@ flagants = 'EA04'
 #
 # List of sources in ms
 #
-#	  0    A    1924-292      19:24:51.06      -29.14.30.12  J2000   
-#	  1    A    1743-038      17:43:58.86      -03.50.04.62  J2000   
-#	  2    A    2202+422      22:02:43.29      +42.16.39.98  J2000   
-#	  3    A    2253+161      22:53:57.75      +16.08.53.56  J2000   
-#	  4    B    2136+006      21:36:38.59      +00.41.54.21  J2000   
-#	  5    B    0137+331      01:37:41.30      +33.09.35.13  J2000   
-#	  6    A    2355+498      23:55:09.46      +49.50.08.34  J2000   
-#	  7    B    0319+415      03:19:48.16      +41.30.42.10  J2000   
-#	  8    B    0359+509      03:59:29.75      +50.57.50.16  J2000   
+#         0    A    1924-292      19:24:51.06      -29.14.30.12  J2000
+#         1    A    1743-038      17:43:58.86      -03.50.04.62  J2000
+#         2    A    2202+422      22:02:43.29      +42.16.39.98  J2000
+#         3    A    2253+161      22:53:57.75      +16.08.53.56  J2000
+#         4    B    2136+006      21:36:38.59      +00.41.54.21  J2000
+#         5    B    0137+331      01:37:41.30      +33.09.35.13  J2000
+#         6    A    2355+498      23:55:09.46      +49.50.08.34  J2000
+#         7    B    0319+415      03:19:48.16      +41.30.42.10  J2000
+#         8    B    0359+509      03:59:29.75      +50.57.50.16  J2000
 #
 # These sources are the gain calibrators
 gaincalfield = ['0137+331','2202+422','1743-038','1924-292','2136+006','2253+161','2355+498','0319+415','0359+509']
@@ -185,7 +185,7 @@ centerbox = [clnblc,clnblc,clntrc,clntrc]
 
 myclnbox = centerbox
 # Can also force interactive cleaning
-#myclnbox = 'interactive'    
+#myclnbox = 'interactive'
 
 #
 #=====================================================================
@@ -247,17 +247,17 @@ for field in list(pcalmodel.keys()) :
         qpol = ppol*cos(rlpd)
         upol = ppol*sin(rlpd)
         fluxdensity=[ipol,qpol,upol,0.0]
-    
+
         pmodel = {}
         pmodel['rlpd_deg'] = rlpd_deg
         pmodel['rlpd'] = rlpd
         pmodel['fpol'] = fpol
-    
+
         fmodel = {}
         fmodel['flux'] = fluxdensity
         fmodel['poln'] = pmodel
         spwmodel[spw] = fmodel
-    
+
     polmodel[field] = spwmodel
 
 print("Created polmodel dictionary")
@@ -282,16 +282,16 @@ if ( importmode == 'vla' ):
     #
     print('--ImportVLA--')
     default('importvla')
-    
+
     print("Use importvla to read VLA Export and make an MS")
-    
+
     archivefiles = datafile
     vis = msfile
     bandname = exportband
     autocorr = False
     antnamescheme = 'new'
     project = exportproject
-    
+
     saveinputs('importvla',prefix+'.importvla.saved')
     importvla()
 elif ( importmode == 'fits' ):
@@ -300,13 +300,13 @@ elif ( importmode == 'fits' ):
     #
     print('--ImportUVFITS--')
     default('importuvfits')
-    
+
     print("Use importuvfits to read UVFITS and make an MS")
-    
+
     fitsfile = datafile
     vis = msfile
     async = False
-    
+
     saveinputs('importuvfits',prefix+'.importuvfits.saved')
     importuvfits()
 else:
@@ -315,7 +315,7 @@ else:
     #
     print('--MS Copy--')
     print("Copying "+datafile+" to "+msfile)
-    
+
     os.system('cp -r '+datafile+' '+msfile)
     vis = msfile
 
@@ -333,99 +333,99 @@ listobs()
 
 ###############################################
 ###  Begin Task: listobs  ###
-#   
+#
 # MeasurementSet Name:
 #     /home/sandrock/smyers/Testing/2008-03/polcal_20080224/polcal_20080224.cband.raw.ms
 # MS Version 2
-#	
-#	   Observer: unavailable     Project: POLCA  
-#	Observation: VLA
+#
+#          Observer: unavailable     Project: POLCA
+#       Observation: VLA
 #   Data records: 318708       Total integration time = 9836.67 seconds
-#	   Observed from   17:10:52   to   19:54:48
-#   
-#	   ObservationID = 0         ArrayID = 0
-#	  Date        Timerange                Scan  FldId FieldName      SpwIds
-#	  24-Feb-2008/17:10:51.7 - 17:12:08.3     1      0 1924-292       [0, 1]
-#	              17:21:01.7 - 17:22:18.3     2      1 1743-038       [0, 1]
-#	              17:34:31.7 - 17:35:48.3     3      2 2202+422       [0, 1]
-#	              17:45:01.7 - 17:46:18.3     4      3 2253+161       [0, 1]
-#	              17:55:11.7 - 17:56:28.3     5      4 2136+006       [0, 1]
-#	              18:08:01.7 - 18:09:18.3     6      5 0137+331       [0, 1]
-#	              18:22:11.7 - 18:23:58.3     7      6 2355+498       [0, 1]
-#	              18:32:51.7 - 19:07:58.3     8      2 2202+422       [0, 1]
-#	              19:20:51.7 - 19:22:18.3     9      5 0137+331       [0, 1]
-#	              19:32:11.7 - 19:33:48.3    10      7 0319+415       [0, 1]
-#	              19:42:01.7 - 19:43:18.3    11      8 0359+509       [0, 1]
-#	              19:53:31.7 - 19:54:48.3    12      2 2202+422       [0, 1]
+#          Observed from   17:10:52   to   19:54:48
+#
+#          ObservationID = 0         ArrayID = 0
+#         Date        Timerange                Scan  FldId FieldName      SpwIds
+#         24-Feb-2008/17:10:51.7 - 17:12:08.3     1      0 1924-292       [0, 1]
+#                     17:21:01.7 - 17:22:18.3     2      1 1743-038       [0, 1]
+#                     17:34:31.7 - 17:35:48.3     3      2 2202+422       [0, 1]
+#                     17:45:01.7 - 17:46:18.3     4      3 2253+161       [0, 1]
+#                     17:55:11.7 - 17:56:28.3     5      4 2136+006       [0, 1]
+#                     18:08:01.7 - 18:09:18.3     6      5 0137+331       [0, 1]
+#                     18:22:11.7 - 18:23:58.3     7      6 2355+498       [0, 1]
+#                     18:32:51.7 - 19:07:58.3     8      2 2202+422       [0, 1]
+#                     19:20:51.7 - 19:22:18.3     9      5 0137+331       [0, 1]
+#                     19:32:11.7 - 19:33:48.3    10      7 0319+415       [0, 1]
+#                     19:42:01.7 - 19:43:18.3    11      8 0359+509       [0, 1]
+#                     19:53:31.7 - 19:54:48.3    12      2 2202+422       [0, 1]
 #   Fields: 9
-#	  ID   Code Name          Right Ascension  Declination   Epoch   
-#	  0    A    1924-292      19:24:51.06      -29.14.30.12  J2000   
-#	  1    A    1743-038      17:43:58.86      -03.50.04.62  J2000   
-#	  2    A    2202+422      22:02:43.29      +42.16.39.98  J2000   
-#	  3    A    2253+161      22:53:57.75      +16.08.53.56  J2000   
-#	  4    B    2136+006      21:36:38.59      +00.41.54.21  J2000   
-#	  5    B    0137+331      01:37:41.30      +33.09.35.13  J2000   
-#	  6    A    2355+498      23:55:09.46      +49.50.08.34  J2000   
-#	  7    B    0319+415      03:19:48.16      +41.30.42.10  J2000   
-#	  8    B    0359+509      03:59:29.75      +50.57.50.16  J2000   
+#         ID   Code Name          Right Ascension  Declination   Epoch
+#         0    A    1924-292      19:24:51.06      -29.14.30.12  J2000
+#         1    A    1743-038      17:43:58.86      -03.50.04.62  J2000
+#         2    A    2202+422      22:02:43.29      +42.16.39.98  J2000
+#         3    A    2253+161      22:53:57.75      +16.08.53.56  J2000
+#         4    B    2136+006      21:36:38.59      +00.41.54.21  J2000
+#         5    B    0137+331      01:37:41.30      +33.09.35.13  J2000
+#         6    A    2355+498      23:55:09.46      +49.50.08.34  J2000
+#         7    B    0319+415      03:19:48.16      +41.30.42.10  J2000
+#         8    B    0359+509      03:59:29.75      +50.57.50.16  J2000
 #   Spectral Windows:  (2 unique spectral windows and 1 unique polarization setups)
-#	  SpwID  #Chans Frame Ch1(MHz)    ChanWid(kHz)TotBW(kHz)  Ref(MHz)    Corrs
-#	  0    1 TOPO  4885.1      50000       50000       4885.1      RR  RL  LR  LL  
-#	  1    1 TOPO  4835.1      50000       50000       4835.1      RR  RL  LR  LL  
+#         SpwID  #Chans Frame Ch1(MHz)    ChanWid(kHz)TotBW(kHz)  Ref(MHz)    Corrs
+#         0    1 TOPO  4885.1      50000       50000       4885.1      RR  RL  LR  LL
+#         1    1 TOPO  4835.1      50000       50000       4835.1      RR  RL  LR  LL
 #   Feeds: 27: printing first row only
-#	  Antenna   Spectral Window     # Receptors    Polarizations
-#	  1         -1                  2              [         R, L]
+#         Antenna   Spectral Window     # Receptors    Polarizations
+#         1         -1                  2              [         R, L]
 #   Antennas: 27:
-#	  ID   Name  Station   Diam.    Long.         Lat.         
-#	  0    EA24  VLA:W12   25.0 m   -107.37.37.4  +33.53.44.2  
-#	  1    EA16  VLA:W6    25.0 m   -107.37.15.6  +33.53.56.4  
-#	  2    EA01  VLA:W10   25.0 m   -107.37.28.9  +33.53.48.9  
-#	  3    EA19  VLA:W4    25.0 m   -107.37.10.8  +33.53.59.1  
-#	  4    VA08  VLA:W16   25.0 m   -107.37.57.4  +33.53.33.0  
-#	  5    EA17  VLA:W14   25.0 m   -107.37.46.9  +33.53.38.9  
-#	  6    VA06  VLA:W8    25.0 m   -107.37.21.6  +33.53.53.0  
-#	  7    VA22  VLA:W2    25.0 m   -107.37.07.4  +33.54.00.9  
-#	  8    EA04  UNKNOWN   25.0 m   -107.37.41.3  +33.53.42.0  
-#	  9    VA20  VLA:E12   25.0 m   -107.36.31.7  +33.53.48.5  
-#	  10   VA15  VLA:E4    25.0 m   -107.37.00.8  +33.53.59.7  
-#	  11   VA28  VLA:E6    25.0 m   -107.36.55.6  +33.53.57.7  
-#	  12   VA10  VLA:E8    25.0 m   -107.36.48.9  +33.53.55.1  
-#	  13   EA14  VLA:E16   25.0 m   -107.36.09.8  +33.53.40.0  
-#	  14   EA11  VLA:E10   25.0 m   -107.36.40.9  +33.53.52.0  
-#	  15   VA03  VLA:E14   25.0 m   -107.36.21.3  +33.53.44.5  
-#	  16   EA23  VLA:E18   25.0 m   -107.35.57.2  +33.53.35.1  
-#	  17   EA21  VLA:E2    25.0 m   -107.37.04.4  +33.54.01.1  
-#	  18   VA12  VLA:N4    25.0 m   -107.37.06.5  +33.54.06.1  
-#	  19   VA02  VLA:N20   25.0 m   -107.37.13.2  +33.55.09.5  
-#	  20   EA13  VLA:N16   25.0 m   -107.37.10.9  +33.54.48.0  
-#	  21   EA26  VLA:N32   25.0 m   -107.37.22.0  +33.56.33.6  
-#	  22   EA25  VLA:N24   25.0 m   -107.37.16.1  +33.55.37.7  
-#	  23   VA09  VLA:N8    25.0 m   -107.37.07.5  +33.54.15.8  
-#	  24   EA18  VLA:N12   25.0 m   -107.37.09.0  +33.54.30.0  
-#	  25   VA07  VLA:N36   25.0 m   -107.37.25.6  +33.57.07.6  
-#	  26   VA27  VLA:N28   25.0 m   -107.37.18.7  +33.56.02.5  
-#   
-#	
-#	Tables:
-#	   MAIN                  318708 rows     
-#	   ANTENNA                   27 rows     
-#	   DATA_DESCRIPTION           2 rows     
-#	   DOPPLER                    2 rows     
-#	   FEED                      27 rows     
-#	   FIELD                      9 rows     
-#	   FLAG_CMD             <empty>  
-#	   FREQ_OFFSET         <absent>  
-#	   HISTORY                    6 rows     
-#	   OBSERVATION                1 row      
-#	   POINTING             <empty>  
-#	   POLARIZATION               1 row      
-#	   PROCESSOR            <empty>  
-#	   SOURCE                     9 rows     
-#	   SPECTRAL_WINDOW            2 rows     
-#	   STATE                <empty>  
-#	   SYSCAL              <absent>  
-#	   WEATHER             <absent>  
-#	
+#         ID   Name  Station   Diam.    Long.         Lat.
+#         0    EA24  VLA:W12   25.0 m   -107.37.37.4  +33.53.44.2
+#         1    EA16  VLA:W6    25.0 m   -107.37.15.6  +33.53.56.4
+#         2    EA01  VLA:W10   25.0 m   -107.37.28.9  +33.53.48.9
+#         3    EA19  VLA:W4    25.0 m   -107.37.10.8  +33.53.59.1
+#         4    VA08  VLA:W16   25.0 m   -107.37.57.4  +33.53.33.0
+#         5    EA17  VLA:W14   25.0 m   -107.37.46.9  +33.53.38.9
+#         6    VA06  VLA:W8    25.0 m   -107.37.21.6  +33.53.53.0
+#         7    VA22  VLA:W2    25.0 m   -107.37.07.4  +33.54.00.9
+#         8    EA04  UNKNOWN   25.0 m   -107.37.41.3  +33.53.42.0
+#         9    VA20  VLA:E12   25.0 m   -107.36.31.7  +33.53.48.5
+#         10   VA15  VLA:E4    25.0 m   -107.37.00.8  +33.53.59.7
+#         11   VA28  VLA:E6    25.0 m   -107.36.55.6  +33.53.57.7
+#         12   VA10  VLA:E8    25.0 m   -107.36.48.9  +33.53.55.1
+#         13   EA14  VLA:E16   25.0 m   -107.36.09.8  +33.53.40.0
+#         14   EA11  VLA:E10   25.0 m   -107.36.40.9  +33.53.52.0
+#         15   VA03  VLA:E14   25.0 m   -107.36.21.3  +33.53.44.5
+#         16   EA23  VLA:E18   25.0 m   -107.35.57.2  +33.53.35.1
+#         17   EA21  VLA:E2    25.0 m   -107.37.04.4  +33.54.01.1
+#         18   VA12  VLA:N4    25.0 m   -107.37.06.5  +33.54.06.1
+#         19   VA02  VLA:N20   25.0 m   -107.37.13.2  +33.55.09.5
+#         20   EA13  VLA:N16   25.0 m   -107.37.10.9  +33.54.48.0
+#         21   EA26  VLA:N32   25.0 m   -107.37.22.0  +33.56.33.6
+#         22   EA25  VLA:N24   25.0 m   -107.37.16.1  +33.55.37.7
+#         23   VA09  VLA:N8    25.0 m   -107.37.07.5  +33.54.15.8
+#         24   EA18  VLA:N12   25.0 m   -107.37.09.0  +33.54.30.0
+#         25   VA07  VLA:N36   25.0 m   -107.37.25.6  +33.57.07.6
+#         26   VA27  VLA:N28   25.0 m   -107.37.18.7  +33.56.02.5
+#
+#
+#       Tables:
+#          MAIN                  318708 rows
+#          ANTENNA                   27 rows
+#          DATA_DESCRIPTION           2 rows
+#          DOPPLER                    2 rows
+#          FEED                      27 rows
+#          FIELD                      9 rows
+#          FLAG_CMD             <empty>
+#          FREQ_OFFSET         <absent>
+#          HISTORY                    6 rows
+#          OBSERVATION                1 row
+#          POINTING             <empty>
+#          POLARIZATION               1 row
+#          PROCESSOR            <empty>
+#          SOURCE                     9 rows
+#          SPECTRAL_WINDOW            2 rows
+#          STATE                <empty>
+#          SYSCAL              <absent>
+#          WEATHER             <absent>
+#
 ###  End Task: listobs  ###
 ###############################################
 
@@ -445,9 +445,9 @@ if ( myquackinterval > 0.0 ):
     #
     print('--Flagdata (scan starts)--')
     default('flagdata')
-    
+
     print("Quacking scan beginnings using interval "+str(myquackinterval))
-    
+
     vis = msfile
     correlation = ''
     field = ''
@@ -455,23 +455,23 @@ if ( myquackinterval > 0.0 ):
     spw = usespw
     mode = 'quack'
     quackinterval = myquackinterval
-    
+
     saveinputs('flagdata',prefix+'.flagdata.quack.saved')
     flagdata()
-    
+
     #
     # Use Flagmanager to save a copy of the flags so far
     #
     default('flagmanager')
-    
+
     print("Now will use flagmanager to save the flags")
-    
+
     vis = msfile
     mode = 'save'
     versionname = 'quack'
     comment = 'Quack '+str(myquackinterval)
     merge = 'replace'
-    
+
     saveinputs('flagmanager',prefix+'.flagmanager.quack.saved')
     flagmanager()
 
@@ -479,32 +479,32 @@ if ( myquackinterval > 0.0 ):
 if (flagants != '' and not flagants.isspace() ):
     print('--Flagdata (antennas)--')
     default('flagdata')
-    
+
     print("Flag all data to AN "+flagants)
-    
+
     vis = msfile
     correlation = ''
     field = ''
     spw = usespw
     mode = 'manual'
     antenna = flagants
-    
+
     saveinputs('flagdata',prefix+'.flagdata.ants.saved')
     flagdata()
-    
+
     #
     # Use Flagmanager to save a copy of the flags so far
     #
     default('flagmanager')
-    
+
     print("Now will use flagmanager to save the flags")
-    
+
     vis = msfile
     mode = 'save'
     versionname = 'antflags'
     comment = 'flag AN '+flagants
     merge = 'replace'
-    
+
     saveinputs('flagmanager',prefix+'.flagmanager.ants.saved')
     flagmanager()
 
@@ -513,9 +513,9 @@ flagtimes = '19:06:50~19:06:57,19:21:17~19:21:20'
 if (flagtimes != '' and not flagtimes.isspace() ):
     print('--Flagdata (timerange)--')
     default('flagdata')
-    
+
     print("Flag timeranges "+flagtimes)
-    
+
     vis = msfile
     correlation = ''
     field = ''
@@ -523,23 +523,23 @@ if (flagtimes != '' and not flagtimes.isspace() ):
     mode = 'manual'
     antenna = ''
     timerange = flagtimes
-    
+
     saveinputs('flagdata',prefix+'.flagdata.times.saved')
     flagdata()
-    
+
     #
     # Use Flagmanager to save a copy of the flags so far
     #
     default('flagmanager')
-    
+
     print("Now will use flagmanager to save the flags")
-    
+
     vis = msfile
     mode = 'save'
     versionname = 'timeflags'
     comment = 'flag '+flagtimes
     merge = 'replace'
-    
+
     saveinputs('flagmanager',prefix+'.flagmanager.times.saved')
     flagmanager()
 
@@ -556,9 +556,9 @@ if benchmarking:
 if ( setjymode == 'flux' ):
     print('--Setjy--')
     default('setjy')
-    
+
     vis = msfile
-    
+
     print("Use setjy to set flux of "+fluxcalfield+" to point model")
     field = fluxcalfield
     spw = usespw
@@ -567,7 +567,7 @@ if ( setjymode == 'flux' ):
     modimage = fluxcaldir + fluxcalmodel
 
     # enforce older standard
-    standard='Perley-Taylor 99'  
+    standard='Perley-Taylor 99'
 
     # old default
     scalebychan=False
@@ -591,13 +591,13 @@ elif ( setjymode == 'ft' ):
         print("Use FT to set model"+model)
         saveinputs('ft',prefix+'.ft.0.saved')
         ft()
-    
+
 else:
     print('--Setjy--')
     default('setjy')
-    
+
     vis = msfile
-    
+
     print("Use setjy to set flux of "+fluxcalfield)
     field = fluxcalfield
     spw = usespw
@@ -606,7 +606,7 @@ else:
     modimage = fluxcaldir + fluxcalmodel
 
     # enforce older standard
-    standard='Perley-Taylor 99'  
+    standard='Perley-Taylor 99'
 
     scalebychan=False
 
@@ -617,11 +617,11 @@ else:
     #
     # 0137+331  spwid=  0  [I=5.405, Q=0, U=0, V=0] Jy, (Perley-Taylor 99)
     # 0137+331  spwid=  1  [I=5.458, Q=0, U=0, V=0] Jy, (Perley-Taylor 99)
-    
+
     # cf. AIPS
     #  SETJY     '0137+331        ' IF =  1 FLUX = 5.4054 (Jy calcd)
     #  SETJY     '0137+331        ' IF =  2 FLUX = 5.4585 (Jy calcd)
-    
+
     print("Look in logger for the fluxes (should be 5.405 and 5.458 Jy)")
 
 if benchmarking:
@@ -807,7 +807,7 @@ if ( setpolmodel and polcalmode.count('X') > 0 ):
     default('setjy')
 
     vis = msfile
-    
+
     print("Use setjy to set IQU fluxes of "+polxfield)
     field = polxfield
 
@@ -815,10 +815,10 @@ if ( setpolmodel and polcalmode.count('X') > 0 ):
 
     for spw in usespwlist:
         fluxdensity = polmodel[field][spw]['flux']
-    
+
         saveinputs('setjy',prefix+'.setjy.polspw.'+spw+'.saved')
         setjy()
-    
+
 if benchmarking:
     setpoljy2time=time.time()
 
@@ -940,26 +940,26 @@ if ( polxfield in pcalmodel ):
         #
         # Now run setjy if we havent already
         #
-    
+
         print('--Setjy--')
         default('setjy')
-        
+
         vis = msfile
-        
+
         print("Use setjy to set IQU fluxes of "+polxfield)
         field = polxfield
 
         scalebychan=False
 
         standard='manual'
-        
+
         for spw in usespwlist:
             fluxdensity = polmodel[field][spw]['flux']
-            
+
             saveinputs('setjy',prefix+'.setjy.polspw.'+spw+'.saved')
             setjy()
-        
-    
+
+
     if benchmarking:
         setxjy2time=time.time()
 
@@ -970,14 +970,14 @@ if ( polxfield in pcalmodel ):
     #
     print('--PolCal--')
     default('polcal')
-    
+
     print("Polarization R-L Phase Calibration (linear approx)")
-    
+
     vis = msfile
-    
+
     # Start with the G and D tables
     gaintable = [gtable,ptable]
-    
+
     # Output table
     xtable = prefix + '.polx'
     caltable = xtable
@@ -985,23 +985,23 @@ if ( polxfield in pcalmodel ):
     # previously set with setjy
     field = polxfield
     spw = usespw
-    
+
     selectdata=True
     uvrange = polxuvrange
-    
+
     # Solve for Chi
     poltype = 'Xf'
     solint = 86400.
-    
+
     # reference antenna
     refant = calrefant
-    
+
     # minimum SNR 3
     minsnr = 3
 
     saveinputs('polcal',prefix+'.polcal.X.saved')
     polcal()
-    
+
     # You should get something like:
     # Position angle offset solution for 0137+331 (spw = 0) = 72.437 deg.
     # Position angle offset solution for 0137+331 (spw = 1) = -21.0703 deg.
@@ -1015,11 +1015,11 @@ if ( polxfield in pcalmodel ):
     # List polcal solutions
     #
     #print '--Listcal--'
-    
+
     #listfile = caltable + '.list'
-    
+
     #print "Listing calibration to file "+listfile
-    
+
     #listcal()
 
     #
@@ -1028,14 +1028,14 @@ if ( polxfield in pcalmodel ):
     # Plot polcal solutions
     #
     print('--Plotcal--')
-    
+
     xaxis = 'antenna'
     yaxis = 'phase'
     iteration = ''
-    
+
     showgui = False
     figfile = caltable + '.plot.png'
-    
+
     print("Plotting calibration to file "+figfile)
     saveinputs('plotcal',prefix+'.plotcal.polcal.x.antphase.saved')
     plotcal()
@@ -1052,7 +1052,7 @@ else:
         setxjy2time=time.time()
         xpolcal2time=time.time()
         plotxcal2time=time.time()
-    
+
 
 #=====================================================================
 #
@@ -1097,7 +1097,7 @@ if ( len(targets) > 0 ):
     # Assemble field string from target list
     field = fieldtargets
     print("Applying calibration to targets "+field)
-    
+
     saveinputs('applycal',prefix+'.applycal.targets.saved')
     applycal()
 
@@ -1150,29 +1150,29 @@ clnmodel = {}
 # Set up for new clean in patch 2
 #
 for src in srclist:
-    
+
     srcmodel = {}
-    
+
     for spwid in usespwlist:
 
         print('-- Clean '+src+' spw '+spwid+' --')
         default('clean')
-    
+
         field = src
         spw = spwid
-    
+
         # Pick up our split source data
         vis = srcsplitms
-        
+
         # Make an image root file name
         imname1 = prefix + '.' + src + '.' + spwid + '.clean'
         imagename = imname1
-        
+
         print("  Output images will be prefixed with "+imname1)
-        
+
         # Set up the output continuum image (single plane mfs)
         mode = 'mfs'
-        
+
         # All polarizations
         stokes = 'IQUV'
 
@@ -1182,31 +1182,31 @@ for src in srclist:
         imagermode=''
         if csclean:
           imagermode='csclean'
-        
-        
+
+
         imsize = [clnimsize,clnimsize]
         cell = [clncell,clncell]
-    
+
         # Standard gain factor 0.1
         gain = 0.1
-        
+
         niter = clniter
-        
+
         threshold = clthreshold
-        
+
         # Set up the weighting
         # Use Briggs weighting (a moderate value, on the uniform side)
         weighting = 'briggs'
         robust = 0.5
         # Use natural weighting
         weighting = 'natural'
-        
+
         # Use the cleanbox
         mask = myclnbox
-    
+
         saveinputs('clean',prefix+'.clean.'+src+'.'+spwid+'.saved')
         clean()
-        
+
         # Set up variables
         clnimage1 = imname1+'.image'
         clnmodel1 = imname1+'.model'
@@ -1214,7 +1214,7 @@ for src in srclist:
         clnmask1  = imname1+'.mask'
         clnpsf1   = imname1+'.psf'
         clnflux1  = imname1+'.flux'
-        
+
         #
         # =====================================================================
         #
@@ -1224,10 +1224,10 @@ for src in srclist:
 
         field = src
         spw = spwid
-        
+
         # Use the clean box
         mybox = str(clnblc)+','+str(clnblc)+','+str(clntrc)+','+str(clntrc)
-        
+
         spwmodel = {}
 
         spwstats = {}
@@ -1240,7 +1240,7 @@ for src in srclist:
             # Use the clean image
             imagename = clnimage1
             box = mybox
-            
+
             saveinputs('imstat',prefix+'.imstat.'+src+'.'+spwid+'.'+stokes+'.saved')
             xstat = imstat()
 
@@ -1253,13 +1253,13 @@ for src in srclist:
                 xpol = xmin
             else:
                 xpol = xmax
-            
+
             spwfluxes[stokes]= xpol
 
             # Integrated flux in box
             xsum = xstat['flux'][0]
             spwsum[stokes]= xsum
-        
+
             # Use the clean model and no box
             imagename = clnmodel1
             box = ''
@@ -1271,7 +1271,7 @@ for src in srclist:
             spwmod[stokes]= xmod
 
         # Done with stokes
-        
+
         spwmodel['stat'] = spwstats
         spwmodel['flux'] = spwfluxes
         spwmodel['integ'] = spwsum
@@ -1359,21 +1359,21 @@ for src in srclist:
         vpix = imval(imagename,box=refbox,stokes='V')
         vflx = vpix['data'][0]
         spwmax['V'] = vflx
-        
+
         spwmax['xref'] = xref
         spwmax['yref'] = yref
         # Done with ia tool
         #ia.close()
-        
+
         spwmodel['refval'] = spwref
         spwmodel['maxval'] = spwmax
-        
+
         srcmodel[spwid] = spwmodel
-    
+
     # Done with spw
 
     clnmodel[src] = srcmodel
-    
+
 if benchmarking:
     clean2time=time.time()
 
@@ -1400,7 +1400,7 @@ else:
     regression = u.load()
     fr.close()
     print("Previous regression results filled from "+regressfile)
-    
+
     if 'results' in regression:
         print("  on "+regression['host']+" for "+regression['version']+" at "+regression['date'])
         regressmodel = regression['results']
@@ -1442,7 +1442,7 @@ if ( polxfield in polmodel ):
     print("")
     print("R-L phase residual from image of "+polxfield+" :", file=logfile)
     print("", file=logfile)
-    
+
     src = polxfield
     rlcor = {}
 
@@ -1457,10 +1457,10 @@ if ( polxfield in polmodel ):
         scor = sin(rlpcor); ccor = cos(rlpcor); rlpcor = atan2(scor,ccor)
         rlcor[spwid] = rlpcor
         rlpcor_deg = rlpcor*180.0/pl.pi
-        
+
         print("R-L Phase Correction SPW "+spwid+" = %7.2f deg" % rlpcor_deg)
         print("R-L Phase Correction SPW "+spwid+" = %7.2f deg" % rlpcor_deg, file=logfile)
-    
+
 
 if 'results' in regression:
     print("", file=logfile)
@@ -1511,9 +1511,9 @@ for src in srclist:
         qpol = clnmodel[src][spwid]['flux']['Q']
         upol = clnmodel[src][spwid]['flux']['U']
         vpol = clnmodel[src][spwid]['flux']['V']
-        
+
         # Now get polarization results
-        
+
         ppol = sqrt(qpol**2 + upol**2)
         fpol = ppol/ipol
         rlpd = atan2(upol,qpol)
@@ -1540,7 +1540,7 @@ for src in srclist:
             fflx = regressmodel[src][spwid]['fpol']
             rlreg = regressmodel[src][spwid]['rlpd']
             rlreg_deg = regressmodel[src][spwid]['rlpd_deg']
-            
+
             pflx = iflx*fflx
             qflx = pflx*cos(rlreg)
             uflx = pflx*sin(rlreg)
@@ -1557,7 +1557,7 @@ for src in srclist:
             rldiff = rlpd - rlreg
             rlpd_diff = atan2( sin(rldiff), cos(rldiff) )
             rlpd_diff_deg = rlpd_diff*180.0/pl.pi
-            
+
             test = (abs(ipol_diff/ipol) < 0.08) & (abs(fpol_diff) < 0.008) & (abs(rlpd_diff < 0.08))
             if test:
                 teststr = 'PASS'
@@ -1565,17 +1565,17 @@ for src in srclist:
                 teststr = 'FAIL'
 
             passfail = passfail & test
-            
+
             print('  spw %s DIFF I = %7.3f P = %7.3f F = %7.4f X = %7.2f deg %s ' %\
                   (spwid,ipol_diff,ppol_diff,fpol_diff,rlpd_diff_deg,teststr))
             print('  spw %s PREV I = %7.3f P = %7.3f F = %7.4f X = %7.2f deg %s ' %\
                   (spwid,ipol_diff,ppol_diff,fpol_diff,rlpd_diff_deg,teststr), file=logfile)
             print('')
             print("", file=logfile)
-    
+
     # Done with spw
     outpolmodel[src] = outpolsrc
-    
+
     if (src in regressmodel):
         pass
     else:
@@ -1588,7 +1588,7 @@ if (src in regressmodel):
         passfailstr = 'PASSED'
     else:
         passfailstr = 'FAILED'
-            
+
     print('POLCAL Regression '+passfailstr)
     print('POLCAL Regression '+passfailstr, file=logfile)
 
@@ -1601,50 +1601,50 @@ new_regression['results'] = outpolmodel
 # Should see something like:
 #
 # R-L phase residual from image of 0137+331
-# 
+#
 # R-L Phase Correction SPW 0 =    0.28 deg
 # R-L Phase Correction SPW 1 =    0.33 deg
 # No regression results file polcal_20080224_cband_regression.polmodel.regress.pickle
-# 
+#
 # Final Stats:
-# 
+#
 # Source 0137+331 :
 #   spw 0 CASA I =   5.263 P =   0.243 F =  0.0462 X = -148.28 deg
 #   spw 1 CASA I =   5.313 P =   0.222 F =  0.0418 X = -148.33 deg
-# 
+#
 # Source 2202+422 :
 #   spw 0 CASA I =   2.521 P =   0.181 F =  0.0720 X =  -58.04 deg
 #   spw 1 CASA I =   2.516 P =   0.184 F =  0.0732 X =  -53.20 deg
-# 
+#
 # Source 1743-038 :
 #   spw 0 CASA I =   5.437 P =   0.085 F =  0.0156 X =    6.59 deg
 #   spw 1 CASA I =   5.425 P =   0.068 F =  0.0126 X =   -2.26 deg
-# 
+#
 # Source 1924-292 :
 #   spw 0 CASA I =   8.079 P =   0.086 F =  0.0106 X =    2.57 deg
 #   spw 1 CASA I =   8.012 P =   0.053 F =  0.0066 X =   15.01 deg
-# 
+#
 # Source 2136+006 :
 #   spw 0 CASA I =  10.284 P =   0.139 F =  0.0135 X = -160.31 deg
 #   spw 1 CASA I =  10.300 P =   0.149 F =  0.0145 X = -167.58 deg
-# 
+#
 # Source 2253+161 :
 #   spw 0 CASA I =   8.937 P =   0.492 F =  0.0550 X =   -1.40 deg
 #   spw 1 CASA I =   8.905 P =   0.530 F =  0.0595 X =    8.29 deg
-# 
+#
 # Source 2355+498 :
 #   spw 0 CASA I =   1.320 P =   0.006 F =  0.0046 X =  140.29 deg
 #   spw 1 CASA I =   1.327 P =   0.002 F =  0.0015 X = -130.23 deg
-# 
+#
 # Source 0319+415 :
 #   spw 0 CASA I =  13.911 P =   0.066 F =  0.0047 X = -136.14 deg
 #   spw 1 CASA I =  13.932 P =   0.024 F =  0.0017 X =  -73.09 deg
-# 
+#
 # Source 0359+509 :
 #   spw 0 CASA I =   5.253 P =   0.100 F =  0.0190 X = -126.80 deg
 #   spw 1 CASA I =   5.222 P =   0.083 F =  0.0158 X = -128.69 deg
-# 
-# 
+#
+#
 #=====================================================================
 #
 # Benchmarking results
@@ -1672,7 +1672,7 @@ if benchmarking:
         print('*   polcal(D)    time was: '+str(polcal2time-setpoljy2time), file=logfile)
     else:
         print('*   polcal(D)    time was: '+str(polcal2time-plotcal2time), file=logfile)
-    
+
     print('*   listcal(D)   time was: '+str(listpcal2time-polcal2time), file=logfile)
     print('*   plotcal(D)   time was: '+str(plotpcal2time-listpcal2time), file=logfile)
 
@@ -1683,7 +1683,7 @@ if benchmarking:
         print('*   applycal     time was: '+str(correct2time-plotxcal2time), file=logfile)
     else:
         print('*   applycal     time was: '+str(correct2time-plotpcal2time), file=logfile)
-    
+
     print('*   split        time was: '+str(split2time-correct2time), file=logfile)
     print('*   clean/stat   time was: '+str(clean2time-split2time), file=logfile)
     print('*****************************************', file=logfile)

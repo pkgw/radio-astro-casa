@@ -87,7 +87,7 @@ class BlparamFileParser(FileReader):
         self.parseCoeff()
         self.parseRms()
         return
-        
+
     def parseCoeff(self):
         self.__coeff = []
         nrow = self.nrow()
@@ -114,7 +114,7 @@ class BlparamFileParser(FileReader):
                 idx = self.index(self.__rtxt, idx)
                 self.__rms.append(self.__parseRms(idx))
             except:
-                break   
+                break
         return
 
     def __parseCoeff(self, idx):
@@ -129,7 +129,7 @@ def parseCoeff(txt):
     for c in clist:
         ret.append(float(c.split('=')[1]))
     return ret
-    
+
 def parseRms(txt):
     t = txt.lstrip().rstrip('\n')[6:]
     return float(t)
@@ -222,13 +222,13 @@ class tsdbaseline_unittest_base(unittest.TestCase):
         """
         Copy a list of files and directories from a directory (from_dir) to
         another (dest_dir) in the same name.
-        
+
         names : a list of files and directories to copy
         from_dir : a path to directory from which search and copy files
                    and directories (the default is the current path)
         to_dir   : a path to directory to which copy files and directories
                    (the default is the current path)
-        NOTE: it is not allowed to specify 
+        NOTE: it is not allowed to specify
         """
         # Check for paths
         if from_dir==None and dest_dir==None:
@@ -250,7 +250,7 @@ class tsdbaseline_unittest_base(unittest.TestCase):
                     casalog.post("Copying '%s' FROM %s TO %s" % (name, from_path, to_path))
             else:
                 casalog.post("Could not find '%s'...skipping copy" % from_name, 'WARN')
-    
+
     """
     def _getStats(self, filename, spw=None):
         if not spw:
@@ -286,7 +286,7 @@ class tsdbaseline_unittest_base(unittest.TestCase):
         else:
             raise Exception('_getListSelection: wrong value ' + str(val) + ' for selection.')
         return self._getUniqList(val_sel)
-    
+
     def _getListSelectedRowID(self, data_list, sel_list):
         """
         Returns IDs of data_list that contains values equal to one in
@@ -305,7 +305,7 @@ class tsdbaseline_unittest_base(unittest.TestCase):
                 #idx = sel_list.index(data_list[i])
                 res.append(i)
         return self._getUniqList(res)
-    
+
     def _getEffective(self, spec, mask):
         """
         Returns an array made by selected elements in spec array.
@@ -331,7 +331,7 @@ class tsdbaseline_unittest_base(unittest.TestCase):
         colname  : the name of data column (default: 'FLOAT_DATA')
         mask     : a mask list of the channel ranges to use. The format is
                    [[start_idx0, end_idx0], [start_idx1, end_idx1], ...]
-        
+
         The order of output list is in the ascending order of selected row IDs.
         The dictionary in output list has keys:
         'row' (row ID in MS), 'pol' (pol ID), 'rms', 'min', 'max', 'median',
@@ -366,7 +366,7 @@ class tsdbaseline_unittest_base(unittest.TestCase):
                 res_elem = self._calc_stats_of_array(spec, mask=mask)
                 res_elem['row'] = irow
                 res_elem['pol'] = ipol
-                
+
                 res.append(res_elem)
 
         return res
@@ -386,7 +386,7 @@ class tsdbaseline_unittest_base(unittest.TestCase):
         res_elem['median'] = numpy.median(spec)
         res_elem['stddev'] = numpy.std(spec)
         return res_elem
-        
+
 
     def _convert_statslist_to_dict(self, stat_list):
         """
@@ -437,7 +437,7 @@ class tsdbaseline_unittest_base(unittest.TestCase):
         else:
             keylist = list(refstat.keys())
             #keylist = self.complist
-        
+
         for key in keylist:
             self.assertTrue(key in currstat,\
                             msg="%s is not defined in the current results."\
@@ -479,7 +479,7 @@ class tsdbaseline_unittest_base(unittest.TestCase):
                                 msg="%s differs: %s" % (key, str(currval)))
             del currval, refval
 
-            
+
 #     def _isInAllowedRange(self, testval, refval, reltol=1.e-2):
 #         """
 #         Check if a test value is within permissive relative difference from refval.
@@ -519,7 +519,7 @@ class tsdbaseline_unittest_base(unittest.TestCase):
         # TO DO: compare only "Fitter range" and "Baseline parameters"
         self._checkfile(out)
         self._checkfile(reference)
-        
+
         blparse_out = BlparamFileParser(out)
         blparse_out.parse()
         coeffs_out = blparse_out.coeff()
@@ -569,7 +569,7 @@ class tsdbaseline_basicTest(tsdbaseline_unittest_base):
 
     Note: The input data 'OrionS_rawACSmod_calave.ms' is generated
           from a single dish regression data 'OrionS_rawACSmod' as follows:
-          
+
           default(sdcal)
           sdcal(infile='OrionS_rawACSmod',scanlist=[20,21,22,23],
                 calmode='ps',tau=0.09,outfile='temp.asap')
@@ -645,7 +645,7 @@ class tsdbaseline_basicTest(tsdbaseline_unittest_base):
         pol = 'LL'
         overwrite = True
         result = tsdbaseline(infile=infile, datacolumn=datacolumn,
-                             maskmode=maskmode, blfunc=blfunc, 
+                             maskmode=maskmode, blfunc=blfunc,
                              spw=spw, pol=pol, outfile=outfile,
                              overwrite=overwrite)
         # tsdbaseline returns None if it runs successfully
@@ -667,7 +667,7 @@ class tsdbaseline_basicTest(tsdbaseline_unittest_base):
                      }
 
         self._compareStats(theresult, reference)
-    
+
     def test002(self):
         """Basic Test 002: simple successful case: blfunc = 'chebyshev', maskmode = 'list' and masklist=[] (no mask)"""
         tid = '002'
@@ -680,7 +680,7 @@ class tsdbaseline_basicTest(tsdbaseline_unittest_base):
         pol = 'LL'
         overwrite = True
         result = tsdbaseline(infile=infile, datacolumn=datacolumn,
-                             maskmode=maskmode, blfunc=blfunc, 
+                             maskmode=maskmode, blfunc=blfunc,
                              spw=spw, pol=pol, outfile=outfile,
                              overwrite=overwrite)
         # tsdbaseline returns None if it runs successfully
@@ -702,8 +702,8 @@ class tsdbaseline_basicTest(tsdbaseline_unittest_base):
                      }
 
         self._compareStats(theresult, reference)
-    
-    
+
+
     def test003(self):
         """Basic Test 003: simple successful case: blfunc = 'cspline', maskmode = 'list' and masklist=[] (no mask)"""
         print("")
@@ -711,7 +711,7 @@ class tsdbaseline_basicTest(tsdbaseline_unittest_base):
         tid = '003'
         infile = self.infile
         outfile = self.outroot+tid+'.ms'
-        datacolumn = 'float_data'  
+        datacolumn = 'float_data'
         maskmode = 'list'
         blfunc = 'cspline'
         overwrite = True
@@ -719,17 +719,17 @@ class tsdbaseline_basicTest(tsdbaseline_unittest_base):
         spw='3'
         pol='LL'
         result = tsdbaseline(infile=infile, datacolumn=datacolumn,
-                             maskmode=maskmode, blfunc=blfunc, 
-                             npiece=npiece,spw=spw, 
+                             maskmode=maskmode, blfunc=blfunc,
+                             npiece=npiece,spw=spw,
                              pol=pol,
                              outfile=outfile,overwrite=overwrite)
-        
+
         # sdbaseline returns None if it runs successfully
         self.assertEqual(result,None,msg="The task returned '"+str(result)+"' instead of None")
-        #self._compareBLparam(outfile+"_blparam.txt",self.blrefroot+tid) 
+        #self._compareBLparam(outfile+"_blparam.txt",self.blrefroot+tid)
         results = self._getStats(outfile)
         print(self._getStats(outfile))
-        
+
         theresult = None
         for i in range(len(results)):
             theresult = results[i]
@@ -757,7 +757,7 @@ class tsdbaseline_basicTest(tsdbaseline_unittest_base):
         orig_pol1_value = numpy.array(tb.getcell('FLOAT_DATA', int(spw))[in_pol,:])
         tb.close()
         variance_orig_pol1 = numpy.var(orig_pol1_value)
-        
+
         #open the MS after tsdbaseline
         tb.open(outfile)
         pol1_value = numpy.array(tb.getcell('FLOAT_DATA', 0)[out_pol,:])
@@ -766,14 +766,14 @@ class tsdbaseline_basicTest(tsdbaseline_unittest_base):
 
         #assert pol1_value < orig_pol1_value
         self.assertTrue((pol1_value<orig_pol1_value).all())
-        
+
         #assert variance of pol1_value < variance of orig_pol1_value
         self.assertLess(variance_pol1**0.5, variance_orig_pol1**0.5)
 
-        #print '1sigma before cspline (pol1)', variance_orig_pol1**0.5 
-        #print '1sigma after cspline (pol1)',  variance_pol1**0.5 
-        
-    
+        #print '1sigma before cspline (pol1)', variance_orig_pol1**0.5
+        #print '1sigma after cspline (pol1)',  variance_pol1**0.5
+
+
     def test050(self):
         """Basic Test 050: failure case: existing file as outfile with overwrite=False"""
         infile = self.infile
@@ -843,7 +843,7 @@ class tsdbaseline_maskTest(tsdbaseline_unittest_base):
                    #'basestd': 0.1313575953245163}
                    'rms': 0.13134850561618805,
                    'stddev': 0.1313575953245163}
-     
+
     def setUp(self):
         if os.path.exists(self.infile):
             shutil.rmtree(self.infile)
@@ -955,7 +955,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
     test022 --- specify fftthresh by 'top' + checking residual rms
     test023 --- sinusoid-related parameters with default values
     test024 --- addwn has too large value but rejwn removes it
-    
+
     test100 --- no effective wave number set (addwn empty list, applyfft=False)
     test101 --- no effective wave number set (addwn empty list, applyfft=True)
     test102 --- no effective wave number set (addwn empty tuple, applyfft=False)
@@ -994,7 +994,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
     test135 --- wrong fftthresh (as int 0)
 
     Note: The input data 'sinusoidal.ms' has just two spectral data,
-          which are actually identical and described as 
+          which are actually identical and described as
           spec[i] = sin(i*2*PI/8191) + 4 * sin(i*2*PI/8191*3)
                     + 8 * sin(i*2*PI/8191*5) + 2 * sin(i*2*PI/8191*12).
           addwn='1,3,5,12' will be enough to perfectly fit this spectrum, but
@@ -1319,7 +1319,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                              blfunc='sinusoid')
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
     def test024(self):
         """Sinusoid Test 024: addwn has too large value but rejwn removes it"""
         tid = '024'
@@ -1333,8 +1333,8 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                              blfunc='sinusoid',applyfft=applyfft,addwn=addwn,rejwn=rejwn)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
-        
+
+
     def test100(self):
         """Sinusoid Test 100: no effective wave number set (addwn empty list, applyfft=False)"""
         tid = '100'
@@ -1347,7 +1347,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                                  blfunc='sinusoid',addwn=addwn,applyfft=False)
         except Exception as e:
             self.assertEqual(e.message, 'addwn must contain at least one element.')
-        
+
     def test101(self):
         """Sinusoid Test 101: no effective wave number set (addwn empty list, applyfft=True)"""
         tid = '101'
@@ -1360,7 +1360,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                                  blfunc='sinusoid',addwn=addwn,applyfft=True)
         except Exception as e:
             self.assertEqual(e.message, 'addwn must contain at least one element.')
-        
+
     def test102(self):
         """Sinusoid Test 102: no effective wave number set (addwn empty tuple, applyfft=False)"""
         tid = '102'
@@ -1373,7 +1373,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                                  blfunc='sinusoid',addwn=addwn,applyfft=False)
         except Exception as e:
             self.assertEqual(e.message, 'addwn must contain at least one element.')
-        
+
     def test103(self):
         """Sinusoid Test 103: no effective wave number set (addwn empty tuple, applyfft=True)"""
         tid = '103'
@@ -1386,7 +1386,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                                  blfunc='sinusoid',addwn=addwn,applyfft=True)
         except Exception as e:
             self.assertEqual(e.message, 'addwn must contain at least one element.')
-        
+
     def test104(self):
         """Sinusoid Test 104: no effective wave number set (addwn empty string, applyfft=False)"""
         tid = '104'
@@ -1399,7 +1399,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                                  blfunc='sinusoid',addwn=addwn,applyfft=False)
         except Exception as e:
             self.assertEqual(e.message, 'string index out of range')
-        
+
     def test105(self):
         """Sinusoid Test 105: no effective wave number set (addwn empty string, applyfft=True)"""
         tid = '105'
@@ -1412,7 +1412,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                                  blfunc='sinusoid',addwn=addwn,applyfft=True)
         except Exception as e:
             self.assertEqual(e.message, 'string index out of range')
-        
+
     def test106(self):
         """Sinusoid Test 106: no effective wave number set (addwn and rejwn identical, applyfft=False)"""
         tid = '106'
@@ -1426,7 +1426,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                                  blfunc='sinusoid',addwn=addwn,rejwn=rejwn,applyfft=False)
         except Exception as e:
             self.assertEqual(e.message, 'No effective wave number given for sinusoidal fitting.')
-        
+
     def test107(self):
         """Sinusoid Test 107: no effective wave number set (addwn and rejwn identical, applyfft=True)"""
         tid = '107'
@@ -1440,7 +1440,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                                  blfunc='sinusoid',addwn=addwn,rejwn=rejwn,applyfft=True)
         except Exception as e:
             self.assertEqual(e.message, 'No effective wave number given for sinusoidal fitting.')
-        
+
     def test108(self):
         """Sinusoid Test 108: no effective wave number set (rejwn covers wider range than that of addwn, applyfft=False)"""
         tid = '108'
@@ -1454,7 +1454,7 @@ class tsdbaseline_sinusoidTest(tsdbaseline_unittest_base):
                                  blfunc='sinusoid',addwn=addwn,rejwn=rejwn,applyfft=False)
         except Exception as e:
             self.assertEqual(e.message, 'No effective wave number given for sinusoidal fitting.')
-        
+
     def test109(self):
         """Sinusoid Test 109: no effective wave number set (rejwn covers wider range than that of addwn, applyfft=True)"""
         tid = '109'
@@ -1818,7 +1818,7 @@ class tsdbaseline_multi_IF_test(tsdbaseline_unittest_base):
     Unit tests for task tsdbaseline. No interactive testing.
 
     This test intends to check whether tsdbaseline task works fine
-    for data that has multiple IFs whose nchan differ each other. 
+    for data that has multiple IFs whose nchan differ each other.
 
     List of tests:
     test200 --- test multi IF data input
@@ -1857,7 +1857,7 @@ class tsdbaseline_multi_IF_test(tsdbaseline_unittest_base):
         order = 1
         outfile = self.outroot+".asap"
         blparamfile = outfile+self.blparamfile_suffix
-        
+
         result = tsdbaseline(infile=infile,maskmode=mode,outfile=outfile,blfunc=blfunc,order=order)
         self.assertEqual(result, None, msg="The task returned '"+str(result)+"' instead of None")
         self._compareBLparam(blparamfile,self.datapath+self.refblparamfile)
@@ -1962,11 +1962,11 @@ class tsdbaseline_outbltableTest(tsdbaseline_unittest_base):
 
                 self.assertEqual(not is_skipped, tb.getcell('APPLY', irow)[ipol][0]);
                 if is_skipped: continue
-            
+
                 self.assertEqual(self.ftype[blparam['btype'][i]], tb.getcell('FUNC_TYPE', irow)[ipol][0]);
                 fparam_key = 'order' if (blparam['btype'][i] != 'cspline') else 'npiec'
                 self.assertEqual(blparam[fparam_key][i], tb.getcell('FUNC_PARAM', irow)[ipol][0])
-            
+
                 if (blparam['btype'][i] == 'cspline'):
                     for j in range(blparam['npiec'][i]):
                         self.assertEqual(0.0, tb.getcell('FUNC_FPARAM', irow)[ipol][j])
@@ -1989,7 +1989,7 @@ class tsdbaseline_outbltableTest(tsdbaseline_unittest_base):
                 self.assertEqual(redge, tb.getcell('LF_EDGE', irow)[ipol][1])
         finally:
             tb.close()
-    
+
     def _checkBltable(self, outms, bltable, blfunc, order, mask):
         tb.open(bltable)
         for irow in range(tb.nrows()):
@@ -1997,9 +1997,9 @@ class tsdbaseline_outbltableTest(tsdbaseline_unittest_base):
                 self.assertEqual(tb.getcell('FUNC_TYPE', irow)[ipol], self.ftype[blfunc])
                 self.assertEqual(tb.getcell('FUNC_PARAM', irow)[ipol], order)
                 ref = self._getStats(filename=outms, spw=str(irow), pol=str(ipol), mask=mask[irow])
-                #tolerance value in the next line is temporarily set a bit large 
+                #tolerance value in the next line is temporarily set a bit large
                 #since rms in bltable is smaller than expected because it is
-                #calculated based on masklist currently stored in bltable, which 
+                #calculated based on masklist currently stored in bltable, which
                 #is after an extra clipping.
                 #this bug is already fixed in trunk of Sakura, so once libsakura
                 #is updated we can set smaller tolerance value. (2015/4/22 WK)
@@ -2153,13 +2153,13 @@ class tsdbaseline_outbltableTest(tsdbaseline_unittest_base):
                                  msg="The task returned '"+str(result)+"' instead of None")
                 with tbmanager(bloutput) as tb:
                     nrow_bltable = tb.nrows()
-                self.assertTrue((nrow_bltable == nrow_data - 1), 
+                self.assertTrue((nrow_bltable == nrow_data - 1),
                                 msg="The baseline table is not shortened...")
                 #delete used data
                 if (os.path.exists(self.infile)):
                     shutil.rmtree(self.infile)
                 os.system('rm -rf '+self.outroot+'*')
-    
+
     def test304(self):
         """test304: testing shortening baseline table for blfunc=variable"""
         self.tid = '304'
@@ -2202,13 +2202,13 @@ class tsdbaseline_outbltableTest(tsdbaseline_unittest_base):
                                  dosubtract=dosubtract,outfile=outfile)
             with tbmanager(bloutput) as tb:
                 nrow_bltable = tb.nrows()
-            self.assertTrue((nrow_bltable == nrow_data - 1), 
+            self.assertTrue((nrow_bltable == nrow_data - 1),
                             msg="The baseline table is not shortened...")
             #delete used data
             if (os.path.exists(self.infile)):
                 shutil.rmtree(self.infile)
             os.system('rm -rf '+self.outroot+'*')
-    
+
 class tsdbaseline_applybltableTest(tsdbaseline_unittest_base):
     """
     Tests for applying baseline table
@@ -2230,14 +2230,14 @@ class tsdbaseline_applybltableTest(tsdbaseline_unittest_base):
     blmode = 'apply'
     bltable = outroot+'.bltable'
     tid = None
-    
+
     def setUp(self):
         if os.path.exists(self.infile):
             shutil.rmtree(self.infile)
         shutil.copytree(self.datapath+self.infile, self.infile)
         default(tsdbaseline)
-        
-       
+
+
         if os.path.exists(self.infile+'_blparam.txt'):
             os.remove(self.infile+ '_blparam.txt')
         if os.path.exists(self.infile+'_blparam.csv'):
@@ -2245,7 +2245,7 @@ class tsdbaseline_applybltableTest(tsdbaseline_unittest_base):
         if os.path.exists(self.infile+'_blparam.btable'):
             shutil.rmtree(self.infile+ '_blparam.btable')
 
-        
+
         #create baseline table
         blparam = self.outroot+'.blparam'
         self._createBlparamFile(blparam, self.blparam_order, self.blparam_dic, '')
@@ -2317,7 +2317,7 @@ class tsdbaseline_applybltableTest(tsdbaseline_unittest_base):
             tb.putcell('FLAG', 2, tmpflag)
         finally:
             tb.close()
-        
+
         result = tsdbaseline(infile=self.infile,datacolumn='float_data',
                              blmode=self.blmode,bltable=self.bltable,
                              outfile=outfile)
@@ -2337,7 +2337,7 @@ class tsdbaseline_applybltableTest(tsdbaseline_unittest_base):
             tb.putcell('APPLY', 2, tmpapply)
         finally:
             tb.close()
-        
+
         result = tsdbaseline(infile=self.infile,datacolumn='float_data',
                              blmode=self.blmode,bltable=self.bltable,
                              outfile=outfile)
@@ -2356,7 +2356,7 @@ class tsdbaseline_applybltableTest(tsdbaseline_unittest_base):
             self.assertEqual(tb.nrows(), 3, msg='failed to remove a row in bltable.')
         finally:
             tb.close()
-        
+
         result = tsdbaseline(infile=self.infile,datacolumn='float_data',
                              blmode=self.blmode,bltable=self.bltable,
                              outfile=outfile)
@@ -2386,7 +2386,7 @@ class tsdbaseline_variableTest(tsdbaseline_unittest_base):
     nspec = 4
     refstat0 = {'max': [0.0]*nspec, 'min': [0.0]*nspec,
                 'rms': [0.0]*nspec, 'stddev': [0.0]*nspec}
-    
+
     def setUp(self):
         if hasattr(self, 'infile'):
             self.__refetch_files(self.infile)
@@ -2513,7 +2513,7 @@ class tsdbaseline_variableTest(tsdbaseline_unittest_base):
         mask = [[[0,4000],[6000,8000]], [[0,5000],[6000,8000]], [[0,3000],[5000,8000]], None]
         self._run_test(infile,self.refstat0,mask=mask,blparam=paramfile,datacolumn=self.column)
 
-    
+
         if os.path.exists(self.infile+'_blparam.txt'):
             os.remove(self.infile+ '_blparam.txt')
         if os.path.exists(self.infile+'_blparam.csv'):
@@ -2580,72 +2580,72 @@ Basic unit tests for task tsdbaseline. No interactive testing.
     List of tests:
     #'poly'
     test000 --- blformat=['csv','text','table'], bloutput=['test.csv','test.txt','test.table']
-    test001 --- blformat=['text','csv','table'], bloutput=['test.txt','test.csv','test.table'] 
+    test001 --- blformat=['text','csv','table'], bloutput=['test.txt','test.csv','test.table']
     test002 --- blformat=['table','text','csv'], bloutput=['test.table','test.txt','test.csv']
-    test003 --- blformat=['table','text','csv'], bloutput=['','test.txt','test.csv'] 
+    test003 --- blformat=['table','text','csv'], bloutput=['','test.txt','test.csv']
     test004 --- blformat=['table','text'],       bloutput=['','','']
     test005 --- blformat=['table','text'],       bloutput=['','']
-    test006 --- blformat=['table'],              bloutput=[''] 
+    test006 --- blformat=['table'],              bloutput=['']
     test007 --- blformat=['csv'],                bloutput=['']
-    test008 --- blformat=['text'],               bloutput=[''] 
+    test008 --- blformat=['text'],               bloutput=['']
     test009 --- blformat=[''],                   bloutput=['']
-    test010 --- blformat=['','csv'],             bloutput=['','test.csv'] 
-    test010a --- blformat=['','csv'],             bloutput=['test.text',''] 
-    test011 --- blformat='',                     bloutput='' 
+    test010 --- blformat=['','csv'],             bloutput=['','test.csv']
+    test010a --- blformat=['','csv'],             bloutput=['test.text','']
+    test011 --- blformat='',                     bloutput=''
     test012 --- blformat='',                     bloutput='test.csv'
 
 
     #'cspline'
     test016 --- blformat=['csv','text','table'], bloutput=['test.csv','test.txt','test.table']
-    test017 --- blformat=['text','csv','table'], bloutput=['test.txt','test.csv','test.table'] 
+    test017 --- blformat=['text','csv','table'], bloutput=['test.txt','test.csv','test.table']
     test018 --- blformat=['table','text','csv'], bloutput=['test.table','test.txt','test.csv']
-    test019 --- blformat=['table','text','csv'], bloutput=['','test.txt','test.csv'] 
+    test019 --- blformat=['table','text','csv'], bloutput=['','test.txt','test.csv']
     test020 --- blformat=['table','text'],       bloutput=['','','']
     test021 --- blformat=['table','text'],       bloutput=['','']
-    test022 --- blformat=['table'],              bloutput=[''] 
+    test022 --- blformat=['table'],              bloutput=['']
     test023 --- blformat=['csv'],                bloutput=['']
-    test024 --- blformat=['text'],               bloutput=[''] 
+    test024 --- blformat=['text'],               bloutput=['']
     test025 --- blformat=[''],                   bloutput=['']
-    test026 --- blformat=['','csv'],             bloutput=['','test.csv'] 
-    test027 --- blformat='',                     bloutput='' 
+    test026 --- blformat=['','csv'],             bloutput=['','test.csv']
+    test027 --- blformat='',                     bloutput=''
     test028 --- blformat='',                     bloutput='test.csv'
 
 
     #'variable'
-    test013 --- blformat=['csv','text','table'], bloutput=['test.csv','test.txt','test.table'] 
-    test014 --- blformat=['table','text','csv'], bloutput=['test.table','','test.csv'] 
+    test013 --- blformat=['csv','text','table'], bloutput=['test.csv','test.txt','test.table']
+    test014 --- blformat=['table','text','csv'], bloutput=['test.table','','test.csv']
     test015 --- blformat=['table','text','csv'], bloutput=['test.table','test.txt','']
 
     # 'variable'
     test029 --- blformat=['csv','text','table'], bloutput=['test.csv','test.txt','test.table']
-    test030 --- blformat=['text','csv','table'], bloutput=['test.txt','test.csv','test.table'] 
+    test030 --- blformat=['text','csv','table'], bloutput=['test.txt','test.csv','test.table']
     test031 --- blformat=['table','text','csv'], bloutput=['test.table','test.txt','test.csv']
-    test032 --- blformat=['table','text','csv'], bloutput=['','test.txt','test.csv'] 
+    test032 --- blformat=['table','text','csv'], bloutput=['','test.txt','test.csv']
     test033 --- blformat=['table','text'],       bloutput=['','','']
     test034 --- blformat=['table','text'],       bloutput=['','']
-    test035 --- blformat=['table'],              bloutput=[''] 
+    test035 --- blformat=['table'],              bloutput=['']
     test036 --- blformat=['csv'],                bloutput=['']
-    test037 --- blformat=['text'],               bloutput=[''] 
+    test037 --- blformat=['text'],               bloutput=['']
     test038 --- blformat=[''],                   bloutput=['']
-    test039 --- blformat=['','csv'],             bloutput=['','test.csv'] 
-    test040 --- blformat='',                     bloutput='' 
+    test039 --- blformat=['','csv'],             bloutput=['','test.csv']
+    test040 --- blformat='',                     bloutput=''
     test041 --- blformat='',                     bloutput='test.csv'
 
 
 
     # 'sinusoid'
     test042 --- blformat=['csv','text','table'], bloutput=['test.csv','test.txt','test.table']
-    test043 --- blformat=['text','csv','table'], bloutput=['test.txt','test.csv','test.table'] 
+    test043 --- blformat=['text','csv','table'], bloutput=['test.txt','test.csv','test.table']
     test044 --- blformat=['table','text','csv'], bloutput=['test.table','test.txt','test.csv']
-    test045 --- blformat=['table','text','csv'], bloutput=['','test.txt','test.csv'] 
+    test045 --- blformat=['table','text','csv'], bloutput=['','test.txt','test.csv']
     test046 --- blformat=['table','text'],       bloutput=['','','']
     test047 --- blformat=['table','text'],       bloutput=['','']
-    test048 --- blformat=['table'],              bloutput=[''] 
+    test048 --- blformat=['table'],              bloutput=['']
     test049 --- blformat=['csv'],                bloutput=['']
-    test050 --- blformat=['text'],               bloutput=[''] 
+    test050 --- blformat=['text'],               bloutput=['']
     test051 --- blformat=[''],                   bloutput=['']
-    test052 --- blformat=['','csv'],             bloutput=['','test.csv'] 
-    test053 --- blformat='',                     bloutput='' 
+    test052 --- blformat=['','csv'],             bloutput=['','test.csv']
+    test053 --- blformat='',                     bloutput=''
     test054 --- blformat='',                     bloutput='test.csv'
 
 
@@ -2691,13 +2691,13 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         if os.path.exists(self.infile):
             shutil.rmtree(self.infile)
         shutil.copytree(self.datapath+self.infile, self.infile)
-        
+
         if os.path.exists(self.blparam):
             #shutil.rmtree(self.blparam)
             os.system('rm '+ self.blparam)
         shutil.copyfile(self.datapath+self.blparam, self.blparam)
         shutil.copyfile(self.datapath+self.bloutput_poly_txt, self.bloutput_poly_txt)
-        shutil.copyfile(self.datapath+self.bloutput_poly_csv, self.bloutput_poly_csv)        
+        shutil.copyfile(self.datapath+self.bloutput_poly_csv, self.bloutput_poly_csv)
         shutil.copyfile(self.datapath+self.bloutput_cspline_txt, self.bloutput_cspline_txt)
         shutil.copyfile(self.datapath+self.bloutput_cspline_csv, self.bloutput_cspline_csv)
         shutil.copyfile(self.datapath+self.bloutput_variable_txt, self.bloutput_variable_txt)
@@ -2738,7 +2738,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         if os.path.exists(self.outfile):
             shutil.rmtree(self.outfile)
         #print 'test'
-        
+
 
     def run_test(self, **kwargs):
         task_param=self.base_param.copy()
@@ -2756,17 +2756,17 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
     def check_bloutputparam_csv(self,bloutputfile, ref_all):
         with open(bloutputfile,'r') as file:
-            dataReader=csv.reader(file)     
+            dataReader=csv.reader(file)
             list_all=[]
             for row in dataReader:
                 list_all.append(row)
- 
+
             self.assertEqual(ref_all, list_all, msg='parameter values of the output csv file are not equivalent to referece values!')
 
 
 
     def test000(self):
-        """Bloutput Test 000:blfunc='poly',blformat=['csv','text','table'],bloutput=['test.csv','test.txt','test.table']""" 
+        """Bloutput Test 000:blfunc='poly',blformat=['csv','text','table'],bloutput=['test.csv','test.txt','test.table']"""
         blfunc='poly'
         blformat=['csv','text','table']
         bloutput=['test.csv','test.txt','test.table']
@@ -2774,7 +2774,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
 
@@ -2788,10 +2788,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         diff_value=os.system('diff test.csv ' + self.bloutput_poly_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_poly_csv) 
+        self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_poly_csv)
 
         diff_value=os.system('diff test.txt ' + self.bloutput_poly_txt)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_poly_txt) 
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_poly_txt)
 
 
 
@@ -2805,10 +2805,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-       
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -2819,10 +2819,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         diff_value=os.system('diff test.csv ' + self.bloutput_poly_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_poly_csv)   
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_poly_csv)
 
         diff_value=os.system('diff test.txt ' + self.bloutput_poly_txt)
-        self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_poly_txt)   
+        self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_poly_txt)
 
 
     def test002(self):
@@ -2834,10 +2834,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -2848,10 +2848,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         diff_value=os.system('diff test.csv ' + self.bloutput_poly_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[2] + ' is not equivalent to ' + self.bloutput_poly_csv)   
+        self.assertEqual(diff_value, 0, msg=bloutput[2] + ' is not equivalent to ' + self.bloutput_poly_csv)
 
         diff_value=os.system('diff test.txt ' + self.bloutput_poly_txt)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_poly_txt)   
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_poly_txt)
 
 
     def test003(self):
@@ -2863,10 +2863,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -2877,10 +2877,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         diff_value=os.system('diff test.csv ' + self.bloutput_poly_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_poly_csv)   
+        self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_poly_csv)
 
         diff_value=os.system('diff test.txt ' + self.bloutput_poly_txt)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_poly_txt)   
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_poly_txt)
 
 
     def test004(self):
@@ -2892,10 +2892,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -2905,28 +2905,28 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result_exist = os.path.exists(self.infile + '_blparam.csv')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
 
-        #self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_poly_csv)   
+        #self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_poly_csv)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt' + ' ' + self.bloutput_poly_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + ' is not equivalent to ' + self.bloutput_poly_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + ' is not equivalent to ' + self.bloutput_poly_txt)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv' + ' ' + self.bloutput_poly_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + ' is not equivalent to ' + self.bloutput_poly_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + ' is not equivalent to ' + self.bloutput_poly_csv)
 
 
     def test005(self):
         """Bloutput Test 005: blfunc='poly', blformat=['table','text'], bloutput=['','']"""
-        blfunc='poly'    
+        blfunc='poly'
         blformat=['table','text']
         bloutput=['','']
 
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -2934,7 +2934,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.txt'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt' + ' ' + self.bloutput_poly_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile+'_blparam.txt' + ' is not equivalent to ' + self.bloutput_poly_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile+'_blparam.txt' + ' is not equivalent to ' + self.bloutput_poly_txt)
 
 
     def test006(self):
@@ -2949,7 +2949,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -2966,12 +2966,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.csv')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv' + ' ' + self.bloutput_poly_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + ' is not equivalent to ' + self.bloutput_poly_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + ' is not equivalent to ' + self.bloutput_poly_csv)
 
 
     def test008(self):
@@ -2986,12 +2986,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.txt')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.txt'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt' + ' ' + self.bloutput_poly_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + ' is not equivalent to ' + self.bloutput_poly_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + ' is not equivalent to ' + self.bloutput_poly_txt)
 
 
     def test009(self):
@@ -3006,7 +3006,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.txt')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.txt'+' does not exist!')
 
@@ -3029,7 +3029,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         #if len(blformat)==len(bloutput):
         #    self.check_bloutput(bloutput)
-    
+
         self.assertEqual(os.path.exists('test.csv'), True, msg='test.csv exists!')
 
         result_exist = not os.path.exists(self.infile + '_blparam.txt')
@@ -3043,7 +3043,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if(os.path.exists('test.csv') == True):
             diff_value=os.system('diff test.csv ' + self.bloutput_poly_csv)
-            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_poly_csv)   
+            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_poly_csv)
 
 
     def test010a(self):
@@ -3058,7 +3058,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         #if len(blformat)==len(bloutput):
         #    self.check_bloutput(bloutput)
-    
+
         self.assertEqual(os.path.exists('test.text'), False, msg='test.text exists!')
 
         result_exist = not os.path.exists(self.infile + '_blparam.txt')
@@ -3071,7 +3071,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv' + ' ' + self.bloutput_poly_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + ' is not equivalent to ' + self.bloutput_poly_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + ' is not equivalent to ' + self.bloutput_poly_csv)
 
 
     def test011(self):
@@ -3108,7 +3108,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-       
+
         result_exist = not os.path.exists(self.infile + '_blparam.txt')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.txt'+' does exist!')
 
@@ -3129,10 +3129,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3141,14 +3141,14 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         result_exist = not os.path.exists(self.infile + '_blparam.csv')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
-        
+
         if(os.path.exists('test.csv') == True):
             diff_value=os.system('diff test.csv ' + self.bloutput_variable_csv)
-            self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_variable_csv)   
+            self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_variable_csv)
 
         if(os.path.exists('test.txt') == True):
             diff_value=os.system('diff test.txt ' + self.bloutput_variable_txt)
-            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_txt)   
+            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test014(self):
@@ -3160,10 +3160,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3172,18 +3172,18 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         result_exist = not os.path.exists(self.infile + '_blparam.csv')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
-        
+
         diff_value=os.system('diff ' + self.infile + '_blparam.txt' + ' ' + self.bloutput_poly_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + ' is not equivalent to ' + self.bloutput_poly_txt)   
-        
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + ' is not equivalent to ' + self.bloutput_poly_txt)
+
         if(os.path.exists('test.csv') == True):
             diff_value=os.system('diff test.csv ' + self.bloutput_poly_csv)
-            self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_poly_csv)   
+            self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_poly_csv)
 
 
     def test015(self):
         """Bloutput Test 015: default values for all parameters except blformat=['table','text','csv'] and bloutput=['test.table','test.txt','']"""
-        
+
         blfunc='poly'
         blformat=['table','text','csv']
         bloutput=['test.table','test.txt','']
@@ -3191,10 +3191,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3203,18 +3203,18 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         result_exist = os.path.exists(self.infile + '_blparam.csv')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
-        
+
         diff_value=os.system('diff ' + self.infile + '_blparam.csv' + ' ' + self.bloutput_poly_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + ' is not equivalent to ' + self.bloutput_poly_csv)   
-        
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + ' is not equivalent to ' + self.bloutput_poly_csv)
+
         if(os.path.exists('test.txt') == True):
             diff_value=os.system('diff test.txt ' + self.bloutput_poly_txt)
-            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_poly_txt)   
-        
+            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_poly_txt)
+
 
     def test016(self):
         """Bloutput Test 016: default values for all parameters except blfunc='cspline'"""
-       
+
         blfunc='cspline'
         blformat=['csv','text','table']
         bloutput=['test.csv','test.txt','test.table']
@@ -3222,7 +3222,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
 
@@ -3236,12 +3236,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         diff_value=os.system('diff test.csv ' + self.bloutput_cspline_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_cspline_csv) 
+        self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_cspline_csv)
 
         diff_value=os.system('diff test.txt ' + self.bloutput_cspline_txt)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_cspline_txt) 
-       
-       
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_cspline_txt)
+
+
     def test017(self):
         """Bloutput Test 017: default values for all parameters except blfunc='cspline',blformat=['text','csv','table'] and bloutput=['test.txt','test.csv','test.table']"""
         blfunc='cspline'
@@ -3251,7 +3251,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
 
@@ -3265,10 +3265,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         diff_value=os.system('diff test.csv ' + self.bloutput_cspline_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_cspline_csv) 
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_cspline_csv)
 
         diff_value=os.system('diff test.txt ' + self.bloutput_cspline_txt)
-        self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_cspline_txt) 
+        self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_cspline_txt)
 
 
     def test018(self):
@@ -3280,7 +3280,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
 
@@ -3294,10 +3294,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         diff_value=os.system('diff test.csv ' + self.bloutput_cspline_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[2] + ' is not equivalent to ' + self.bloutput_cspline_csv) 
+        self.assertEqual(diff_value, 0, msg=bloutput[2] + ' is not equivalent to ' + self.bloutput_cspline_csv)
 
         diff_value=os.system('diff test.txt ' + self.bloutput_cspline_txt)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_cspline_txt) 
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_cspline_txt)
 
 
     def test019(self):
@@ -3309,10 +3309,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -3323,10 +3323,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         diff_value=os.system('diff test.csv ' + self.bloutput_cspline_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_cspline_csv)   
+        self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_cspline_csv)
 
         diff_value=os.system('diff test.txt ' + self.bloutput_cspline_txt)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_cspline_txt)   
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_cspline_txt)
 
 
     def test020(self):
@@ -3339,10 +3339,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -3353,25 +3353,25 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv' + ' ' + self.bloutput_cspline_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_cspline_csv)   
+        self.assertEqual(diff_value, 0, msg=bloutput[0] + ' is not equivalent to ' + self.bloutput_cspline_csv)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt' + ' ' + self.bloutput_cspline_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + ' is not equivalent to ' + self.bloutput_cspline_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + ' is not equivalent to ' + self.bloutput_cspline_txt)
 
 
     def test021(self):
         """Bloutput Test 021: default values for all parameters except blfunc='cspline',blformat=['table','text'] and bloutput=['','']"""
-        blfunc='cspline'    
+        blfunc='cspline'
         blformat=['table','text']
         bloutput=['','']
 
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -3379,7 +3379,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.txt'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt' + ' ' + self.bloutput_cspline_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile+'_blparam.txt' + ' is not equivalent to ' + self.bloutput_cspline_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile+'_blparam.txt' + ' is not equivalent to ' + self.bloutput_cspline_txt)
 
 
     def test022(self):
@@ -3394,7 +3394,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -3412,12 +3412,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.csv')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv' + ' ' + self.bloutput_cspline_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + ' is not equivalent to ' + self.bloutput_cspline_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + ' is not equivalent to ' + self.bloutput_cspline_csv)
 
 
     def test024(self):
@@ -3433,12 +3433,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.txt')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.txt'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt' + ' ' + self.bloutput_cspline_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + ' is not equivalent to ' + self.bloutput_cspline_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + ' is not equivalent to ' + self.bloutput_cspline_txt)
 
 
     def test025(self):
@@ -3454,7 +3454,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.txt')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.txt'+' does not exist!')
 
@@ -3478,7 +3478,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         #if len(blformat)==len(bloutput):
         #    self.check_bloutput(bloutput)
-    
+
         self.assertEqual(os.path.exists('test.csv'), True, msg='test.csv exists!')
 
         result_exist = not os.path.exists(self.infile + '_blparam.txt')
@@ -3492,7 +3492,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if(os.path.exists('test.csv') == True):
             diff_value=os.system('diff test.csv ' + self.bloutput_cspline_csv)
-            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_cspline_csv)   
+            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_cspline_csv)
 
 
     def test027(self):
@@ -3528,7 +3528,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-       
+
         result_exist = not os.path.exists(self.infile + '_blparam.txt')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.txt'+' does exist!')
 
@@ -3550,10 +3550,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3565,11 +3565,11 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if(os.path.exists('test.csv') == True):
             diff_value=os.system('diff test.csv ' + self.bloutput_variable_csv)
-            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_variable_csv)   
+            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_variable_csv)
 
         if(os.path.exists('test.txt') == True):
             diff_value=os.system('diff test.txt ' + self.bloutput_variable_txt)
-            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_txt)   
+            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test030(self):
@@ -3582,10 +3582,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3598,12 +3598,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if(os.path.exists('test.csv') == True):
             diff_value=os.system('diff test.csv ' + self.bloutput_variable_csv)
-            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_csv)   
+            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_csv)
 
 
         if(os.path.exists('test.txt') == True):
             diff_value=os.system('diff test.txt ' + self.bloutput_variable_txt)
-            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_variable_txt)   
+            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test031(self):
@@ -3616,10 +3616,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3632,12 +3632,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if(os.path.exists('test.csv') == True):
             diff_value=os.system('diff test.csv ' + self.bloutput_variable_csv)
-            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_csv)   
+            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_csv)
 
 
         if(os.path.exists('test.txt') == True):
             diff_value=os.system('diff test.txt ' + self.bloutput_variable_txt)
-            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_variable_txt)   
+            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test032(self):
@@ -3650,10 +3650,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -3665,10 +3665,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
 
         diff_value=os.system('diff test.csv ' + self.bloutput_variable_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_variable_csv)   
+        self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_variable_csv)
 
         diff_value=os.system('diff test.txt ' + self.bloutput_variable_txt)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test033(self):
@@ -3681,10 +3681,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -3695,10 +3695,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_variable_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test034(self):
@@ -3711,10 +3711,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -3725,10 +3725,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         #self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_variable_csv)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test035(self):
@@ -3741,10 +3741,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -3755,10 +3755,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_variable_csv)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test036(self):
@@ -3771,10 +3771,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3785,10 +3785,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_variable_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test037(self):
@@ -3801,10 +3801,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3815,10 +3815,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
     def test038(self):
         """Bloutput Test 038: default values for all parameters except blfunc='cspline',blformat=[''] and bloutput=['']"""
@@ -3830,10 +3830,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3844,10 +3844,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
 
@@ -3861,10 +3861,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         #result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         #self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3875,13 +3875,13 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
         result_exist = os.path.exists(bloutput[1])
         self.assertEqual(result_exist, True, msg= bloutput[1] + ' does not exist!')
         diff_value=os.system('diff ' + bloutput[1] + ' ' + self.bloutput_variable_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_variable_csv)   
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_variable_csv)
 
 
 
@@ -3895,10 +3895,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         #if len(blformat)==len(bloutput):
         #    self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3909,13 +3909,13 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
         #result_exist = os.path.exists(bloutput[1])
         #self.assertEqual(result_exist, True, msg= bloutput[1] + ' does not exist!')
         #diff_value=os.system('diff ' + bloutput[1] + ' ' + self.bloutput_variable_csv)
-        #self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_variable_csv)   
+        #self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_variable_csv)
 
     def test041(self):
         """Bloutput Test 041: default values for all parameters except blfunc='cspline', blformat='' and  bloutput='test.csv'"""
@@ -3927,10 +3927,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         #if len(blformat)==len(bloutput):
         #    self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3945,7 +3945,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
 
 
-    
+
     def test042(self):
         """Basic Test 042: default values for all parameters except blfunc='sinusoid'"""
 
@@ -3956,10 +3956,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -3971,11 +3971,11 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if(os.path.exists('test.csv') == True):
             diff_value=os.system('diff test.csv ' + self.bloutput_sinusoid_csv)
-            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_sinusoid_csv)   
+            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_sinusoid_csv)
 
         if(os.path.exists('test.txt') == True):
             diff_value=os.system('diff test.txt ' + self.bloutput_sinusoid_txt)
-            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_sinusoid_txt)   
+            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_sinusoid_txt)
 
 
     def test043(self):
@@ -3988,10 +3988,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -4004,12 +4004,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if(os.path.exists('test.csv') == True):
             diff_value=os.system('diff test.csv ' + self.bloutput_sinusoid_csv)
-            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_sinusoid_csv)   
+            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_sinusoid_csv)
 
 
         if(os.path.exists('test.txt') == True):
             diff_value=os.system('diff test.txt ' + self.bloutput_sinusoid_txt)
-            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_sinusoid_txt)   
+            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_sinusoid_txt)
 
 
     def test044(self):
@@ -4022,10 +4022,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -4038,12 +4038,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         if(os.path.exists('test.csv') == True):
             diff_value=os.system('diff test.csv ' + self.bloutput_sinusoid_csv)
-            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_csv)   
+            self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_variable_csv)
 
 
         if(os.path.exists('test.txt') == True):
             diff_value=os.system('diff test.txt ' + self.bloutput_sinusoid_txt)
-            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_sinusoid_txt)   
+            self.assertEqual(diff_value, 0, msg=bloutput[0] + 'is not equivalent to ' + self.bloutput_sinusoid_txt)
 
 
     def test045(self):
@@ -4056,10 +4056,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -4071,10 +4071,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
 
         diff_value=os.system('diff test.csv ' + self.bloutput_sinusoid_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_sinusoid_csv)   
+        self.assertEqual(diff_value, 0, msg=bloutput[2] + 'is not equivalent to ' + self.bloutput_sinusoid_csv)
 
         diff_value=os.system('diff test.txt ' + self.bloutput_sinusoid_txt)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_sinusoid_txt)   
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + 'is not equivalent to ' + self.bloutput_sinusoid_txt)
 
 
     def test046(self):
@@ -4087,10 +4087,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -4101,10 +4101,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_sinusoid_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_sinusoid_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_sinusoid_csv)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_sinusoid_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_sinusoid_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_sinusoid_txt)
 
 
     def test047(self):
@@ -4117,10 +4117,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -4131,10 +4131,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         #self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_variable_csv)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_sinusoid_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_sinusoid_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_sinusoid_txt)
 
 
     def test048(self):
@@ -4147,10 +4147,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' does not exist!')
 
@@ -4161,10 +4161,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_variable_csv)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_variable_csv)
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test049(self):
@@ -4177,10 +4177,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -4191,10 +4191,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' does not exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_sinusoid_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_sinusoid_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_sinusoid_csv)
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
     def test050(self):
@@ -4207,10 +4207,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -4221,10 +4221,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_sinusoid_txt)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_sinusoid_txt)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_sinusoid_txt)
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
     def test051(self):
         """Basic Test 051: default values for all parameters except blfunc='sinusoid',blformat=[''] and bloutput=['']"""
@@ -4236,10 +4236,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -4250,10 +4250,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
 
@@ -4267,10 +4267,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
-        
+
         #result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         #self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -4281,13 +4281,13 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
         result_exist = os.path.exists(bloutput[1])
         self.assertEqual(result_exist, True, msg= bloutput[1] + ' does not exist!')
         diff_value=os.system('diff ' + bloutput[1] + ' ' + self.bloutput_sinusoid_csv)
-        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_sinusoid_csv)   
+        self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_sinusoid_csv)
 
 
 
@@ -4301,10 +4301,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         #if len(blformat)==len(bloutput):
         #    self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -4315,13 +4315,13 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
         #diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_variable_txt)
-        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)   
+        #self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_variable_txt)
 
 
         #result_exist = os.path.exists(bloutput[1])
         #self.assertEqual(result_exist, True, msg= bloutput[1] + ' does not exist!')
         #diff_value=os.system('diff ' + bloutput[1] + ' ' + self.bloutput_variable_csv)
-        #self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_variable_csv)   
+        #self.assertEqual(diff_value, 0, msg=bloutput[1] + ' is not equivalent to ' + self.bloutput_variable_csv)
 
     def test054(self):
         """Basic Test 054: default values for all parameters except blfunc='sinusoid', blformat='' and  bloutput='test.csv'"""
@@ -4333,10 +4333,10 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
         self.assertEqual(result,None,
                          msg="The task returned '"+str(result)+"' instead of None")
-        
+
         #if len(blformat)==len(bloutput):
         #    self.check_bloutput(bloutput)
-        
+
         result_exist = not os.path.exists(self.infile + '_blparam.bltable')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.bltable'+' exist!')
 
@@ -4346,7 +4346,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         result_exist = not os.path.exists(self.infile + '_blparam.csv')
         self.assertEqual(result_exist, True, msg=self.infile + '_blparam.csv'+' exist!')
 
-    
+
 
     def test0123(self):
         """Basic Test 0123: failure test"""
@@ -4354,7 +4354,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
         blformat=''
         bloutput='test.csv'
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput)
-                
+
     def test0124(self):
         """Basic Test 0124: addwn012, rejwn0 test"""
         blfunc='sinusoid'
@@ -4365,12 +4365,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput, addwn=addwn, rejwn=rejwn)
         self.assertEqual(result,None, msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_sinusoid_addwn012_rejwn0_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_sinusoid_addwn012_rejwn0_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_sinusoid_addwn012_rejwn0_csv)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_sinusoid_addwn012_rejwn0_txt)
         self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_sinusoid_addwn012_rejwn0_txt)
@@ -4385,12 +4385,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput, addwn=addwn, rejwn=rejwn)
         self.assertEqual(result,None, msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_sinusoid_addwn012_rejwn02_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_sinusoid_addwn012_rejwn02_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_sinusoid_addwn012_rejwn02_csv)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_sinusoid_addwn012_rejwn02_txt)
         self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_sinusoid_addwn012_rejwn02_txt)
@@ -4405,12 +4405,12 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
         result = self.run_test(blfunc=blfunc, blformat=blformat, bloutput=bloutput, addwn=addwn, rejwn=rejwn)
         self.assertEqual(result,None, msg="The task returned '"+str(result)+"' instead of None")
-        
+
         if len(blformat)==len(bloutput):
             self.check_bloutput(bloutput)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.csv ' + self.bloutput_sinusoid_addwn012_rejwn1_csv)
-        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_sinusoid_addwn012_rejwn1_csv)   
+        self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.csv' + 'is not equivalent to ' + self.bloutput_sinusoid_addwn012_rejwn1_csv)
 
         diff_value=os.system('diff ' + self.infile + '_blparam.txt ' + self.bloutput_sinusoid_addwn012_rejwn1_txt)
         self.assertEqual(diff_value, 0, msg=self.infile + '_blparam.txt' + 'is not equivalent to ' + self.bloutput_sinusoid_addwn012_rejwn1_txt)
@@ -4418,7 +4418,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 
     def test0127(self):
         """Basic Test 0127: addwn>4000, rejwn4005 test"""
-        
+
         blfunc='sinusoid'
         blformat=['text','csv']
         bloutput=['','']
@@ -4442,7 +4442,7 @@ Basic unit tests for task tsdbaseline. No interactive testing.
 class tsdbaseline_autoTest(tsdbaseline_unittest_base):
     """
     A class that tests maskmode='auto'.
-    
+
     testAutoPolyNoMask : polynomial fitting using all channels but edge=(500, 500)
     testAutoChebNoMask : Chebyshev polynomial fitting using all channels but edge=(500, 500)
     testAutoCsplNoMask : cspline fitting using all channels but edge=(500, 500)
@@ -4515,7 +4515,7 @@ class tsdbaseline_autoTest(tsdbaseline_unittest_base):
         try:
             for idx in rowidx:
                 specs = tb.getcell("FLAG", idx)
-                if rowflag: 
+                if rowflag:
                     specs = True
                 else:
                     for ipol in range(len(specs)):
@@ -4537,12 +4537,12 @@ class tsdbaseline_autoTest(tsdbaseline_unittest_base):
                                    mask=self.statrange)
         self._compareStats(currstat[0],refstat)
 
-        
+
 
     def testAutoPolyNoMask(self):
         """polynomial fitting using all channels but edge=[500, 500]"""
         self.run_test(self.polystat, spw=self.spw, edge=self.edge, blfunc='poly')
-        
+
     def testAutoChebNoMask(self):
         """Chebyshev polynomial fitting using all channels but edge=[500, 500]"""
         self.run_test(self.chebstat, spw=self.spw, edge=self.edge, blfunc='chebyshev')
@@ -4558,7 +4558,7 @@ class tsdbaseline_autoTest(tsdbaseline_unittest_base):
     def testAutoPolyMaskChan(self):
         """polynomial fitting using 500~7691 channels (no edge mask)"""
         self.run_test(self.polystat, spw=self.spwchan, edge=[0,0], blfunc='poly')
-        
+
     def testAutoChebMaskChan(self):
         """Chebyshev polynomial fitting using 500~7691 channels (no edge mask)"""
         self.run_test(self.chebstat, spw=self.spwchan, edge=[0,0], blfunc='chebyshev')
@@ -4574,7 +4574,7 @@ class tsdbaseline_autoTest(tsdbaseline_unittest_base):
     def testAutoPolyMaskFreq(self):
         """polynomial fitting using 500~7691 channels (no edge mask)"""
         self.run_test(self.polystat, spw=self.spwfreq, edge=[0,0], blfunc='poly')
-        
+
     def testAutoChebMaskFreq(self):
         """Chebyshev polynomial fitting using 500~7691 channels (no edge mask)"""
         self.run_test(self.chebstat, spw=self.spwfreq, edge=[0,0], blfunc='chebyshev')
@@ -4591,7 +4591,7 @@ class tsdbaseline_autoTest(tsdbaseline_unittest_base):
         """polynomial fitting of all channels with channel flag in both edge"""
         self.flag(self.infile,edge=self.edge)
         self.run_test(self.polystat, spw=self.spw, edge=[0,0], blfunc='poly')
-        
+
     def testAutoChebChanFlag(self):
         """Chebyshev polynomial of all channels with channel flag in both edge"""
         self.flag(self.infile,edge=self.edge)
@@ -4633,7 +4633,7 @@ class tsdbaseline_selection(unittest.TestCase):
                                'r1': ((80, 175.0), (80, 225.0))} }
     templist = [infile, outfile, bloutfile]
     verbose = False
- 
+
     def _clearup(self):
         for name in self.templist:
             if os.path.isdir(name):
@@ -4687,7 +4687,7 @@ class tsdbaseline_selection(unittest.TestCase):
                 spwstr = spwstr + \
                     ("%s:%s" % (spwids[irow], self.chan_mask[datacolumn][irow]))
             return spwstr
-    
+
     def run_test(self, sel_param, datacolumn):
         inparams = self._get_selection_string(sel_param)
         inparams['spw'] = self._format_spw_mask(datacolumn, sel_param)
@@ -4695,7 +4695,7 @@ class tsdbaseline_selection(unittest.TestCase):
         print(("task param: %s" % str(inparams)))
         tsdbaseline(datacolumn=datacolumn, **inparams)
         self._test_result(inparams["outfile"], sel_param, datacolumn)
-        
+
     def _test_result(self, msname, sel_param, dcol, atol=1.e-5, rtol=1.e-5):
         # Make sure output MS exists
         self.assertTrue(os.path.exists(msname), "Could not find output MS")
@@ -4724,7 +4724,7 @@ class tsdbaseline_selection(unittest.TestCase):
                                     "Baselined spectrum differs in row=%d, pol=%d" % (out_row, out_pol))
         finally:
             tb.close()
-        
+
 
     def testIntentF(self):
         """Test selection by intent (float_data)"""
@@ -4783,7 +4783,7 @@ class tsdbaseline_selection(unittest.TestCase):
         self.run_test("pol", "corrected")
 
 def suite():
-    return [tsdbaseline_basicTest, 
+    return [tsdbaseline_basicTest,
             tsdbaseline_maskTest,
             tsdbaseline_sinusoidTest,
             tsdbaseline_outbltableTest,

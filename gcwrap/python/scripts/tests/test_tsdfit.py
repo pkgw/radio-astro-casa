@@ -88,7 +88,7 @@ class BlparamFileParser(FileReader):
         self.parseCoeff()
         self.parseRms()
         return
-        
+
     def parseCoeff(self):
         self.__coeff = []
         nrow = self.nrow()
@@ -115,7 +115,7 @@ class BlparamFileParser(FileReader):
                 idx = self.index(self.__rtxt, idx)
                 self.__rms.append(self.__parseRms(idx))
             except:
-                break   
+                break
         return
 
     def __parseCoeff(self, idx):
@@ -130,7 +130,7 @@ def parseCoeff(txt):
     for c in clist:
         ret.append(float(c.split('=')[1]))
     return ret
-    
+
 def parseRms(txt):
     t = txt.lstrip().rstrip('\n')[6:]
     return float(t)
@@ -223,13 +223,13 @@ class tsdfit_unittest_base(unittest.TestCase):
         """
         Copy a list of files and directories from a directory (from_dir) to
         another (dest_dir) in the same name.
-        
+
         names : a list of files and directories to copy
         from_dir : a path to directory from which search and copy files
                    and directories (the default is the current path)
         to_dir   : a path to directory to which copy files and directories
                    (the default is the current path)
-        NOTE: it is not allowed to specify 
+        NOTE: it is not allowed to specify
         """
         # Check for paths
         if from_dir==None and dest_dir==None:
@@ -251,7 +251,7 @@ class tsdfit_unittest_base(unittest.TestCase):
                     casalog.post("Copying '%s' FROM %s TO %s" % (name, from_path, to_path))
             else:
                 casalog.post("Could not find '%s'...skipping copy" % from_name, 'WARN')
-    
+
     """
     def _getStats(self, filename, spw=None):
         if not spw:
@@ -287,7 +287,7 @@ class tsdfit_unittest_base(unittest.TestCase):
         else:
             raise Exception('_getListSelection: wrong value ' + str(val) + ' for selection.')
         return self._getUniqList(val_sel)
-    
+
     def _getListSelectedRowID(self, data_list, sel_list):
         """
         Returns IDs of data_list that contains values equal to one in
@@ -306,7 +306,7 @@ class tsdfit_unittest_base(unittest.TestCase):
                 #idx = sel_list.index(data_list[i])
                 res.append(i)
         return self._getUniqList(res)
-    
+
     def _getEffective(self, spec, mask):
         """
         Returns an array made by selected elements in spec array.
@@ -332,7 +332,7 @@ class tsdfit_unittest_base(unittest.TestCase):
         colname  : the name of data column (default: 'FLOAT_DATA')
         mask     : a mask list of the channel ranges to use. The format is
                    [[start_idx0, end_idx0], [start_idx1, end_idx1], ...]
-        
+
         The order of output list is in the ascending order of selected row IDs.
         The dictionary in output list has keys:
         'row' (row ID in MS), 'pol' (pol ID), 'rms', 'min', 'max', 'median',
@@ -367,7 +367,7 @@ class tsdfit_unittest_base(unittest.TestCase):
                 res_elem = self._calc_stats_of_array(spec, mask=mask)
                 res_elem['row'] = irow
                 res_elem['pol'] = ipol
-                
+
                 res.append(res_elem)
 
         return res
@@ -387,7 +387,7 @@ class tsdfit_unittest_base(unittest.TestCase):
         res_elem['median'] = numpy.median(spec)
         res_elem['stddev'] = numpy.std(spec)
         return res_elem
-        
+
 
     def _convert_statslist_to_dict(self, stat_list):
         """
@@ -438,7 +438,7 @@ class tsdfit_unittest_base(unittest.TestCase):
         else:
             keylist = list(refstat.keys())
             #keylist = self.complist
-        
+
         for key in keylist:
             self.assertTrue(key in currstat,\
                             msg="%s is not defined in the current results."\
@@ -480,7 +480,7 @@ class tsdfit_unittest_base(unittest.TestCase):
                                 msg="%s differs: %s" % (key, str(currval)))
             del currval, refval
 
-            
+
 #     def _isInAllowedRange(self, testval, refval, reltol=1.e-2):
 #         """
 #         Check if a test value is within permissive relative difference from refval.
@@ -520,7 +520,7 @@ class tsdfit_unittest_base(unittest.TestCase):
         # TO DO: compare only "Fitter range" and "Baseline parameters"
         self._checkfile(out)
         self._checkfile(reference)
-        
+
         blparse_out = BlparamFileParser(out)
         blparse_out.parse()
         coeffs_out = blparse_out.coeff()
@@ -581,7 +581,7 @@ class tsdfit_basicTest(tsdfit_unittest_base):
          3    1     2        1         5       4100   100    0.1
       -------------------------------------------------------
 
-      the spectra of the row (irow=3) have two lines, while those 
+      the spectra of the row (irow=3) have two lines, while those
       of the other rows have single line.
       spw value is identical to irow, and number of channels is 8192.
     """
@@ -613,7 +613,7 @@ class tsdfit_basicTest(tsdfit_unittest_base):
         for i in range(len(answer['peak'])):
             for j in range(len(answer['peak'][i])):
                 answer['peak'][i][j] *= -1.0
-        
+
     def setUp(self):
         for infile in self.infiles:
             if os.path.exists(infile):
@@ -639,7 +639,7 @@ class tsdfit_basicTest(tsdfit_unittest_base):
                 nrow = tb.nrows()
 
             for key in list(result.keys()):
-                self.assertEqual(len(result[key]), nrow*npol, 
+                self.assertEqual(len(result[key]), nrow*npol,
                                  msg="The result data has wrong data length")
                 for i in range(len(result[key])):
                     if (key == "nfit"):
@@ -660,9 +660,9 @@ class tsdfit_basicTest(tsdfit_unittest_base):
             npol = 2
             nrow = len(spw.split(','))
             answer = self.answer012
-        
+
             for key in list(result.keys()):
-                self.assertEqual(len(result[key]), nrow*npol, 
+                self.assertEqual(len(result[key]), nrow*npol,
                                  msg="The result data has wrong data length")
                 for i in range(len(result[key])):
                     if (key == "nfit"):
@@ -691,7 +691,7 @@ class tsdfit_basicTest(tsdfit_unittest_base):
             answer = self.answer3
 
             for key in list(result.keys()):
-                self.assertEqual(len(result[key]), nrow*npol, 
+                self.assertEqual(len(result[key]), nrow*npol,
                                  msg="The result data has wrong data length")
                 for i in range(len(result[key])):
                     if (key == "nfit"):
@@ -722,7 +722,7 @@ class tsdfit_basicTest(tsdfit_unittest_base):
             answer = self.answer3
 
             for key in list(result.keys()):
-                self.assertEqual(len(result[key]), nrow*npol, 
+                self.assertEqual(len(result[key]), nrow*npol,
                                  msg="The result data has wrong data length")
                 for i in range(len(result[key])):
                     if (key == "nfit"):
@@ -753,9 +753,9 @@ class tsdfit_basicTest(tsdfit_unittest_base):
             nrow = len(spw.split(','))
             answer = copy.deepcopy(self.answer012)
             self._generateAnswerForNegativeProfiles(answer)
-            
+
             for key in list(result.keys()):
-                self.assertEqual(len(result[key]), nrow*npol, 
+                self.assertEqual(len(result[key]), nrow*npol,
                                  msg="The result data has wrong data length")
                 for i in range(len(result[key])):
                     if (key == "nfit"):
@@ -786,9 +786,9 @@ class tsdfit_basicTest(tsdfit_unittest_base):
             nrow = 1
             answer = copy.deepcopy(self.answer3)
             self._generateAnswerForNegativeProfiles(answer)
-            
+
             for key in list(result.keys()):
-                self.assertEqual(len(result[key]), nrow*npol, 
+                self.assertEqual(len(result[key]), nrow*npol,
                                  msg="The result data has wrong data length")
                 for i in range(len(result[key])):
                     if (key == "nfit"):
@@ -821,9 +821,9 @@ class tsdfit_basicTest(tsdfit_unittest_base):
             nrow = 1
             answer = copy.deepcopy(self.answer3)
             self._generateAnswerForNegativeProfiles(answer)
-            
+
             for key in list(result.keys()):
-                self.assertEqual(len(result[key]), nrow*npol, 
+                self.assertEqual(len(result[key]), nrow*npol,
                                  msg="The result data has wrong data length")
                 for i in range(len(result[key])):
                     if (key == "nfit"):
@@ -859,7 +859,7 @@ class tsdfit_selection(tsdfit_unittest_base,unittest.TestCase):
                     scan=("0~8", [0]),
                     pol=("YY", [1]))
     verbose = False
- 
+
     reference = {'float_data': {'cent': [50, 50, 60, 60],
                                 'peak': [5, 10, 15, 20],
                                 'fwhm': [40, 30, 20, 10]},
@@ -915,7 +915,7 @@ class tsdfit_selection(tsdfit_unittest_base,unittest.TestCase):
         inparams.update(self.common_param)
         fit_val = tsdfit(datacolumn=datacolumn, **inparams)
         self._test_result(fit_val, sel_param, datacolumn)
-        
+
     def _test_result(self, fit_val, sel_param, dcol, atol=1.e-5, rtol=1.e-5):
         # Make sure output MS exists
         self.assertTrue(os.path.exists(self.infile), "Could not find input MS")

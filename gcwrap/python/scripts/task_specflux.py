@@ -70,7 +70,7 @@ def specflux(
                     "WARN"
                 )
         rec = myia.getprofile(
-            axis=axis, function="flux", region=reg, 
+            axis=axis, function="flux", region=reg,
             mask=mask, unit=unit, stretch=stretch
         )
         xunit = rec['xUnit']
@@ -111,13 +111,13 @@ def specflux(
             freq_unit = xunit
         if need_vel:
             vels = myia.getprofile(
-                axis=axis, function="flux", region=reg, 
+                axis=axis, function="flux", region=reg,
                 mask=mask, unit="km/s", stretch=stretch
             )['coords']
             vel_unit = "km/s"
         if need_freq:
             freqs = myia.getprofile(
-                axis=axis, function="flux", region=reg, 
+                axis=axis, function="flux", region=reg,
                 mask=mask, unit="MHz", stretch=stretch
             )['coords']
             freq_unit = "MHz"

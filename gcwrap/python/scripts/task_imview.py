@@ -38,11 +38,11 @@ class __imview_class(object):
         imview
         imview "myimage.im"
         imview "myrestorefile.rstr"
-        
+
         imview "myimage.im", "contour"
 
         imview "'myimage1.im' - 2 * 'myimage2.im'", "lel"
-    
+
         Executing imview( ) will bring up a display panel
         window, which can be resized.  If no data file was specified,
         a Load Data window will also appear.  Click on the desired data
@@ -51,14 +51,14 @@ class __imview_class(object):
 
         A Data Display Options window will also appear.  It has drop-down
         subsections for related options, most of which are self-explanatory.
-      
+
         The state of the imview task -- loaded data and related display
         options -- can be saved in a 'restore' file for later use.
         You can provide the restore filename on the command line or
         select it from the Load Data window.
 
         See the cookbook for more details on using the imview task.
-    
+
         Keyword arguments:
         infile -- Name of file to visualize
             default: ''
@@ -66,7 +66,7 @@ class __imview_class(object):
             If no infile is specified the Load Data window
             will appear for selecting data.
         displaytype -- (optional): method of rendering data
-            visually (raster, contour, vector or marker).  
+            visually (raster, contour, vector or marker).
             You can also set this parameter to 'lel' and
             provide an lel expression for infile (advanced).
             default: 'raster'
@@ -89,7 +89,7 @@ class __imview_class(object):
         myf=sys._getframe(stacklevel).f_globals
 
         casalog.origin('imview')
-        
+
         if (type(out) == str and len(out) != 0) or \
                (type(out) == dict and len(out) != 0) :
             gui = False
@@ -128,7 +128,7 @@ class __imview_class(object):
         else:
             panel = self.__load_files( "raster", vwr, None, raster )
             panel = self.__load_files( "contour", vwr, panel, contour )
-            
+
         self.__set_axes( vwr, panel, axes )
         self.__zoom( vwr, panel, zoom )
         self.__process_colorwedges( vwr, panel )
@@ -161,14 +161,14 @@ class __imview_class(object):
 
         if panel is None:
             panel = self.__panel(vwr)
-        
+
         scaling = 0.0
         if 'scaling' in raster:
             scaling = self.__checknumeric(raster['scaling'], float, "raster scaling")
 
-            
+
         data = vwr.load( raster['file'], 'raster', panel=panel, scaling=scaling )
-        
+
         if 'range' in raster:
             vwr.datarange( self.__checknumeric(raster['range'], float, "data range", array_size=2), data=data )
 
@@ -270,7 +270,7 @@ class __imview_class(object):
         return result
 
 
-    def __zoom( self, vwr, panel, zoom ) :      
+    def __zoom( self, vwr, panel, zoom ) :
 
         channel = -1
         if type(zoom) == dict and 'channel' in zoom :
@@ -317,7 +317,7 @@ class __imview_class(object):
                 vwr.zoom(region=zoom,panel=panel)
             else:
                 casalog.post( "zoom blc & trc must be either lists or dictionaries", 'SEVERE')
-                raise Exception("zoom blc & trc must be either lists or dictionaries") 
+                raise Exception("zoom blc & trc must be either lists or dictionaries")
 
         elif type(zoom) == dict and 'regions' in zoom:
             if channel >= 0:
@@ -371,7 +371,7 @@ class __imview_class(object):
         output_scale=1.0
         output_dpi=300
         output_orientation="portrait"
-        
+
         if type(out) == str:
             output_format = self.__check_filename(out)
             output_file = out
@@ -442,7 +442,7 @@ class __imview_class(object):
                 casalog.post( error_string + " must be a numeric list", 'SEVERE')
                 raise Exception(error_string + " must be a numeric list")
             return [otype(x) for x in value]
-                    
+
         if type(value) != int and type(value) != float:
             casalog.post( error_string + " must be numeric", 'SEVERE')
             raise Exception(error_string + " must be numeric")

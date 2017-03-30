@@ -15,8 +15,8 @@ def sdimprocess(infiles, mode, numpoly, beamsize, smoothsize, direction, masklis
         worker.initialize()
         worker.execute()
         worker.finalize()
-        
-    
+
+
 class sdimprocess_worker(sdutil.sdtask_interface):
     def __init__(self, **kwargs):
         super(sdimprocess_worker,self).__init__(**kwargs)
@@ -29,7 +29,7 @@ class sdimprocess_worker(sdutil.sdtask_interface):
 
     def initialize(self):
         self.parameter_check()
-        
+
         # temporary filename
         tmpstr = time.ctime().replace( ' ', '_' ).replace( ':', '_' )
         self.tmpmskname = 'masked.'+tmpstr+'.im'
@@ -80,7 +80,7 @@ class sdimprocess_worker(sdutil.sdtask_interface):
             # check input file
             if type(self.infiles) == list:
                 if len(self.infiles) != 1:
-                    raise Exception("infiles allows only one input file for pressed-out method.") 
+                    raise Exception("infiles allows only one input file for pressed-out method.")
                 else:
                     self.infiles = self.infiles[0]
             # check direction
@@ -194,7 +194,7 @@ class sdimprocess_worker(sdutil.sdtask_interface):
         else:
             raise Exception("Sorry, the task don't support inclined scan with respect to horizontal or vertical axis, right now.")
         # Replace duplicated method ia.fitpolynomial with
-        # ia.fitprofile 
+        # ia.fitprofile
         #polyimage = convimage.fitpolynomial( fitfile=tmppolyname, axis=fitaxis, order=numpoly, overwrite=True )
         #polyimage.done()
         if os.path.exists( self.tmppolyname ):
@@ -352,7 +352,7 @@ class sdimprocess_worker(sdutil.sdtask_interface):
                 masks.append( self.masklist[i%len(self.masklist)] )
         for i in range(len(masks)):
             masks[i] = 0.01 * masks[i]
-        
+
         # mask
         for i in range(nfile):
             self.realimage = ia.newimagefromimage( infile=self.infiles[i], outfile=self.tmprealname[i] )
@@ -425,7 +425,7 @@ class sdimprocess_worker(sdutil.sdtask_interface):
         for i in range(nfile):
             if abs(numpy.sin(dirs[i]*dtor)) < eps:
                 # direction is around 0 deg
-                maskw = 0.5 * nx * masks[i] 
+                maskw = 0.5 * nx * masks[i]
                 for ix in range(nx):
                     for iy in range(ny):
                         dd = abs( float(ix) - 0.5 * (nx-1) )
@@ -456,7 +456,7 @@ class sdimprocess_worker(sdutil.sdtask_interface):
                             cosd = numpy.cos(0.5*numpy.pi*dd/maskw)
                             weights[i][ix][iy] = 1.0 - cosd * cosd
                         if weights[i][ix][iy] == 0.0:
-                            weights[i][ix][iy] += eps*0.01 
+                            weights[i][ix][iy] += eps*0.01
             # shift
             xshift = -((ny-1)/2)
             yshift = -((nx-1)/2)
@@ -578,7 +578,7 @@ class sdimprocess_worker(sdutil.sdtask_interface):
             if len(maskstr) > 0: maskstr += " || "
             maskstr += ("mask('%s')" % (name))
         outimage.calcmask(maskstr,name="basketweaving",asdefault=True)
-        
+
         self.realimage.close()
         self.imagimage.close()
         outimage.close()
@@ -615,4 +615,4 @@ class sdimprocess_worker(sdutil.sdtask_interface):
         if len(existing_files) > 0:
             cu = utilstool()
             cu.removetable(existing_files)
-    
+

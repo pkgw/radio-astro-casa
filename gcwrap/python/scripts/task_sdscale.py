@@ -10,7 +10,7 @@ def sdscale(infile, antenna, factor, scaletsys, outfile, overwrite, verbose):
         worker.initialize()
         worker.execute()
         worker.finalize()
-        
+
 
 class sdscale_worker(sdutil.sdtask_template):
     def __init__(self, **kwargs):

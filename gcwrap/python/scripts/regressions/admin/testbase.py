@@ -34,7 +34,7 @@ class testbase :
         if os.access(self.workingDirectory, os.F_OK) is False:
             print(self.workingDirectory+' does not exist, creating it')
             os.makedirs(self.workingDirectory)
-            
+
     def setDataBaseDir(self, dir=['./Data']):
         if type(dir) != type(["directory", "list"]):
             raise TypeError(type(dir))
@@ -45,7 +45,7 @@ class testbase :
 
     def setWorkingDir(self, dir='./Temporaire'):
         self.workingDirectory=dir
-        
+
     def setScriptsDir(self, dir='./Scripts'):
         self.scriptRepository=dir
 
@@ -62,7 +62,7 @@ class testbase :
             # Also, searching in .../tests/<name>/regression.py is
             # obsolete
             raise Exception("Unsupported!")
-        
+
             theFiles=os.listdir(self.scriptRepository)
             tempy=[]
             ###locate only the *.py files
@@ -80,7 +80,7 @@ class testbase :
         self.testsToRun=[]
         for k  in range(len(theFiles)):
             #self.testsToRun.append(string.split(theFiles[k],'.py')[0])
-            self.testsToRun.append(theFiles[k])          
+            self.testsToRun.append(theFiles[k])
         print("tests to run = ", self.testsToRun)
         return len(self.testsToRun)
 
@@ -91,7 +91,7 @@ class testbase :
                         self.workingDirectory+'/'+testName+'.py')
         shutil.copy(self.scriptRepository+'/'+testnamek, \
                     self.workingDirectory+'/')
-    
+
     def testname(self, ind=0):
         if(len(self.testsToRun)==0):
             print('No tests defined yet')
@@ -115,7 +115,7 @@ class testbase :
         else:
             desc = None
         return desc
-            
+
     def runtests(self, testName, testId=0, dry=False):
         try:
             leFile=self.testsToRun[testId]
@@ -136,9 +136,9 @@ class testbase :
                         print('Using doCopy function to determine whether to copy or link input data.')
                 except:
                     doCopy=[-1]
-                    
+
                 print("Required data =", allData)
-                for leIndex, leData in enumerate(allData) : 
+                for leIndex, leData in enumerate(allData) :
                     theData=self.locatedata(leData)
                     if(theData != ''):
                         os.system('rm -rf '+ self.workingDirectory+'/'+leData)
@@ -165,8 +165,8 @@ class testbase :
                 del leTest
 
                 if type(theImages) == None:
-                    raise Exception("Illegal return value from run()")                   
-                    
+                    raise Exception("Illegal return value from run()")
+
                 leResult=[]
                 for leImage in theImages :
                     leResult.append(self.workingDirectory+'/'+leImage)
@@ -195,7 +195,7 @@ class testbase :
                 # do not propagate to here if the regression
                 # script is run directly with execfile() from
                 # here. But an exeption propagates
-                
+
                 fd=open('exec-'+leFile, 'w')
                 print("regstate=True", file=fd)   # used in regression scripts to signal error
                 print("execfile('"+leFile+"')", file=fd)
@@ -207,13 +207,13 @@ class testbase :
                 # What we really want, but regstate doesn't propagate:
                 # execfile(leFile, gl)
                 exec(compile(open('./exec-'+leFile).read(), './exec-'+leFile, 'exec'), gl)
-                
+
                 return [], []   # no product images known
         except:
             self.notest=True
             #print >> sys.stderr, "Error running test:", sys.exc_info()[0]
             raise
-            
+
     def defineQualityTestList(self,theResult):
         self.testList.clear()
         for k in range(len(theResult)) :
@@ -230,7 +230,7 @@ class testbase :
                     self.testList[theResult[k]].append('ms')
                     ms.done()
                 elif('coords' in tabkwords):
-                    ## table is an image                    
+                    ## table is an image
                     self.testList[theResult[k]]=[]
                     self.testList[theResult[k]].append('simple')
                     ia.open(theResult[k])
@@ -241,10 +241,10 @@ class testbase :
                     mycs=ia.coordsys()
                     findstok=mycs.findcoordinate("stokes")
                     findspec=mycs.findcoordinate("spectral")
-                    if findspec['return']:                        
+                    if findspec['return']:
                         spix=findspec['pixel']
                         if(shp[spix]>5):
-                            print('spectral shape= ', shp[spix],' ', theResult[k], k) 
+                            print('spectral shape= ', shp[spix],' ', theResult[k], k)
                             self.testList[theResult[k]].append('cube')
                     if findstok['return']:
                         kpix=findstok['pixel']
@@ -254,13 +254,13 @@ class testbase :
                             self.testList[theResult[k]].append('pol2')
                         elif(shp[kpix]==4):
                             self.testList[theResult[k]].append('pol4')
-                    ia.close()                
-            
+                    ia.close()
+
     def whatQualityTest(self):
         if(self.notest):
             return []
         return self.testList
-    
+
     def searchscript(self,  testname):
         scriptdir=self.scriptRepository
         print("searching for script", testname, "in ",scriptdir)
@@ -292,7 +292,7 @@ class testbase :
             #print scriptdir, scr, testname
             if (scr == testname + '.py'):
                 theScript = scr
-                numOfScript += 1             
+                numOfScript += 1
         if numOfScript == 0:
             raise Exception("Could not find test %s" % testname)
         if( numOfScript > 1) :
@@ -312,7 +312,7 @@ class testbase :
 
             # Skip hidden directories
             filter_hidden = ' | grep -vE "^\\."  | grep -vE "/\\."'
-            
+
             # See if find understands -L or -follow (depends on find version)
             (err, a) = subprocess.getstatusoutput('find -L ' + repository+'/ 1>/dev/null 2>&1')
             if not err:
@@ -321,7 +321,7 @@ class testbase :
                 findstr='find '+repository+'/ -follow -name '+datafile+' -print 2>/dev/null' + filter_hidden
             # A '/' is appended to the directory name; otherwise sometimes find doesn't find.
             # Also, ignore error messages such as missing directory permissions
-            
+
             (find_errorcode, a)=subprocess.getstatusoutput(findstr)   # stdout and stderr
             if find_errorcode > 0 and not a:
                 a = self.python_find(datafile, repository)

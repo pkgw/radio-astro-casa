@@ -24,20 +24,20 @@ def run(fetch=False):
     if fetch:
         for f in data( ):
             copydata( f, os.getcwd( ) )
-    
+
     im=gl['casac'].imager()
     me=gl['me']
     time1=time.time()
     im.open('coma.ms')
-    
+
     im.selectvis(spw=0, field=0);
     mydir=me.direction('J2000', '12h30m48', '12d24m0')
-    im.defineimage(nx=200, ny=200, cellx='30arcsec', celly='30arcsec',  phasecenter=mydir); 
+    im.defineimage(nx=200, ny=200, cellx='30arcsec', celly='30arcsec',  phasecenter=mydir);
     im.make('outlier1re');
     im.defineimage(nx=2000, ny=2000, cellx='30arcsec',celly='30arcsec',phasecenter=0, facets=1);
     im.setoptions(ftmachine='wproject',wprojplanes=400, padding=1.2)
     im.make('bla1re')
-    
+
     im.clean(algorithm='wfclark',model=['bla1re', 'outlier1re'], image=['bla1re.restored', 'outlier1re.restored'], niter=10000);
 
     im.done()

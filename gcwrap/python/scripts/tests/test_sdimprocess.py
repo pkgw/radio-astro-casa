@@ -16,7 +16,7 @@ import asap as sd
 
 #
 # Unit test of sdimprocess task.
-# 
+#
 
 ###
 # Base class for sdimprocess unit test
@@ -27,7 +27,7 @@ class sdimprocess_unittest_base:
     """
     taskname='sdimprocess'
     datapath=os.environ.get('CASAPATH').split()[0] + '/data/regression/unittest/sdimprocess/'
-    
+
     def _checkfile( self, name ):
         isthere=os.path.exists(name)
         self.assertEqual(isthere,True,
@@ -44,7 +44,7 @@ class sdimprocess_unittest_base:
         incr_dec = qa.quantity(abs(increments[axis_dec]), units[axis_dec])
         area = qa.convert(incr_ra, 'arcsec')['value'] * qa.convert(incr_dec, 'arcsec')['value']
         return area * ref['sum']
-        
+
     def _checkstats(self,name,ref):
         self._checkfile(name)
         ia.open(name)
@@ -55,7 +55,7 @@ class sdimprocess_unittest_base:
             ref['flux'] = self._flux(ia.coordsys(), ref)
 
         ia.close()
-        
+
         for key in list(stats.keys()):
         #for key in self.keys:
             message='statistics \'%s\' does not match: %s'%(key,str(stats[key]))
@@ -67,7 +67,7 @@ class sdimprocess_unittest_base:
                 ret=numpy.allclose(stats[key],ref[key])
                 self.assertEqual(ret,True,
                                  msg=message)
-                
+
 ###
 # Test on bad parameter settings
 ###
@@ -108,7 +108,7 @@ class sdimprocess_test0(unittest.TestCase,sdimprocess_unittest_base):
         except Exception as e:
             pos=str(e).find('infiles should be a list of input images for Basket-Weaving.')
             self.assertNotEqual(pos,-1,
-                                msg='Unexpected exception was thrown: %s'%(str(e)))        
+                                msg='Unexpected exception was thrown: %s'%(str(e)))
 
     def test002(self):
         """Test 002: direction is not given for Basket-Weaving"""
@@ -119,7 +119,7 @@ class sdimprocess_test0(unittest.TestCase,sdimprocess_unittest_base):
         except Exception as e:
             pos=str(e).find('direction must have at least two different direction.')
             self.assertNotEqual(pos,-1,
-                                msg='Unexpected exception was thrown: %s'%(str(e)))        
+                                msg='Unexpected exception was thrown: %s'%(str(e)))
 
     def test003(self):
         """Test 003: Multiple images are given for Press"""
@@ -130,7 +130,7 @@ class sdimprocess_test0(unittest.TestCase,sdimprocess_unittest_base):
         except Exception as e:
             pos=str(e).find('infiles allows only one input file for pressed-out method.')
             self.assertNotEqual(pos,-1,
-                                msg='Unexpected exception was thrown: %s'%(str(e)))        
+                                msg='Unexpected exception was thrown: %s'%(str(e)))
 
     def test004(self):
         """Test 004: direction is not given for Press"""
@@ -141,7 +141,7 @@ class sdimprocess_test0(unittest.TestCase,sdimprocess_unittest_base):
         except Exception as e:
             pos=str(e).find('direction allows only one direction for pressed-out method.')
             self.assertNotEqual(pos,-1,
-                                msg='Unexpected exception was thrown: %s'%(str(e)))        
+                                msg='Unexpected exception was thrown: %s'%(str(e)))
 
     def test005(self):
         """Test 005: Existing output image file"""
@@ -153,10 +153,10 @@ class sdimprocess_test0(unittest.TestCase,sdimprocess_unittest_base):
         except Exception as e:
             pos=str(e).find('%s already exists'%(self.outfile))
             self.assertNotEqual(pos,-1,
-                                msg='Unexpected exception was thrown: %s'%(str(e)))        
+                                msg='Unexpected exception was thrown: %s'%(str(e)))
         except Exception as e:
             self.assertTrue(False,
-                            msg='Unexpected exception was thrown: %s'%(str(e)))        
+                            msg='Unexpected exception was thrown: %s'%(str(e)))
 
     def test006(self):
         """Test 006: Zero beamsize for Press"""
@@ -167,10 +167,10 @@ class sdimprocess_test0(unittest.TestCase,sdimprocess_unittest_base):
         except Exception as e:
             pos=str(e).find('Gaussian2DParam')
             self.assertNotEqual(pos,-1,
-                                msg='Unexpected exception was thrown: %s'%(str(e)))        
+                                msg='Unexpected exception was thrown: %s'%(str(e)))
         except Exception as e:
             self.assertTrue(False,
-                            msg='Unexpected exception was thrown: %s'%(str(e)))        
+                            msg='Unexpected exception was thrown: %s'%(str(e)))
 
 ###
 # Test on Pressed method
@@ -179,7 +179,7 @@ class sdimprocess_test1(unittest.TestCase,sdimprocess_unittest_base):
     """
     Test on Pressed method.
 
-    Test data, scan_x.im, is artificial data, which is 
+    Test data, scan_x.im, is artificial data, which is
 
        - 128x128 in R.A. and Dec.
        - 1 polarization component (Stokes I)
@@ -188,7 +188,7 @@ class sdimprocess_test1(unittest.TestCase,sdimprocess_unittest_base):
        - 1% random noise
        - scanning noise in horizontal direction
        - smoothed by Gaussian kernel of FWHM of 10 pixel
-       
+
     """
     # Input and output names
     rawfile='scan_x.im'
@@ -317,8 +317,8 @@ class sdimprocess_test1(unittest.TestCase,sdimprocess_unittest_base):
 class sdimprocess_test2(unittest.TestCase,sdimprocess_unittest_base):
     """
     Test on FFT based Basket-Weaving
-    
-    Test data, scan_x.im and scan_y.im, are artificial data, which is 
+
+    Test data, scan_x.im and scan_y.im, are artificial data, which is
 
        - 128x128 in R.A. and Dec.
        - 1 polarization component (Stokes I)
@@ -328,7 +328,7 @@ class sdimprocess_test2(unittest.TestCase,sdimprocess_unittest_base):
        - scanning noise in horizontal direction (scan_x.im)
          or vertical direction (scan_y.im)
        - smoothed by Gaussian kernel of FWHM of 10 pixel
-       
+
     """
     # Input and output names
     rawfiles=['scan_x.im','scan_y.im']

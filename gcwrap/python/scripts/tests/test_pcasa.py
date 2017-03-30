@@ -39,7 +39,7 @@ class pcasa_test(unittest.TestCase):
         pCASA.create(vis)
         for i in range(6):
             pCASA.add(vis, self.vis[i], "localhost")
-        
+
         pCASA.list(vis)
 
         print("Remove a few subMSs")
@@ -65,7 +65,7 @@ class pcasa_test(unittest.TestCase):
                   antenna = "8",
                   mode='unflag',
                   flagbackup = False)
-        
+
 
 
         flagcmd(vis, inpmode="list")

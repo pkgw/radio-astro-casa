@@ -17,7 +17,7 @@ try:
     import asap as sd
 except ImportError as e:
     print("failed to load asap:\n", e)
-    
+
 # jagonzal: Create CASA dictionary (some tasks like setjy need it)
 homedir = os.getenv('HOME')
 if homedir == None :
@@ -50,7 +50,7 @@ casa = { 'build': {
              'root': None
          },
          'flags': { },
-         'files': { 
+         'files': {
              'logfile': os.getcwd( ) + '/casapy-'+time.strftime("%Y%m%d-%H%M%S", time.gmtime())+'.log'
          },
          'state' : { 'startup': True }
@@ -267,7 +267,7 @@ try:
     from sdplot_pg import sdplot_pg as sdplot
     from sdreduce_pg import sdreduce_pg as sdreduce
     from sdsave_pg import sdsave_pg as sdsave
-    from sdscale_pg import sdscale_pg as sdscale 
+    from sdscale_pg import sdscale_pg as sdscale
     from sdsmooth_pg import sdsmooth_pg as sdsmooth
     from sdstat_pg import sdstat_pg as sdstat
 except ImportError as e:
@@ -286,7 +286,7 @@ except ImportError as e:
     sdplot = None
     sdsmooth = None
     sdreduce = None
-     
+
 
 #from tasks import *
 
@@ -308,7 +308,7 @@ try:
    contrid=os.environ['contrid']
    stamp=os.environ['stamp']
 except:
-   pass 
+   pass
 
 #thisproc='casaengine-'+stamp+'-'+contrid+'-'
 thispid=os.getpid()
@@ -373,7 +373,7 @@ def rmdir(p):
 # Task Interface
 
 from parameter_check import *
-import inspect 
+import inspect
 
 ####################
 def go(taskname=None):
@@ -420,7 +420,7 @@ def go(taskname=None):
 #            except StopIteration:
 #                break
 #            #
-#            if (x.find(fld)!=-1): 
+#            if (x.find(fld)!=-1):
 #                indexlist.append(fields.index(x))
 #                stringlist.append(x)
 #
@@ -499,7 +499,7 @@ def go(taskname=None):
 #
 #    Format is:
 #    #FIELDID BLC-X BLC-Y TRC-X TRC-Y
-#    0       110   110   150   150 
+#    0       110   110   150   150
 #    or
 #    0       hh:mm:ss.s dd.mm.ss.s hh:mm:ss.s dd.mm.ss.s
 #
@@ -509,20 +509,20 @@ def go(taskname=None):
 #    union=[]
 #    f=open(boxfile)
 #    while 1:
-#        try: 
+#        try:
 #            line=f.readline()
-#            if (line.find('#')!=0): 
+#            if (line.find('#')!=0):
 #                splitline=line.split('\n')
 #                splitline2=splitline[0].split()
-#                if (len(splitline2[1])<6): 
+#                if (len(splitline2[1])<6):
 #                    boxlist=[int(splitline2[1]),int(splitline2[2]),
 #                    int(splitline2[3]),int(splitline2[4])]
 #                else:
 #                    boxlist=[splitline2[1],splitline2[2],splitline2[3],
 #                    splitline2[4]]
-#    
+#
 #                union.append(boxlist)
-#    
+#
 #        except:
 #            break
 #
@@ -596,15 +596,15 @@ def update_params(func, printtext=True):
     ###check if task has defined a task_check_params function
 
     if (hascheck):
-	has_othertasks = 'task_location' in myf
-	if(has_othertasks) :
-	   has_task = myf['taskname'] in myf['task_location']
-	   if (has_task) :
-		pathname=myf['task_location'][myf['taskname']]
-	   else :
-	        pathname = xmlpath( )
-	else :
-	   pathname = xmlpath( )
+        has_othertasks = 'task_location' in myf
+        if(has_othertasks) :
+           has_task = myf['taskname'] in myf['task_location']
+           if (has_task) :
+                pathname=myf['task_location'][myf['taskname']]
+           else :
+                pathname = xmlpath( )
+        else :
+           pathname = xmlpath( )
         xmlfile=pathname+'/'+myf['taskname']+'.xml'
         if(os.path.exists(xmlfile)) :
             cu.setconstraints('file://'+xmlfile);
@@ -622,7 +622,7 @@ def update_params(func, printtext=True):
         if(type(paramval)==dict):
             if(0 in paramval):
                 notdict=False
-        
+
         if (notdict ):
             if(params[k] not in myf):
                 myf.update({params[k]:paramval})
@@ -633,7 +633,7 @@ def update_params(func, printtext=True):
                     print_params_col(params[k],myf[params[k]],obj.description(params[k]), 'ndpdef', 'black',noerror)
                 else:
                     print_params_col(params[k],myf[params[k]],obj.description(params[k]), 'ndpnondef', 'black', noerror)
-		itsparams[params[k]] = myf[params[k]]
+                itsparams[params[k]] = myf[params[k]]
         else:
             subdict=odict(paramval)
             ##printtext is False....called most probably to set
@@ -657,7 +657,7 @@ def update_params(func, printtext=True):
                 for j in range(len(subdict)):
                     subkey=list(subdict[j].keys())
                     for kk in range(len(subkey)):
-                        
+
                         if( (subkey[kk] != 'value') & (subkey[kk] != 'notvalue') ):
                             #if user selecteddict
                             #does not have the key
@@ -665,11 +665,11 @@ def update_params(func, printtext=True):
                             if((subkey[kk] not in userdict) and (not subkeyupdated[subkey[kk]])):
                                 myf.update({subkey[kk]:subdict[j][subkey[kk]]})
                                 subkeyupdated[subkey[kk]]=True
-                                
+
                     ###put default if not there
                             if(subkey[kk] not in myf):
                                 myf.update({subkey[kk]:subdict[j][subkey[kk]]})
-                        
+
             ### need to do default when user has not set val
             if(params[k] not in myf):
                 if('notvalue' in paramval[0]):
@@ -699,7 +699,7 @@ def update_params(func, printtext=True):
                     print_params_col(params[k],myf[params[k]],obj.description(params[k]),'dpdef','black', noerror)
                 else:
                     print_params_col(params[k],myf[params[k]],obj.description(params[k]),'dpnondef','black', noerror)
-		itsparams[params[k]] = myf[params[k]]
+                itsparams[params[k]] = myf[params[k]]
             for j in range(len(subkey)):
                 if((subkey[j] != valuekey) & (notchoice > -1)):
                     ###put default if not there
@@ -718,8 +718,8 @@ def update_params(func, printtext=True):
                             print_params_col(subkey[j],myf[subkey[j]],obj.description(subkey[j],userval),'spdef',comment, noerror)
                         else:
                             print_params_col(subkey[j],myf[subkey[j]],obj.description(subkey[j],userval),'spnondef',comment, noerror)
-		        itsparams[params[k]] = myf[params[k]]
-    #print itsparams                    
+                        itsparams[params[k]] = myf[params[k]]
+    #print itsparams
     #
     # Verify the complete record, with errors being reported to the user
     #
@@ -727,7 +727,7 @@ def update_params(func, printtext=True):
 
 ####function to print inputs with coloring
 ####colorparam 'blue'=> non-default, colorcomment 'green'=> can have sub params
-#### 'blue' => is a sub-parameter 
+#### 'blue' => is a sub-parameter
 # blue = \x1B[94m
 # bold = \x1B[1m
 # red  = \x1B[91m
@@ -916,12 +916,12 @@ def saveinputs(taskname=None, outfile='', myparams=None):
 
         f=list(zip(myf[taskname].__call__.__code__.co_varnames,myf[taskname].__call__.__defaults__))
         scriptstring='#'+str(taskname)+'('
-	if myparams == None :
-		myparams = {}
+        if myparams == None :
+                myparams = {}
         for j in range(len(f)):
             k=f[j][0]
-	    if k not in myparams and k != 'self' :
-		    myparams[k] = myf[k]
+            if k not in myparams and k != 'self' :
+                    myparams[k] = myf[k]
             if(k != 'self' and type(myparams[k])==str):
                 if ( myparams[k].count( '"' ) < 1 ):
                     # if the string doesn't contain double quotes then
@@ -945,7 +945,7 @@ def saveinputs(taskname=None, outfile='', myparams=None):
             if(not myf['casaglobals']):
                 del myf[k]
         scriptstring=scriptstring.rstrip(',')
-        scriptstring=scriptstring+')'        
+        scriptstring=scriptstring+')'
         print(scriptstring, file=taskparameterfile)
         taskparameterfile.close()
     except TypeError as e:
@@ -998,7 +998,7 @@ def default(taskname=None):
 #import pylab as pl
 
 #
-# 
+#
 import platform
 ##
 ## CAS-951: matplotlib unresponsive on some 64bit systems

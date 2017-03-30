@@ -2,37 +2,37 @@ import os
 from taskinit import *
 
 def importvla(archivefiles,vis,
-	      bandname,frequencytol,
-	      project,
-	      starttime,stoptime,
-	      applytsys,
-	      autocorr,antnamescheme,keepblanks,evlabands):
-	i=0
-	overwrite=True
+              bandname,frequencytol,
+              project,
+              starttime,stoptime,
+              applytsys,
+              autocorr,antnamescheme,keepblanks,evlabands):
+        i=0
+        overwrite=True
         ok = True
-	try:
-		casalog.origin('importvla')
-		if ((type(vis)!=str) | (vis=='') | (os.path.exists(vis))): 
-			raise Exception('Need valid visibility file name (bad name or already exists)')
-		if (os.path.exists(vis)): raise Exception('Visibility file already exists - remove or rename')
-		for archivefile in archivefiles:
-			if i>0: overwrite=False
-			if ((type(archivefile)==str) & (os.path.exists(archivefile))):
-				vlafiller(msname=vis,inputfile=archivefile,
-					  overwrite=overwrite,
-					  bandname=bandname,freqtol=frequencytol,
-					  project=project, start=starttime,
-					  stop=stoptime, applytsys=applytsys,
-					  keepautocorr=autocorr,
-					  antnamescheme=antnamescheme,
-					  keepblanks=keepblanks,
-					  evlabands=evlabands)
-				i += 1
-			else:
-				raise Exception('Archive file not found - please verify the name')
+        try:
+                casalog.origin('importvla')
+                if ((type(vis)!=str) | (vis=='') | (os.path.exists(vis))):
+                        raise Exception('Need valid visibility file name (bad name or already exists)')
+                if (os.path.exists(vis)): raise Exception('Visibility file already exists - remove or rename')
+                for archivefile in archivefiles:
+                        if i>0: overwrite=False
+                        if ((type(archivefile)==str) & (os.path.exists(archivefile))):
+                                vlafiller(msname=vis,inputfile=archivefile,
+                                          overwrite=overwrite,
+                                          bandname=bandname,freqtol=frequencytol,
+                                          project=project, start=starttime,
+                                          stop=stoptime, applytsys=applytsys,
+                                          keepautocorr=autocorr,
+                                          antnamescheme=antnamescheme,
+                                          keepblanks=keepblanks,
+                                          evlabands=evlabands)
+                                i += 1
+                        else:
+                                raise Exception('Archive file not found - please verify the name')
         except Exception as instance:
-		print('*** Error importing %s to %s:' % (archivefiles, vis))
-		raise Exception(instance)
+                print('*** Error importing %s to %s:' % (archivefiles, vis))
+                raise Exception(instance)
 
         # Write history
         try:
@@ -53,7 +53,7 @@ def importvla(archivefiles,vis,
                                            merge='replace')
                 ok &= aflocal.done();
         except Exception as instance:
-		print('*** Error writing initial flag version of %s:' % vis)
-		raise Exception(instance)
+                print('*** Error writing initial flag version of %s:' % vis)
+                raise Exception(instance)
 
 

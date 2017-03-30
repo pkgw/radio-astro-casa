@@ -38,7 +38,7 @@
 #
 # <prerequisite>
 # <ul>
-#   <li> <linkto class="imval.py:description">imval</linkto> 
+#   <li> <linkto class="imval.py:description">imval</linkto>
 # </ul>
 # </prerequisite>
 #
@@ -54,7 +54,7 @@
 #
 # input/output tests.  Valid and invalid inputs are given
 #         for the following paramaters:
-#           a) No imagename 
+#           a) No imagename
 #           b) Bad imagename given
 #           c) Incorrect data type, not a string, to imagename parameter
 #           d) Out of range errors for, box, chans, & stokes parameters
@@ -74,7 +74,7 @@
 #           c) A cube RA,Dec,and Spectral axes
 #           d) Two cubes RA,Dec,and Spectral axes
 #           e) A 4D blob: RA,Dec, Spetral, & Stokes.
-# </synopsis> 
+# </synopsis>
 #
 # <example>
 # # This test was designed to run in the automated CASA test system.
@@ -97,7 +97,7 @@
 #  1. produce summary data
 #  2 make sure failure_msgs is used everywere, and display them#
 # </todo>
-#     
+#
 #
 # SDJ Sep. 8, 2008 Created.
 # SDJ May 20, 2009 Updated to testing Framework
@@ -169,23 +169,23 @@ def note(message, priority="NORMAL", origin="imval_test"):
 ############################################################################
 
 class imval_test(unittest.TestCase):
-    
+
     def setUp(self):
         if (os.path.exists(image_file)):
             os.system('rm -rf ' +image_file+ ' ' +good_rgn_file)
-            
+
         datapath = os.environ.get('CASAPATH').split()[0]+'/data/regression/ATST3/NGC4826/'
         os.system('cp -r ' +datapath + image_file +' ' + image_file)
         os.system('cp -r ' +datapath + good_rgn_file +' ' + good_rgn_file)
 
     def tearDown(self):
             os.system('rm -rf ' +image_file+ ' ' +good_rgn_file)
-        
+
     def test_input(self):
         '''Imval: Input/output tests'''
         retValue = {'success': True, 'msgs': "", 'error_msgs': '' }
         note( "Starting imval INPUT/OUTPUT tests.", 'NORMAL2' )
-    
+
         ###########################################################
         # Image name tests
         info( 'Performing input/output tests on imagename, errors WILL occur.' )
@@ -201,7 +201,7 @@ class imval_test(unittest.TestCase):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Empty imagename parameter not detected."
-    
+
         results = None
         try:
             results = imval( imagename=good_rgn_file )
@@ -214,7 +214,7 @@ class imval_test(unittest.TestCase):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
                               +"\nError: Invalid image file name not detected."
-    
+
         results=None
         try:
             results = imval( imagename=2.3 )
@@ -227,7 +227,7 @@ class imval_test(unittest.TestCase):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
                          +"\nError: Invalid image file name, 2.3,  not detected."
-    
+
         results=None
         try:
             results = imval( imagename='n4826_bima.im' )
@@ -239,8 +239,8 @@ class imval_test(unittest.TestCase):
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Valid imagename, n4826_bima.im, test failed."
-        del results        
-            
+        del results
+
         ###################################################################
         # Testing out of range errors.
         # BLC=0,0,0,0  and TRC= 255,255,0,29   for n4826_bima.im
@@ -257,7 +257,7 @@ class imval_test(unittest.TestCase):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
                              +'\nInvalid box parameter, x=-3, values not detected.'
-            
+
         results=None
         try:
             results = imval( imagename=image_file, box='200,0,262,3' )
@@ -270,7 +270,7 @@ class imval_test(unittest.TestCase):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
                      +'Invalid box parameter values,262, not detected.'
-    
+
         results=None
         try:
             results = imval( imagename=image_file, box='0,-3,0,3' )
@@ -283,7 +283,7 @@ class imval_test(unittest.TestCase):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
                        + 'Invalid box parameter value, y=-3, not detected.'
-    
+
         results=None
         try:
             results = imval( imagename=image_file, box='0,270,0,3' )
@@ -296,7 +296,7 @@ class imval_test(unittest.TestCase):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
                           + 'Invalid box parameter value, y=270, not detected.'
-    
+
         results=None
         try:
             results = imval( imagename=image_file, box='0,110,0,10' )
@@ -309,7 +309,7 @@ class imval_test(unittest.TestCase):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
                           + 'Invalid box parameter value, y[1]>y[0], not detected.'
-    
+
         results=None
         try:
             results = imval( imagename=image_file, box="1,2,3,4" )
@@ -317,13 +317,13 @@ class imval_test(unittest.TestCase):
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs'] \
                        +'Valid box parameter values caused an error.'
-    
+
         if ( results == None ):
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Valid box test, box=[1,2,3,4], failed."
-        del results        
-    
+        del results
+
         ##############################################################
         # CHANS parameter testing
         info( 'Performing input/output tests on "chans", errors WILL occur.' )
@@ -339,7 +339,7 @@ class imval_test(unittest.TestCase):
                         retValue['success']=False
                         retValue['error_msgs']=retValue['error_msgs'] \
                                +'Invalid chans parameter value,-3, not detected.'
-    
+
         resutls=None
         try:
             results = imval( imagename=image_file, chans='50' )
@@ -352,7 +352,7 @@ class imval_test(unittest.TestCase):
                         retValue['success']=False
                         retValue['error_msgs']=retValue['error_msgs'] \
                             +'Invalid chans parameter value,50, not detected.'
-    
+
         results=None
         try:
             results = imval( imagename=image_file, chans="10" )
@@ -360,20 +360,20 @@ class imval_test(unittest.TestCase):
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs'] \
                   +'Valid chans parameter value caused an error.'
-    
+
         if ( results == None ):
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Valid channel test, chans='10', failed."
         del results
-    
-    
+
+
         ###############################################################
         # STOKES parameter testing
         info( 'Performing input/output tests on "stokes", errors WILL occur.' )
         results=None
         try:
-            results = imval( imagename=image_file, stokes='Q' )        
+            results = imval( imagename=image_file, stokes='Q' )
         except:
             pass
         else:
@@ -383,7 +383,7 @@ class imval_test(unittest.TestCase):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs'] \
                            +'Invalid stokes value, Q,  not detected.'
-    
+
         results=None
         try:
             results = imval( imagename=image_file, stokes=0 )
@@ -403,14 +403,14 @@ class imval_test(unittest.TestCase):
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs'] \
                            +'Valid stokes value, I, caused errors.'
-    
+
         if ( results == None ):
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Valid stokes, 'I', test failed on file ."\
                      +image_file+"\nRESULTS: "+str(results)
         del results
-            
+
         ########################################
         # REGION parameter tests
         info( 'Performing input/output tests on "region", errors WILL occur.' )
@@ -426,13 +426,13 @@ class imval_test(unittest.TestCase):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
                    +"\nError: Bad region, '[1, 3]', was not reported."
-                
-                   
+
+
         # First make sure the region file does not exist.
         garbage_rgn_file = os.getcwd()+'/garbage.rgn'
         if ( os.path.exists( garbage_rgn_file )):
             os.remove( garbage_rgn_file )
-        
+
         try:
             results = imval( imagename=image_file, \
                              region=garbage_rgn_file )
@@ -447,7 +447,7 @@ class imval_test(unittest.TestCase):
                 retValue['error_msgs']=retValue['error_msgs']\
                        + "\nError: Bad region file, 'garbage.rgn', was NOT "\
                        + "reported as missing."
-                       
+
         try:
             rgn_file = os.getcwd()+'garbage.rgn'
             fp=open( rgn_file, 'w' )
@@ -458,9 +458,9 @@ class imval_test(unittest.TestCase):
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Unable to create bad region file.\n\t"
             raise Exception(err)
-    
-            
-    
+
+
+
         try:
             results = imval( imagename=image_file, region=rgn_file )
         except:
@@ -473,8 +473,8 @@ class imval_test(unittest.TestCase):
                 retValue['error_msgs']=retValue['error_msgs']\
                               + "\nError: Bad region file, 'garbage.rgn',"\
                               + " was not reported as bad."
-    
-        
+
+
         results=None
         try:
             results=imval( imagename=image_file, region=good_rgn_file )
@@ -490,9 +490,9 @@ class imval_test(unittest.TestCase):
                      +" tset has failed."\
                      +"\nRESULTS: "+str(results)
         del results
-                
+
         self.assertTrue(retValue['success'],retValue['error_msgs'])
-    
+
     ###########################################################################
     # NAME: single_point
     #
@@ -506,15 +506,15 @@ class imval_test(unittest.TestCase):
     #           e) Value at 3 points within the image.
     #
     ############################################################################
-    
+
     def test_single_point(self):
         '''Imval: Single point tests'''
         retValue = {'success': True, 'msgs': "", 'error_msgs': '' }
         note( "Starting SINGLE POINT tests.", 'NORMAL2' )
-    
+
         # Find the min/max points of the image.
         bbox={}
-        try: 
+        try:
             ia.open( image_file )
             bbox=ia.boundingbox()
             ia.done()
@@ -522,25 +522,25 @@ class imval_test(unittest.TestCase):
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Unable to find size of image "+image_name
-    
+
         dir_blc=[]
         dir_trc=[]
         min_chan=max_chan=-1
-        min_stokes=max_stokes=-1    
+        min_stokes=max_stokes=-1
         if ( len(bbox) > 0 and 'blc' in bbox and 'trc' in bbox ):
             blc=bbox['blc']
             trc=bbox['trc']
-    
+
             dir_blc=[blc[0], blc[1]]
             dir_trc=[trc[0], trc[1]]
             min_chan=blc[3]
             max_chan=trc[3]
             min_Stokes=blc[2]
             max_stokes=trc[2]
-    
+
         error_margin=0.00001
-    
-        
+
+
         #############################################################
         # Bottom-left
         tbox=str(dir_blc[0])+','+str(dir_blc[1])+','+str(dir_blc[0])+','\
@@ -569,7 +569,7 @@ class imval_test(unittest.TestCase):
                 retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Expected 1.035184e-09Jy/Beam with mask=True."\
                      +"\n\t"+msg
-    
+
         #############################################################
         # Bottom-right
         tbox=str(dir_trc[0])+','+str(dir_blc[1])+','+str(dir_trc[0])+','\
@@ -583,7 +583,7 @@ class imval_test(unittest.TestCase):
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Failed to get the value in the bottom right"\
-                     +" corner. "+tbox+"."                
+                     +" corner. "+tbox+"."
         else:
             if ( results!=None and 'blc' in results \
                  and 'data' in results and 'unit' in results\
@@ -598,14 +598,14 @@ class imval_test(unittest.TestCase):
                 retValue['error_msgs']=retValue['error_msgs']\
                          +'\nError: Expected value of -1.172165e-09 and mask=True'\
                          +'\n\t'+msg
-    
+
         ######################################################3
         # Top-left
         tbox=str(dir_blc[0])+','+str(dir_trc[1])+','+str(dir_blc[0])+','\
               +str(dir_trc[1])
         msg="Top left corner value was Not Found"
         results=None
-    
+
         try:
             results=imval( imagename=image_file, box=tbox, chans=str(min_chan),
                            stokes=str(min_stokes) )
@@ -626,7 +626,7 @@ class imval_test(unittest.TestCase):
                  ( results['data']+4.2731923e-09>error_margin or not results['mask'])):
                 retValue['success']=False
                 retValue['error_msgs'] = retValue['error_msgs'] + "\nError: Expected value of -4.273192e-09, and mask=True"  + "\n\t" + msg
-                
+
         #############################################################
         # Top-right
         tbox=str(dir_trc[0])+','+str(dir_trc[1])+','+str(dir_trc[0])+','\
@@ -655,14 +655,14 @@ class imval_test(unittest.TestCase):
                 retValue['error_msgs']=retValue['error_msgs']\
                     +'\nError: Expected value -3.647830e-09Jy/Beam and mask=True'\
                     +'\n\t'+msg
-    
+
         #########################################################3
         # Last channel and stokes
         tbox=str(dir_trc[0])+','+str(dir_trc[1])+','+str(dir_trc[0])+','+\
               str(dir_trc[1])
         msg="Value NOT found when looking at last chanel and last stokes"
         results=None
-    
+
         try:
             results=imval( imagename=image_file, box=tbox, chans=str(max_chan), \
                            stokes=str(max_stokes) )
@@ -684,14 +684,14 @@ class imval_test(unittest.TestCase):
                     retValue['error_msgs']=retValue['error_msgs']\
                             +'\nError: Expected value -3.647830e-09Jy/Beam and'\
                             +' mask=True \n\t'+msg
-    
+
             #######################################################
             # A couple of not so random points
             tbox=str(int(dir_trc[0]*2/3))+','+str(int(dir_trc[1]*2/3))+','\
                   +str(int(dir_trc[0]*2/3))+','+str(int(dir_trc[1]*2/3))
             msg="Value NOT found when looking at first random point,"+tbox+"."
             results=None
-    
+
             try:
                 results=imval( imagename=image_file, box=tbox, \
                 chans=str(int(max_chan*2/3)), stokes=str(max_stokes) )
@@ -712,13 +712,13 @@ class imval_test(unittest.TestCase):
                     retValue['error_msgs']=retValue['error_msgs']\
                     +'\nError: Expected value of 0.062294Jy/Beam and mask=True'\
                        +'\n\t'+msg
-    
+
             # Second random point
             tbox=str(int(dir_trc[0]*1/6))+','+str(int(dir_trc[1]*2/6))+','\
                   +str(int(dir_trc[0]*1/6))+','+str(int(dir_trc[1]*2/6))
             msg="Value NOT found when looking at second random point,"+tbox+"."
             results=None
-    
+
             try:
                 results=imval( imagename=image_file, box=tbox, \
                             chans=str(int(max_chan*5/6)), stokes=str(max_stokes) )
@@ -733,18 +733,18 @@ class imval_test(unittest.TestCase):
                      msg='Value found at'+str(results['blc'])+' is: '\
                      +str(results['data'])+str(results['unit'])\
                      +'. with mask '+str(results['mask'])
-    
+
                 if ( results==None or 'data' not in results or \
                      ( results['data']+0.070744 > error_margin ) ):
                     retValue['success']=False
                     retValue['error_msgs']=retValue['error_msgs']\
                           +'Error: Expected value of -0.070744Jy/Beam and '\
                           +'mask=True'+'\n\t'+msg
-    
+
         self.assertTrue(retValue['success'],retValue['error_msgs'])
-    
+
     ###########################################################################
-    # NAME: arrays 
+    # NAME: arrays
     #
     # SHORT DESCRIPTION: Do tests to find the value at a single point
     #
@@ -762,16 +762,16 @@ class imval_test(unittest.TestCase):
     #      - This could be done in a loop, or some of it pulled out to
     #        a separate method instead of repeating code!
     ############################################################################
-    
+
     def test_array(self):
         '''Imval: array values'''
         retValue = {'success': True, 'msgs': "", 'error_msgs': '' }
         note( "Starting ARRAY RESULTS tests.", 'NORMAL2' )
         error_margin = 0.00001
-    
+
         # Find the min/max points of the image.
         bbox={}
-        try: 
+        try:
             ia.open( image_file )
             bbox=ia.boundingbox()
             ia.done()
@@ -779,13 +779,13 @@ class imval_test(unittest.TestCase):
             retValue['success']=False
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Unable to find size of input image "+image_name
-        
+
         dir_blc=dir_trc=[]
         min_chan=max_chan=min_stokes=max_stokes=-2
         if ( len(bbox) > 0 and 'blc' in bbox and 'trc' in bbox ):
             blc=bbox['blc']
             trc=bbox['trc']
-            
+
             dir_blc=[blc[0], blc[1]]
             dir_trc=[trc[0], trc[1]]
             min_chan=blc[3]
@@ -797,7 +797,7 @@ class imval_test(unittest.TestCase):
             retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Unable to find corners of input image "+image_name
             return retValue
-    
+
         #
         # We want to find an array of values for the following areas:
         #    1. inner quarter, for channel 5
@@ -806,7 +806,7 @@ class imval_test(unittest.TestCase):
         #
         # Setup a few arrays with the input values so that we can do
         # these tests in a beautiful loop.
-    
+
         # Input values
         testnames= [ 'inner 1/2 with 1 channel', 'inner 1/2 multi-channel',\
                      'inner 1/3rd multi-channel' ]
@@ -815,23 +815,23 @@ class imval_test(unittest.TestCase):
                       ','+str(int(dir_trc[0]*3/4))+','+str(int(dir_trc[1]*3/4)))
         boxes.append( str(int(dir_trc[0]*1/4))+','+str(int(dir_trc[1]*1/4))+\
                       ','+str(int(dir_trc[0]*3/4))+','+str(int(dir_trc[1]*3/4)))
-                      
+
         boxes.append(str(int(dir_trc[0]*1/3))+','+str(int(dir_trc[1]*1/3))+\
                      ','+str(int(dir_trc[0]*5/6))+','+str(int(dir_trc[1]*5/6)))
-                    
+
         chans  = [ '5', '5,10', '15~17']
         stokes = [ '0', '0', '0'  ]
-    
+
         # Expected results.
         shapes = [ [129,129,1,1], [129,129,2,1], [128,128,3,1] ]
         mins   = [ 0.417753, -0.417753, 0.4758411 ]
         maxs   = [ 1.69093, 1.537767, 0.999663 ]
         means  = [ 0.003042, 1000.0, 10000.0 ]
-        
+
         for index in range(0,len(boxes)):
             results=None
             tbox=boxes[index]
-    
+
             try:
                 results=imval( imagename=image_file, box=tbox, \
                                chans=chans[index], stokes=stokes[index] )
@@ -842,29 +842,29 @@ class imval_test(unittest.TestCase):
                                         + " test, region is: "\
                                         + tbox+".\n\t"+str(e)
                 return retValue
-                                        
+
             msg=''
             if ( results!=None and 'blc' in results \
                  and 'trc' in results ):
                 msg='Data array bounded by: , '+str(results['blc'])\
                      +' and '+str(results['trc'])
-                
+
             data_array=[]
             if ( results!=None and 'data' in results ):
                 data_array=results['data']
-    
+
             mask_array=[]
             if ( results!=None and 'mask' in results ):
                 mask_array=results['mask']
-    
+
             if ( len( mask_array ) < 1 or \
                  ( mask_array.min()!=True and mask_array.max() != True ) ):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
                      +"\nError: Either no mask found, or False values were"\
                      +' found in the mask, expected all True values.'
-    
-            # Expect shape of 
+
+            # Expect shape of
             if ( len( data_array ) < 0 ):
                 retValue['success']=False
                 retValue['error_msgs']=retValue['error_msgs']\
@@ -887,7 +887,7 @@ class imval_test(unittest.TestCase):
                             +"\n"+msg+"\nexpected shape to be "\
                             +str(shapes[index][0])\
                             +"X"+str(shapes[index][1])
-                    
+
                 dmin=data_array.min()
                 dmax=data_array.max()
                 dmean=data_array.mean()
@@ -911,9 +911,9 @@ class imval_test(unittest.TestCase):
                       +"\nError: Expected mean of, "\
                       + str(means[index])\
                       +" but found mean of "+str(dmax)+"."
-    
-        self.assertTrue(retValue['success'],retValue['error_msgs'])     
-        
+
+        self.assertTrue(retValue['success'],retValue['error_msgs'])
+
     def test_coord_return(self):
         """Test returned coordinates CAS-2651"""
         myimval = imval(imagename=image_file, box="40,40,50,50", chans="5")
@@ -926,7 +926,7 @@ class imval_test(unittest.TestCase):
         diff = got - expected
         # not 0 because of 32 bit precision issues
         self.assertTrue(max(abs(diff)) < 1e-16)
-        
+
     def test_non_rect_region(self):
         """ verify imval works on non-rectangular regions, CAS-5734"""
         myia = iatool()
@@ -937,7 +937,7 @@ class imval_test(unittest.TestCase):
             imagename, region="circle[[0:0:20,-0.05.00],4arcmin]"
         )
         self.assertTrue(ret['data'].shape == (9, 9, 4, 10))
-        
+
     def test_pv(self):
         """Test fix so imval works with pv images, CAS-7573"""
         myia = iatool()
@@ -951,8 +951,8 @@ class imval_test(unittest.TestCase):
         res = imval(imagename)
         got = res['data']
         self.assertTrue((got == expec).all())
-    
+
 def suite():
     return [imval_test]
 
-    
+

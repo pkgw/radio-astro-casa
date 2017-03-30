@@ -38,7 +38,7 @@ startProc = time.clock()
 #  1        4096 LSRK  45899.1486  12.2067945  49999.0303  45924.1481  RR  LL H213CO
 #  2        4096 LSRK  43857.1942  12.2067945  49999.0303  43882.1937  RR  LL 13CS
 #  3        4096 LSRK  48970.0031  12.2067945  49999.0303  48995.0026  RR  LL CS
-#  7        4096 LSRK  46226.6452  12.2067949  49999.0319  46251.6447  RR  LL 
+#  7        4096 LSRK  46226.6452  12.2067949  49999.0319  46251.6447  RR  LL
 #  17       4096 LSRK  45469.0638  12.2067955  49999.0343  45494.0633  RR  LL HC3N
 #  18       4096 LSRK  45280.5214  12.2067955  49999.0343  45305.5209  RR  LL HCC13CN
 #  19       4096 LSRK  44054.8331  12.2067955  49999.0343  44079.8326  RR  LL CH3OH
@@ -53,71 +53,71 @@ startProc = time.clock()
 # Scans: 241-248         Setup 3 SiO et al
 
 casapath = os.environ['CASAPATH']
-import asap as sd			#import ASAP package into CASA			#GBTIDL
-os.environ['CASAPATH'] = casapath		#IRC+10216 (CS line reduction only)
-					#Notes:
-					#scan numbers (zero-based) as compared to GBTIDL
+import asap as sd                       #import ASAP package into CASA                  #GBTIDL
+os.environ['CASAPATH'] = casapath               #IRC+10216 (CS line reduction only)
+                                        #Notes:
+                                        #scan numbers (zero-based) as compared to GBTIDL
 
-					#changes made to get to IRC+10216_rawACSmod
-					#  -- merge spectral windows with tolerance
+                                        #changes made to get to IRC+10216_rawACSmod
+                                        #  -- merge spectral windows with tolerance
 
 
-s = sd.scantable('IRC+10216_rawACSmod', False)#load the data without averaging		# filein,'IRC.raw.fits'
+s = sd.scantable('IRC+10216_rawACSmod', False)#load the data without averaging          # filein,'IRC.raw.fits'
 #Cannot find any matching Tcal at/near the data timestamp. Set Tcal=0.0
 
-#s.summary()				#summary info					# summary
-											# fileout,'IRC+10216.reduced.fits'
-s.set_fluxunit('K')         		# make 'K' default unit
+#s.summary()                            #summary info                                   # summary
+                                                                                        # fileout,'IRC+10216.reduced.fits'
+s.set_fluxunit('K')                     # make 'K' default unit
 
-#scal = sd.calnod(s, [229,230])		# Calibrate CS scans	                        # for i=230,231,2 do begin getps,i,ifnum=3,plnum=0,units='Ta*',
-scal = sd.calnod(s, [230, 231])		# Calibrate CS scans	                        # for i=230,231,2 do begin getps,i,ifnum=3,plnum=0,units='Ta*',
+#scal = sd.calnod(s, [229,230])         # Calibrate CS scans                            # for i=230,231,2 do begin getps,i,ifnum=3,plnum=0,units='Ta*',
+scal = sd.calnod(s, [230, 231])         # Calibrate CS scans                            # for i=230,231,2 do begin getps,i,ifnum=3,plnum=0,units='Ta*',
 del s                                   # remove s from memory
 # recalculate az/el (NOT needed for GBT data)
 antennaname = scal.get_antennaname()
-if ( antennaname != 'GBT'): scal.recalc_azel() 	  # recalculate az/el to 		# tau=0.09 & accum & getps, i, ifnum=3,plnum=1,units='Ta*',
-scal.opacity(0.09)			# do opacity correction				# tau=0.09 & accum & end & ave
-sel = sd.selector()			# Prepare a selection				# 
-sel.set_ifs(3)				# select CS IF					#
-scal.set_selection(sel)			# get this IF					#
-stave = sd.average_time(scal, weight='tintsys')	# average in time			# 
-spave = stave.average_pol(weight='tsys')	# average polarizations;Tsys-weighted average   #
-sd.plotter.plot(spave)			# plot						# 
-											# 
-					# do some smoothing				# 
-spave.smooth('boxcar', 5)		# boxcar 5					# boxcar,5
-spave.auto_poly_baseline(order=1, threshold=5, chan_avg_limit=4)	# baseline fit order=2	# nregion,[200,1500,2600,3500]
-sd.plotter.plot(spave)			# plot						# nfit,2
-											# baseline
-spave.set_unit('GHz')									# freq
+if ( antennaname != 'GBT'): scal.recalc_azel()    # recalculate az/el to                # tau=0.09 & accum & getps, i, ifnum=3,plnum=1,units='Ta*',
+scal.opacity(0.09)                      # do opacity correction                         # tau=0.09 & accum & end & ave
+sel = sd.selector()                     # Prepare a selection                           #
+sel.set_ifs(3)                          # select CS IF                                  #
+scal.set_selection(sel)                 # get this IF                                   #
+stave = sd.average_time(scal, weight='tintsys') # average in time                       #
+spave = stave.average_pol(weight='tsys')        # average polarizations;Tsys-weighted average   #
+sd.plotter.plot(spave)                  # plot                                          #
+                                                                                        #
+                                        # do some smoothing                             #
+spave.smooth('boxcar', 5)               # boxcar 5                                      # boxcar,5
+spave.auto_poly_baseline(order=1, threshold=5, chan_avg_limit=4)        # baseline fit order=2  # nregion,[200,1500,2600,3500]
+sd.plotter.plot(spave)                  # plot                                          # nfit,2
+                                                                                        # baseline
+spave.set_unit('GHz')                                                                   # freq
 sd.plotter.plot(spave)
 sd.plotter.set_histogram(hist=True)     # draw spectrum using histogram                 # histogram
 sd.plotter.axhline(color='r', linewidth=2) # zline                                       # zline
-sd.plotter.save('irc_cs_reduced.eps')	# save postscript spectrum			# write_ps,'irc_cs.ps'
+sd.plotter.save('irc_cs_reduced.eps')   # save postscript spectrum                      # write_ps,'irc_cs.ps'
 
-spave.set_unit('channel')								# chan
+spave.set_unit('channel')                                                               # chan
 rmsmask = spave.create_mask([800,1500])  # get rms of line free regions                   # stats,800,1500
-curr_rms = spave.stats(stat='rms', mask=rmsmask)                                                                
-					#---------------------------------------------- # Chans   bchan   echan      Xmin      Xmax      Ymin      Ymax
-											#   701     800    1500     800.0    1500.0  -0.29621   0.36313
-					#  rms
-					#---------------------------------------------- #              Mean      Median      RMS  Variance      Area
-					#Scan[0] (IRC+10216_nod) Time[2006/01/19/01:52:05]: #     -0.0037430   -0.014653 0.10816 0.011699  -2.6239
-					# IF[3] = 0.147
-					#----------------------------------------------
-					# LINE
+curr_rms = spave.stats(stat='rms', mask=rmsmask)
+                                        #---------------------------------------------- # Chans   bchan   echan      Xmin      Xmax      Ymin      Ymax
+                                                                                        #   701     800    1500     800.0    1500.0  -0.29621   0.36313
+                                        #  rms
+                                        #---------------------------------------------- #              Mean      Median      RMS  Variance      Area
+                                        #Scan[0] (IRC+10216_nod) Time[2006/01/19/01:52:05]: #     -0.0037430   -0.014653 0.10816 0.011699  -2.6239
+                                        # IF[3] = 0.147
+                                        #----------------------------------------------
+                                        # LINE
 linemask = spave.create_mask([1850,2300])
-curr_max = spave.stats('max', linemask)	   	#  IF[3] = 3.325
-curr_sum = spave.stats('sum', linemask)	   	#  IF[3] = 627.922
-curr_median = spave.stats('median', linemask) 	#  IF[3] = 1.305
-curr_mean = spave.stats('mean', linemask)	#  IF[3] = 1.392
-											#  Chans  bchan    echan      Xmin      Xmax       Ymin    Ymax
-											#    451   1850     2300    1850.0    2300.0   -0.36467  2.3805
-											#                   Mean    Median       RMS   Variance    Area
-											#                0.98944   0.92886   0.54541    0.29747  446.24
+curr_max = spave.stats('max', linemask)         #  IF[3] = 3.325
+curr_sum = spave.stats('sum', linemask)         #  IF[3] = 627.922
+curr_median = spave.stats('median', linemask)   #  IF[3] = 1.305
+curr_mean = spave.stats('mean', linemask)       #  IF[3] = 1.392
+                                                                                        #  Chans  bchan    echan      Xmin      Xmax       Ymin    Ymax
+                                                                                        #    451   1850     2300    1850.0    2300.0   -0.36467  2.3805
+                                                                                        #                   Mean    Median       RMS   Variance    Area
+                                                                                        #                0.98944   0.92886   0.54541    0.29747  446.24
 
 # Save the spectrum
-spave.save('irc_cs.spc', 'ASCII', True)	# save the spectrum				# write_ascii,'irc_cs.spc'
-#spave.save('irc_cs.ms','MS2',True) # save as an MS					# NA
+spave.save('irc_cs.spc', 'ASCII', True) # save the spectrum                             # write_ascii,'irc_cs.spc'
+#spave.save('irc_cs.ms','MS2',True) # save as an MS                                     # NA
 #
 endProc = time.clock()
 endTime = time.time()
@@ -150,7 +150,7 @@ print('*  Spectrum rms '+str(curr_rms), file=logfile)
 if (diff_sum < 0.05): print('* Passed spectrum (line) sum test', file=logfile)
 print('*  Line integral '+str(curr_sum), file=logfile)
 if ((diff_max<0.05) & (diff_rms<0.05) & (diff_sum<0.05)):
-	regstate = True
+        regstate = True
         print('---', file=logfile)
         print('Passed Regression test for IRC-CS', file=logfile)
         print('---', file=logfile)
@@ -158,7 +158,7 @@ if ((diff_max<0.05) & (diff_rms<0.05) & (diff_sum<0.05)):
         print('Regression PASSED')
         print('')
 else:
-	regstate = False
+        regstate = False
         print('----FAILED Regression test for IRC-CS', file=logfile)
         print('')
         print('Regression FAILED')

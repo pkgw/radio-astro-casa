@@ -38,16 +38,16 @@ def ic2233_reg():
 
     #os.system("rm -rf "+MYIMAGE+"*");
     if (REUSEREPOS==False):
-    	os.system("rm -rf "+THISHOME);
-    	os.mkdir(THISHOME);
-    	REPOSNAME = os.environ.get('CASAPATH').split()[0]
-    	PREFIX    = REPOSNAME + "/data/regression/ic2233/";
-    	FITSFILE  = PREFIX    + "ic2233.lband.fits";
+        os.system("rm -rf "+THISHOME);
+        os.mkdir(THISHOME);
+        REPOSNAME = os.environ.get('CASAPATH').split()[0]
+        PREFIX    = REPOSNAME + "/data/regression/ic2233/";
+        FITSFILE  = PREFIX    + "ic2233.lband.fits";
         ms.fromfits(fitsfile=FITSFILE,msfile=MSFILE);
         ms.done();
 
     im.open(MSFILE,usescratch=true);
-    
+
     im.selectvis(nchan=NCHAN,start=CHSTART,step=1,spw=SPW,time=TIMERANGE);
     im.defineimage(nx=IMSIZE,ny=IMSIZE,cellx=CELLSIZE,celly=CELLSIZE,stokes=STOKES,
                    nchan=1,start=CHSTART,step=NCHAN-1,phasecenter=0);
@@ -75,7 +75,7 @@ def ic2233_reg():
 # StokesIRMS           = 0.00138986;
 
 # The following was changed to new values on Feb 23, 2010
-# StokesIPeak          = 0.86264914  
+# StokesIPeak          = 0.86264914
 # StokesIRMS           = 0.00138987
 
 # The following was changed to new values on Mar. 23, 2011
@@ -146,7 +146,7 @@ def stats():
 #        vbox=ia.setboxregion(blc=[0,0,1,0],trc=[2048,2048,1,0]);
         ibox = rg.box(blc=[0,0,0,0],trc=[2048,2048,0,0]);
         vbox = rg.box(blc=[0,0,1,0],trc=[2048,2048,1,0]);
-    
+
         istats=ia.statistics(region=ibox, list=True, verbose=True);
         vstats=ia.statistics(region=vbox, list=True, verbose=True);
 
@@ -192,7 +192,7 @@ def stats():
             (abs(dIRMS) < EPS) &
             (abs(dVMax) < EPS) &
             (abs(dVRMS) < EPS) &
-            (dIMaxPos==0).all() 
+            (dIMaxPos==0).all()
             #        (dVMaxPos==0).all()
             ):
             regstate=True;
@@ -206,7 +206,7 @@ def stats():
             print('Regression FAILED')
             print('')
             print("IC2233 Regression failed.", file=logfile);
-        
+
             print('', file=logfile)
             print('', file=logfile)
             print('********* Benchmarking *****************', file=logfile)

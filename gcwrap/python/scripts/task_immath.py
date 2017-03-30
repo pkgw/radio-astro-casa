@@ -34,7 +34,7 @@
 # </reviewed
 #
 # <author>
-# Shannon Jaeger, University of Calgary  (image math) 
+# Shannon Jaeger, University of Calgary  (image math)
 # Takeshi Nakazato, National Radio Astronomy Obaservatory (polarization)
 # </author>
 #
@@ -47,10 +47,10 @@
 #
 # <synopsis>
 #    This task evaluates mathematical expressions involving existing
-#    image files. The results of the calculations are stored in the 
-#    designated output file.  Options are available to specify mathematical 
-#    expression directly or pre-defined expression for calculation of 
-#    spectral index image, and polarization intensity and position angle 
+#    image files. The results of the calculations are stored in the
+#    designated output file.  Options are available to specify mathematical
+#    expression directly or pre-defined expression for calculation of
+#    spectral index image, and polarization intensity and position angle
 #    images are available. The image file names imbedded in the expression or
 #    specified in the imagename parameter for the pre-defined calculations may
 #    be CASA images or FITS images.
@@ -60,22 +60,22 @@
 #          parameters, but at 1 when used with the indexin function
 #          in expression. Use the imhead task to see the range of
 #          values for each axes.
-#    
+#
 #
 #    Keyword arguments:
-#    outfile -- The file where the results of the image calculations 
+#    outfile -- The file where the results of the image calculations
 #                are stored.  Overwriting an existing outfile is not permitted.
 #            Default: none;  Example: outfile='results.im'
 #    mode -- mode for mathematical operation
 #            Default: evalexpr
-#            Options: 'evalexpr' : evalulate a mathematical expression defined in 'expr' 
-#                     'spix' : spectalindex image 
-#                     'pola' : polarization position angle image 
-#                     'poli' : polarization intesity image 
+#            Options: 'evalexpr' : evalulate a mathematical expression defined in 'expr'
+#                     'spix' : spectalindex image
+#                     'pola' : polarization position angle image
+#                     'poli' : polarization intesity image
 #           mode expandable parameters
 #            expr -- (for mode='evalexpr') A mathematical expression, with image file names.
 #              Image file names MUST be enclosed in double quotes (&quot;)
-#              Default: none 
+#              Default: none
 #              Examples:
 #                 Make an image that is image1.im - image2.im
 #                   expr=' (&quot;image1.im&quot; - &quot;image2.im&quot; )'
@@ -89,27 +89,27 @@
 #                         Note: No exponentiaion available?
 #                 Build an image pixel by pixel from the minimum of (image2.im, 2*image1.im)
 #                   expr='min(&quot;image2.im&quot;,2*max(&quot;image1.im&quot;))'
-#            imagename -- (for mode='spix','pola','poli') input image names        
+#            imagename -- (for mode='spix','pola','poli') input image names
 #              Default: none;
-#              Examples: mode='spix'; imagename=['image1.im','image2.im'] will calculate 
-#                       an image of log(S1/S2)/log(f1/f2), where S1 and S2 are fluxes and 
+#              Examples: mode='spix'; imagename=['image1.im','image2.im'] will calculate
+#                       an image of log(S1/S2)/log(f1/f2), where S1 and S2 are fluxes and
 #                       f1 and f2 are frequencies
-#                       mode='pola'; imagename=['imageQ.im','imageU.im'] will calculate 
-#                       an image of polarization angle distribution, where imageQ.im and 
+#                       mode='pola'; imagename=['imageQ.im','imageU.im'] will calculate
+#                       an image of polarization angle distribution, where imageQ.im and
 #                       imageU.im are Stokes Q and U images, respectively. Calculate 0.5*arctan(U/Q).
 #                       mode='poli'; imagename=['imageQ.im','imageU.im','imageV.im'] will calculate
 #                       total polarization intensity image, where imageQ.im, imageU.im, imageV.im
 #                       are Stokes Q, U, and V images, respectively.
 #            sigma - (for mode='poli') standard deviation of noise of Stokes images with unit such as
-#                    Jy/beam to correct for bias 
+#                    Jy/beam to correct for bias
 #              Default: '0.0Jy/beam' (= no debiasing)
 #    mask -- Name of mask applied to each image in the calculation
-#            Default '' means no mask;  Example: mask='orion.mask'.  
+#            Default '' means no mask;  Example: mask='orion.mask'.
 #    region -- File path to an ImageRegion file.
 #            An ImageRegion file can be created with the CASA
 #            viewer's region manager.  Typically ImageRegion files
 #            will have the suffix '.rgn'.  If a region file is given
-#            then the box, chans, and stokes selections whill be 
+#            then the box, chans, and stokes selections whill be
 #            ignored.
 #            Default: none
 #            Example: region='myimage.im.rgn'
@@ -118,27 +118,27 @@
 #            Default: none (whole 2-D plane);  Example: box='10,10,50,50'
 #    chans -- channel numbers, velocity, and/or frequency
 #            Only channel numbers acceptable at this time.
-#            Default: none (all);  Example: chans='3~20'   
+#            Default: none (all);  Example: chans='3~20'
 #    stokes -- Stokes parameters to image, may or may not be separated
 #            by commas but best if you use commas.
 #            Default: none (all); Example: stokes='IQUV';
-#            Options: 'I','Q','U','V','RR','RL','LR','LL','XX','YX','XY','YY', ... 
+#            Options: 'I','Q','U','V','RR','RL','LR','LL','XX','YX','XY','YY', ...
 #
 #    Available functions in the <i>expr</i> and <i>mask</i> paramters:
 #    pi(), e(), sin(), sinh(), asinh(), cos(), cosh(), tan(), tanh(),
 #    atan(), exp(), log(), log10(), pow(), sqrt(), complex(), conj()
 #    real(), imag(), abs(), arg(), phase(), aplitude(), min(), max()
-#    round(), isgn(), floor(), ceil(), rebin(), spectralindex(), pa(), 
+#    round(), isgn(), floor(), ceil(), rebin(), spectralindex(), pa(),
 #    iif(), indexin(), replace(), ...
 #
-#    For a full description of the allowed syntax see the 
+#    For a full description of the allowed syntax see the
 #    Lattice Expression Language (LEL) documentation on the at:
 #    http://aips2.nrao.edu/docs/notes/223/223.html
 #
 #    NOTE: where indexing and axis numbering are used in the above
 #    functions they are 1-based, ie. numbering starts at 1.
 #
-# </synopsis> 
+# </synopsis>
 #
 # <example>
 # <srcblock>
@@ -158,7 +158,7 @@
 #
 #  Add an "overwrite" output file parameter
 #
-#  Add polygon and circle region selection 
+#  Add polygon and circle region selection
 # </todo>
 ########################################################################3
 
@@ -176,10 +176,10 @@ def immath(
     casalog.origin('immath')
     retValue = False
     # NOTE: This step likely be eliminated
-    # 
+    #
     # Remove any old tmp files that may be left from
     # a previous run of immath
-    tb.clearlocks()    
+    tb.clearlocks()
     tmpFilePrefix='_immath_tmp'
     try:
         _immath_cleanup( tmpFilePrefix )
@@ -192,7 +192,7 @@ def immath(
     # which are lower-case.  For some reason LEL was written
     # to be case sensitive!
     #
-    # The values stored are in the opposite case of what we want, 
+    # The values stored are in the opposite case of what we want,
     # because we want to search for the invalid case.
     #
     # Note these were found in the various LEL*Enums.h files.
@@ -220,7 +220,7 @@ def immath(
             'SEVERE'
         )
         return False
-    
+
     # Find the list of filenames in the expression
     # also do a quick check to see if all of the files
     # exist
@@ -257,12 +257,12 @@ def immath(
         varnamesSet=set(varnames)
         count = 0
         for imname in tmpfilenames:
-            # check if it is one of varnames, if not check the files in expr exist 
+            # check if it is one of varnames, if not check the files in expr exist
             if(not varnamesSet.issuperset(imname)):
                if( not os.path.exists(imname)):
                    raise Exception('Image data set not found - please verify '+imname)
                else:
-                   count=count+1            
+                   count=count+1
         if len(tmpfilenames)==count:
             ignoreimagename=True
             filenames=tmpfilenames
@@ -272,7 +272,7 @@ def immath(
                 casalog.post("Image data set not found - please verify " +filenames[i], "SEVERE")
                 raise Exception('Image data set not found - please verify '+filenames[i])
 
-       
+
     # Remove spaces from the expression.
     expr=expr.replace( ' ', '' )
     doPolThresh = False
@@ -365,12 +365,12 @@ def immath(
             casalog.post( 'Unable to do mathematical expression: '\
                   +expr+'\n'+str(error), 'SEVERE' )
             raise
-   
+
     # If we've made it here we need to apply masks or extract
     # regions from the images before doing the calculations first.
     # Warning if user has given a region file plus other region
     # selection information
-                
+
     # For each file in the list of files, creat a subimage
     # of it and store it.  We need to do this only if the user
     # specified a region or mask information.
@@ -417,7 +417,7 @@ def immath(
         casalog.post( 'Unable to create subimages for all image names given',\
                       'SEVERE' )
         raise Exception
-    
+
     # because real file names also have to be mapped to a corresponding subimage, CAS-1830
     for k in list(file_map.keys()):
         # we require actual image names to be in quotes when used in the expression
@@ -440,7 +440,7 @@ def immath(
         res = _myia.imagecalc(pixels=expr, outfile=outfile, imagemd=imagemd )
 
         # modify stokes type for polarization intensity image
-        if (  mode=="poli" ):                
+        if (  mode=="poli" ):
             csys=retValue.coordsys()
             if isTPol:
                 csys.setstokes('Ptotal')
@@ -452,9 +452,9 @@ def immath(
             _immath_createPolMask(polithresh, lpol, outfile)
 
         #cleanup
-        _myia.done()                
+        _myia.done()
         _immath_cleanup( tmpFilePrefix )
-                    
+
         return True
     except Exception as error:
         try:
@@ -468,9 +468,9 @@ def immath(
         casalog.post( 'Unable to evaluate math expression: '\
                       +expr+' on file(s) '+str(filenames), 'SEVERE' )
         raise
-        
+
     # Remove any temporary files
-    try: 
+    try:
         _immath_cleanup( tmpFilePrefix )
     except:
         casalog.post( 'immath was unable to cleanup temporary files','SEVERE' )
@@ -489,7 +489,7 @@ def _immath_cleanup( filePrefix ):
 
 def _immath_parse( expr='' ):
         retValue=[]
-        
+
         # Find out if the names are surrounded by single or double quotes
         quote=''
         if ( expr.find('"') > -1 ):
@@ -506,7 +506,7 @@ def _immath_parse( expr='' ):
                 # to the list again.  This saves us work and disk space.
                 current=current[end+1:]
                 continue;
-            
+
             retValue.append( current[start:end] )
             current=current[end+1:]
 
@@ -523,7 +523,7 @@ def __check_stokes(images):
             _myia.close()
             retValue.extend(stks)
         return retValue
-       
+
 # it is important to sort the varnames in reverse order before doing
 # the substitutions to assure the substitution set is performed correctly
 # CAS-1678
@@ -698,7 +698,7 @@ def _doPolI(filenames, varnames, tmpFilePrefix, createSubims, tpol):
                 +'+'+varnames[1]+'*'+varnames[1]
         isLPol = True
     return [expr, isLPol, isTPol]
-        
+
 def _immath_createPolMask(polithresh, lpol, outfile):
     # make the linear polarization threshhold mask CAS-2120
     myexpr = "'" + lpol + "' >= " + str(qa.getvalue(polithresh)[0])
@@ -708,4 +708,4 @@ def _immath_createPolMask(polithresh, lpol, outfile):
     casalog.post('Calculated mask based on linear polarization threshold ' + str(polithresh),
         'INFO')
     _myia.done()
-            
+
